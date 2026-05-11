@@ -1,0 +1,44 @@
+{
+  "common": {
+    "siteName": "Zenzo",
+    "tagline": "Premium in-home massage in Utrecht",
+    "bookNow": "Book now",
+    "learnMore": "Learn more",
+    "viewAll": "View all",
+    "back": "Back",
+    "loading": "Loading..."
+  },
+  "nav": {
+    "home": "Home",
+    "providers": "Massage therapists",
+    "services": "Services",
+    "howItWorks": "How it works",
+    "forProviders": "For providers",
+    "about": "About us",
+    "contact": "Contact",
+    "login": "Log in",
+    "register": "Register",
+    "dashboard": "Dashboard",
+    "bookings": "Bookings",
+    "logout": "Log out"
+  },
+  "home": {
+    "heroTitle": "Premium in-home massage in Utrecht",
+    "heroSubtitle": "Book a certified massage therapist who comes to you. Relax at home, on your schedule.",
+    "heroCtaPrimary": "Browse available therapists",
+    "heroCtaSecondary": "How it works",
+    "placeholderTitle": "Welcome to Zenzo",
+    "placeholderSubtitle": "Platform under construction — first bookings in Utrecht coming soon.",
+    "phase": "Phase 1: Foundation"
+  },
+  "footer": {
+    "tagline": "Premium in-home massage in Utrecht.",
+    "rights": "All rights reserved.",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service"
+  },
+  "meta": {
+    "defaultTitle": "Zenzo — Premium in-home massage in Utrecht",
+    "defaultDescription": "Book a professional massage therapist at home in Utrecht. Certified therapists, flexible hours, secure payment."
+  }
+}

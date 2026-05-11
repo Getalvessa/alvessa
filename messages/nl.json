@@ -1,0 +1,44 @@
+{
+  "common": {
+    "siteName": "Zenzo",
+    "tagline": "Premium massage aan huis in Utrecht",
+    "bookNow": "Nu boeken",
+    "learnMore": "Meer informatie",
+    "viewAll": "Alles bekijken",
+    "back": "Terug",
+    "loading": "Laden..."
+  },
+  "nav": {
+    "home": "Home",
+    "providers": "Masseurs",
+    "services": "Diensten",
+    "howItWorks": "Hoe het werkt",
+    "forProviders": "Voor masseurs",
+    "about": "Over ons",
+    "contact": "Contact",
+    "login": "Inloggen",
+    "register": "Registreren",
+    "dashboard": "Dashboard",
+    "bookings": "Boekingen",
+    "logout": "Uitloggen"
+  },
+  "home": {
+    "heroTitle": "Premium massage aan huis in Utrecht",
+    "heroSubtitle": "Boek een gecertificeerde masseur die naar jou toe komt. Ontspan thuis, op jouw moment.",
+    "heroCtaPrimary": "Bekijk beschikbare masseurs",
+    "heroCtaSecondary": "Hoe het werkt",
+    "placeholderTitle": "Welkom bij Zenzo",
+    "placeholderSubtitle": "Platform in opbouw — eerste boekingen in Utrecht zijn onderweg.",
+    "phase": "Fase 1: Fundament"
+  },
+  "footer": {
+    "tagline": "Premium massage aan huis in Utrecht.",
+    "rights": "Alle rechten voorbehouden.",
+    "privacy": "Privacybeleid",
+    "terms": "Algemene voorwaarden"
+  },
+  "meta": {
+    "defaultTitle": "Zenzo — Premium massage aan huis in Utrecht",
+    "defaultDescription": "Boek een professionele masseur aan huis in Utrecht. Gecertificeerde massage therapeuten, flexibele tijden, veilige betaling."
+  }
+}
