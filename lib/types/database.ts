@@ -159,7 +159,7 @@ export type Database = {
           customer_id: string
           customer_notes?: string | null
           duration_minutes: number
-          end_at: string
+          end_at?: string  // set automatically by bookings_set_end_at trigger
           id?: string
           platform_fee_cents?: number
           provider_display_name_snapshot: string
