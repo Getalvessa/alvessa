@@ -18,13 +18,13 @@ export default function SiteHeader() {
 
         <nav className="hidden gap-6 md:flex">
           <Link
-            href="/"
+            href="/aanbod"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('providers')}
           </Link>
           <Link
-            href="/"
+            href="/#hoe-het-werkt"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('howItWorks')}

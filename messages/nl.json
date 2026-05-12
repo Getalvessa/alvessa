@@ -6,7 +6,11 @@
     "learnMore": "Meer informatie",
     "viewAll": "Alles bekijken",
     "back": "Terug",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "from": "Vanaf",
+    "minutes": "min",
+    "reviews": "beoordelingen",
+    "noResults": "Geen resultaten gevonden"
   },
   "nav": {
     "home": "Home",
@@ -23,19 +27,55 @@
     "logout": "Uitloggen"
   },
   "home": {
+    "heroLabel": "Utrecht · Aan huis",
     "heroTitle": "Premium massage aan huis in Utrecht",
     "heroSubtitle": "Boek een gecertificeerde masseur die naar jou toe komt. Ontspan thuis, op jouw moment.",
     "heroCtaPrimary": "Bekijk beschikbare masseurs",
     "heroCtaSecondary": "Hoe het werkt",
-    "placeholderTitle": "Welkom bij Zenzo",
-    "placeholderSubtitle": "Platform in opbouw — eerste boekingen in Utrecht zijn onderweg.",
-    "phase": "Fase 1: Fundament"
+    "valuePropTitle": "Waarom Zenzo?",
+    "valueProp1Title": "Aan huis",
+    "valueProp1Desc": "Jouw therapeut komt naar jou toe. Geen reistijd, geen parkeergedoe — gewoon genieten.",
+    "valueProp2Title": "Gecertificeerd",
+    "valueProp2Desc": "Elk Zenzo-therapeut is persoonlijk gescreend en in het bezit van erkende diploma's.",
+    "valueProp3Title": "Eenvoudig boeken",
+    "valueProp3Desc": "Kies een dienst, kies een tijdstip en betaal veilig online. Klaar in minder dan twee minuten.",
+    "howItWorksTitle": "Hoe het werkt",
+    "howItWorksSubtitle": "In drie stappen naar jouw massage aan huis.",
+    "step1Number": "1",
+    "step1Title": "Kies jouw massage",
+    "step1Desc": "Blader door onze gecertificeerde therapeuten in Utrecht en kies de massage die bij jou past.",
+    "step2Number": "2",
+    "step2Title": "Boek een tijdstip",
+    "step2Desc": "Kies een datum en tijdstip, voer jouw adres in en bevestig jouw boeking.",
+    "step3Number": "3",
+    "step3Title": "Ontspan thuis",
+    "step3Desc": "Jouw therapeut komt naar jou toe met alles wat nodig is. Geniet van een professionele massage.",
+    "ctaTitle": "Klaar om te ontspannen?",
+    "ctaSubtitle": "Ontdek gecertificeerde masseurs in Utrecht die naar jou toe komen.",
+    "ctaButton": "Bekijk alle masseurs"
+  },
+  "providers": {
+    "pageTitle": "Masseurs in Utrecht",
+    "pageSubtitle": "Gecertificeerde massage therapeuten die bij jou thuis komen.",
+    "viewProfile": "Bekijk profiel",
+    "fromPrice": "Vanaf {price}",
+    "newProvider": "Nieuw",
+    "reviewCount": "{count} {count, plural, one {beoordeling} other {beoordelingen}}",
+    "serviceArea": "{km} km radius",
+    "emptyTitle": "Nog geen masseurs beschikbaar",
+    "emptyDesc": "We zijn bezig met het onboarden van gecertificeerde therapeuten in Utrecht. Kom binnenkort terug.",
+    "emptyCtaLabel": "Meld je aan als therapeut",
+    "metaTitle": "Masseurs in Utrecht — Zenzo",
+    "metaDescription": "Bekijk gecertificeerde massage therapeuten in Utrecht die aan huis komen. Vergelijk diensten, tarieven en beoordelingen."
   },
   "footer": {
     "tagline": "Premium massage aan huis in Utrecht.",
     "rights": "Alle rechten voorbehouden.",
     "privacy": "Privacybeleid",
-    "terms": "Algemene voorwaarden"
+    "terms": "Algemene voorwaarden",
+    "howItWorks": "Hoe het werkt",
+    "forProviders": "Voor masseurs",
+    "contact": "Contact"
   },
   "meta": {
     "defaultTitle": "Zenzo — Premium massage aan huis in Utrecht",
