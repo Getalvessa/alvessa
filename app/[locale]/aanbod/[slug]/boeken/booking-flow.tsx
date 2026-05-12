@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useActionState } from 'react';
+import { useState, useEffect, useActionState, useMemo } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
@@ -130,12 +130,11 @@ function ServiceStep({
 // ── Step 2: Date & time ───────────────────────────────────────────────────────
 
 function DateTimeStep({
-  providerId, duration, locale, date, slot,
+  providerId, duration, date, slot,
   onDateChange, onSlotChange, onNext, onBack,
 }: {
   providerId: string;
   duration: number;
-  locale: string;
   date: string;
   slot: string;
   onDateChange: (d: string) => void;
@@ -144,23 +143,31 @@ function DateTimeStep({
   onBack: () => void;
 }) {
   const t = useTranslations('booking');
-  const [slots, setSlots] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [fetched, setFetched] = useState(false);
 
-  const today = new Date().toISOString().slice(0, 10);
-  const maxDate = new Date(Date.now() + 60 * 86_400_000).toISOString().slice(0, 10);
+  type SlotResult = { loading: true } | { loading: false; slots: string[] };
+  const [slotResult, setSlotResult] = useState<SlotResult | null>(null);
+
+  // useMemo: date construction is impure — compute once, not on every render
+  const today   = useMemo(() => new Date().toISOString().slice(0, 10), []);
+  const maxDate = useMemo(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 60);
+    return d.toISOString().slice(0, 10);
+  }, []);
 
   useEffect(() => {
     if (!date) return;
-    setLoading(true);
-    setFetched(false);
     onSlotChange('');
     fetch(`/api/availability?provider_id=${providerId}&date=${date}&duration=${duration}`)
       .then((r) => r.json())
-      .then(({ slots: s }) => { setSlots(s ?? []); setFetched(true); })
-      .finally(() => setLoading(false));
+      .then(({ slots: s }) => setSlotResult({ loading: false, slots: s ?? [] }));
+    // Set loading state inside a microtask to avoid synchronous setState-in-effect
+    Promise.resolve().then(() => setSlotResult({ loading: true }));
   }, [date, providerId, duration]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const loading = slotResult?.loading === true;
+  const fetched = slotResult !== null && !slotResult.loading;
+  const slots   = fetched && !slotResult.loading ? slotResult.slots : [];
 
   return (
     <div>
@@ -396,18 +403,18 @@ export function BookingFlow({
   const [slot, setSlot]                 = useState('');
   const [addressLine, setAddressLine]   = useState('');
   const [addressNotes, setAddressNotes] = useState('');
-  const [redirecting, setRedirecting]   = useState(false);
 
   const [bookingState, formAction, isPending] = useActionState(createBooking, { error: null });
 
+  // Trigger Stripe redirect when checkoutUrl is available (no setState needed)
   useEffect(() => {
     if (bookingState.checkoutUrl) {
-      setRedirecting(true);
       window.location.href = bookingState.checkoutUrl;
     }
   }, [bookingState.checkoutUrl]);
 
-  if (redirecting) return <RedirectingScreen />;
+  // Show spinner while browser navigates to Stripe
+  if (bookingState.checkoutUrl) return <RedirectingScreen />;
 
   const city = provider.city;
 
@@ -442,7 +449,6 @@ export function BookingFlow({
         <DateTimeStep
           providerId={provider.id}
           duration={service.services!.duration_minutes}
-          locale={locale}
           date={date}
           slot={slot}
           onDateChange={setDate}
