@@ -246,7 +246,19 @@
     "successBody": "Your booking has been registered. Payment will follow in the next step.",
     "successMyBookings": "View my bookings",
     "errorSlotTaken": "This time slot was just booked. Please choose another.",
-    "errorGeneric": "Something went wrong. Please try again."
+    "errorGeneric": "Something went wrong. Please try again.",
+    "redirectingToPayment": "Redirecting to payment...",
+    "cancelledNotice": "Your payment was cancelled. You can try again below."
+  },
+  "payment": {
+    "successMetaTitle": "Booking confirmed — Zenzo",
+    "successTitle": "Payment received!",
+    "successSubtitle": "Your booking has been registered. You'll receive confirmation once the payment is processed.",
+    "summaryService": "Service",
+    "summaryProvider": "Therapist",
+    "summaryDate": "Date & time",
+    "summaryAmount": "Amount paid",
+    "myBookingsButton": "View my bookings"
   },
   "myBookings": {
     "metaTitle": "My bookings — Zenzo",

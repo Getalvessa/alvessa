@@ -246,7 +246,19 @@
     "successBody": "Je boeking is geregistreerd. Betaling volgt in de volgende stap.",
     "successMyBookings": "Bekijk mijn boekingen",
     "errorSlotTaken": "Dit tijdstip is zojuist geboekt. Kies een ander tijdstip.",
-    "errorGeneric": "Er is iets misgegaan. Probeer het opnieuw."
+    "errorGeneric": "Er is iets misgegaan. Probeer het opnieuw.",
+    "redirectingToPayment": "Doorsturen naar betaling...",
+    "cancelledNotice": "Je betaling is afgebroken. Je kunt het hieronder opnieuw proberen."
+  },
+  "payment": {
+    "successMetaTitle": "Boeking bevestigd — Zenzo",
+    "successTitle": "Betaling ontvangen!",
+    "successSubtitle": "Je boeking is geregistreerd. Je ontvangt bevestiging zodra de betaling verwerkt is.",
+    "summaryService": "Dienst",
+    "summaryProvider": "Masseur",
+    "summaryDate": "Datum & tijd",
+    "summaryAmount": "Betaald bedrag",
+    "myBookingsButton": "Bekijk mijn boekingen"
   },
   "myBookings": {
     "metaTitle": "Mijn boekingen — Zenzo",

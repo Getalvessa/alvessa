@@ -3,7 +3,7 @@
 import { useState, useEffect, useActionState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { ArrowLeft, Check } from 'lucide-react';
+import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { createBooking } from './actions';
 
 // Amsterdam UTC+2 (CEST) — fixed offset for MVP
@@ -337,7 +337,6 @@ function ConfirmStep({
       )}
 
       <form action={formAction}>
-        {/* Hidden booking data */}
         <input type="hidden" name="provider_id"            value={provider.id} />
         <input type="hidden" name="provider_service_id"    value={service.id} />
         <input type="hidden" name="scheduled_at"           value={scheduled} />
@@ -351,6 +350,7 @@ function ConfirmStep({
         <input type="hidden" name="service_price_cents"    value={price} />
         <input type="hidden" name="provider_display_name"  value={provider.profiles?.display_name ?? provider.slug} />
         <input type="hidden" name="provider_slug"          value={provider.slug} />
+        <input type="hidden" name="locale"                 value={locale} />
 
         <div className="flex gap-3">
           <button type="button" onClick={onBack}
@@ -367,42 +367,47 @@ function ConfirmStep({
   );
 }
 
-// ── Success screen ────────────────────────────────────────────────────────────
+// ── Redirecting screen ────────────────────────────────────────────────────────
 
-function SuccessScreen() {
+function RedirectingScreen() {
   const t = useTranslations('booking');
   return (
-    <div className="py-16 text-center">
-      <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-foreground">
-        <Check className="h-8 w-8 text-background" />
-      </div>
-      <h2 className="text-xl font-bold text-foreground">{t('successTitle')}</h2>
-      <p className="mt-2 text-sm text-muted-foreground">{t('successBody')}</p>
-      <Link
-        href="/mijn-boekingen"
-        className="mt-8 inline-flex h-10 items-center justify-center rounded-lg bg-foreground px-6 text-sm font-semibold text-background hover:bg-foreground/90"
-      >
-        {t('successMyBookings')}
-      </Link>
+    <div className="flex flex-col items-center py-20 text-center">
+      <Loader2 className="mb-4 h-10 w-10 animate-spin text-muted-foreground" />
+      <p className="text-sm font-medium text-foreground">{t('redirectingToPayment')}</p>
     </div>
   );
 }
 
 // ── Main orchestrator ─────────────────────────────────────────────────────────
 
-export function BookingFlow({ provider, locale }: { provider: Provider; locale: string }) {
+export function BookingFlow({
+  provider, locale, cancelled,
+}: {
+  provider: Provider;
+  locale: string;
+  cancelled?: boolean;
+}) {
   const t = useTranslations('booking');
 
-  const [step, setStep] = useState(1);
-  const [service, setService]         = useState<Service | null>(null);
-  const [date, setDate]               = useState('');
-  const [slot, setSlot]               = useState('');
-  const [addressLine, setAddressLine] = useState('');
+  const [step, setStep]                 = useState(1);
+  const [service, setService]           = useState<Service | null>(null);
+  const [date, setDate]                 = useState('');
+  const [slot, setSlot]                 = useState('');
+  const [addressLine, setAddressLine]   = useState('');
   const [addressNotes, setAddressNotes] = useState('');
+  const [redirecting, setRedirecting]   = useState(false);
 
   const [bookingState, formAction, isPending] = useActionState(createBooking, { error: null });
 
-  if (bookingState.bookingId) return <SuccessScreen />;
+  useEffect(() => {
+    if (bookingState.checkoutUrl) {
+      setRedirecting(true);
+      window.location.href = bookingState.checkoutUrl;
+    }
+  }, [bookingState.checkoutUrl]);
+
+  if (redirecting) return <RedirectingScreen />;
 
   const city = provider.city;
 
@@ -415,6 +420,12 @@ export function BookingFlow({ provider, locale }: { provider: Provider; locale: 
         <ArrowLeft className="h-4 w-4" />
         {t('backToProfile')}
       </Link>
+
+      {cancelled && (
+        <div className="mb-6 rounded-lg border border-border bg-muted px-4 py-3 text-sm text-muted-foreground">
+          {t('cancelledNotice')}
+        </div>
+      )}
 
       <StepIndicator step={step} total={4} />
 
