@@ -1,11 +1,28 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
+import { createClient } from '@/lib/supabase/client';
+import { logoutAction } from '@/app/[locale]/inloggen/actions';
+import type { User } from '@supabase/supabase-js';
 
 export default function SiteHeader() {
   const t = useTranslations('nav');
   const tCommon = useTranslations('common');
+  const [user, setUser] = useState<User | null | undefined>(undefined); // undefined = loading
+
+  useEffect(() => {
+    const supabase = createClient();
+
+    supabase.auth.getUser().then(({ data }) => setUser(data.user));
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => setUser(session?.user ?? null),
+    );
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -38,12 +55,46 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <button className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
-            {t('login')}
-          </button>
-          <button className="inline-flex h-9 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90">
-            {tCommon('bookNow')}
-          </button>
+          {/* Loading state — matches width of auth buttons to avoid layout shift */}
+          {user === undefined && (
+            <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
+          )}
+
+          {user === null && (
+            <>
+              <Link
+                href="/inloggen"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t('login')}
+              </Link>
+              <Link
+                href="/registreren"
+                className="inline-flex h-9 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+              >
+                {t('register')}
+              </Link>
+            </>
+          )}
+
+          {user && (
+            <>
+              <Link
+                href="/mijn-boekingen"
+                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+              >
+                {t('myBookings')}
+              </Link>
+              <form action={logoutAction}>
+                <button
+                  type="submit"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  {t('logout')}
+                </button>
+              </form>
+            </>
+          )}
         </div>
       </div>
     </header>
