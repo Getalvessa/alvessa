@@ -24,13 +24,13 @@ export default function SiteHeader() {
             {t('providers')}
           </Link>
           <Link
-            href="/#hoe-het-werkt"
+            href="/hoe-het-werkt"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('howItWorks')}
           </Link>
           <Link
-            href="/"
+            href="/voor-masseurs"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('forProviders')}
