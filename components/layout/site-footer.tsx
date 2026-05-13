@@ -46,8 +46,12 @@ export default function SiteFooter() {
             © {new Date().getFullYear()} {tCommon('siteName')}. {t('rights')}
           </span>
           <div className="flex gap-4 text-xs text-muted-foreground">
-            <span className="cursor-default">{t('privacy')}</span>
-            <span className="cursor-default">{t('terms')}</span>
+            <Link href="/privacybeleid" className="transition-colors hover:text-foreground">
+              {t('privacy')}
+            </Link>
+            <Link href="/algemene-voorwaarden" className="transition-colors hover:text-foreground">
+              {t('terms')}
+            </Link>
           </div>
         </div>
       </div>

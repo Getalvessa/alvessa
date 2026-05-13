@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { ArrowLeft, MapPin, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
@@ -163,10 +164,13 @@ function ProviderHeader({ provider }: { provider: ProviderDetail }) {
     <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
       {/* Avatar */}
       {avatarUrl ? (
-        <img
+        <Image
           src={avatarUrl}
           alt={displayName}
+          width={96}
+          height={96}
           className="h-24 w-24 shrink-0 rounded-full object-cover"
+          unoptimized
         />
       ) : (
         <div className="flex h-24 w-24 shrink-0 items-center justify-center rounded-full bg-muted text-2xl font-semibold text-muted-foreground">

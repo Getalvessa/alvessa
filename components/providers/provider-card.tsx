@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { Star, MapPin } from 'lucide-react';
 
@@ -55,10 +56,13 @@ export function ProviderCard({ provider }: { provider: ProviderCardData }) {
         {/* Avatar */}
         <div className="shrink-0">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt={displayName}
+              width={64}
+              height={64}
               className="h-16 w-16 rounded-full object-cover"
+              unoptimized
             />
           ) : (
             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-muted text-lg font-semibold text-muted-foreground">
