@@ -35,7 +35,7 @@ export async function createBooking(
   const locale              = (formData.get('locale')                   as string) || 'nl';
 
   // 1. Create booking record
-  const { data: booking, error } = await supabase
+  const { data: booking, error: dbError } = await supabase
     .from('bookings')
     .insert({
       customer_id:                    user.id,
@@ -58,9 +58,11 @@ export async function createBooking(
     .select('id')
     .single();
 
-  if (error) {
-    if (error.code === '23P01') return { error: 'errorSlotTaken' };
-    console.error('createBooking error:', error.message);
+  if (dbError) {
+    if (dbError.code === '23P01') return { error: 'errorSlotTaken' };
+    console.error('[createBooking] DB insert failed:', JSON.stringify({
+      code: dbError.code, message: dbError.message, details: dbError.details, hint: dbError.hint,
+    }));
     return { error: 'errorGeneric' };
   }
 
@@ -75,30 +77,36 @@ export async function createBooking(
   const stripeClient = createStripeClient();
   const serviceName  = locale === 'nl' ? serviceNameNl : serviceNameEn;
 
-  const session = await stripeClient.checkout.sessions.create({
-    mode: 'payment',
-    payment_method_types: ['card', 'ideal'],
-    line_items: [
-      {
-        price_data: {
-          currency: 'eur',
-          unit_amount: totalCents,
-          product_data: {
-            name: `${serviceName} — ${providerDisplayName}`,
-            description: `${durationMinutes} min · ${addressCity}`,
+  let session: Awaited<ReturnType<typeof stripeClient.checkout.sessions.create>>;
+  try {
+    session = await stripeClient.checkout.sessions.create({
+      mode: 'payment',
+      payment_method_types: ['card', 'ideal'],
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            unit_amount: totalCents,
+            product_data: {
+              name: `${serviceName} — ${providerDisplayName}`,
+              description: `${durationMinutes} min · ${addressCity}`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
-      },
-    ],
-    metadata:            { booking_id: booking.id },
-    client_reference_id: booking.id,
-    success_url: `${base}${localePath}/boeken/succes?session_id={CHECKOUT_SESSION_ID}&booking_id=${booking.id}`,
-    cancel_url:  `${base}${localePath}/aanbod/${providerSlug}/boeken?cancelled=true`,
-  });
+      ],
+      metadata:            { booking_id: booking.id },
+      client_reference_id: booking.id,
+      success_url: `${base}${localePath}/boeken/succes?session_id={CHECKOUT_SESSION_ID}&booking_id=${booking.id}`,
+      cancel_url:  `${base}${localePath}/aanbod/${providerSlug}/boeken?cancelled=true`,
+    });
+  } catch (stripeErr) {
+    console.error('[createBooking] Stripe session creation failed:', stripeErr);
+    return { error: 'errorGeneric' };
+  }
 
   if (!session.url) {
-    console.error('Stripe session has no URL');
+    console.error('[createBooking] Stripe session missing URL, session id:', session.id);
     return { error: 'errorGeneric' };
   }
 
