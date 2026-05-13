@@ -13,6 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // metadataBase enables relative OG image URLs (/og-image.png) across all pages
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zenzo.nl'),
   title: 'Zenzo — Premium massage aan huis in Utrecht',
   description:
     'Boek een professionele masseur aan huis in Utrecht. Gecertificeerde massage therapeuten, flexibele tijden, veilige betaling.',

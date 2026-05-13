@@ -12,7 +12,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'payment' });
-  return { title: t('successMetaTitle') };
+  return { title: t('successMetaTitle'), robots: { index: false, follow: false } };
 }
 
 export default async function BookingSuccessPage({ params, searchParams }: Props) {

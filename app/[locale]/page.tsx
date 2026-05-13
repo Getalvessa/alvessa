@@ -3,17 +3,45 @@ import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { MapPin, ShieldCheck, CalendarCheck, Search, Calendar, Sparkles } from 'lucide-react';
+import { buildMetadata, SITE_URL } from '@/lib/metadata';
+import { JsonLd } from '@/components/seo/json-ld';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'meta' });
-  return {
+  return buildMetadata({
+    locale,
+    path: '',
     title: t('defaultTitle'),
     description: t('defaultDescription'),
-  };
+  });
 }
+
+const LOCAL_BUSINESS_SCHEMA = {
+  '@context': 'https://schema.org',
+  '@type': 'LocalBusiness',
+  name: 'Zenzo',
+  description: 'Premium massage aan huis in Utrecht — gecertificeerde masseurs die naar jou toe komen.',
+  url: SITE_URL,
+  email: 'hallo@zenzo.nl',
+  image: `${SITE_URL}/og-image.png`,
+  address: {
+    '@type': 'PostalAddress',
+    addressLocality: 'Utrecht',
+    addressRegion: 'Utrecht',
+    addressCountry: 'NL',
+  },
+  areaServed: [
+    { '@type': 'City', name: 'Utrecht' },
+    { '@type': 'Place', name: 'Utrecht Centrum' },
+    { '@type': 'Place', name: 'Utrecht Oost' },
+    { '@type': 'Place', name: 'Leidsche Rijn' },
+  ],
+  serviceType: 'Massage aan huis',
+  priceRange: '€€',
+};
 
 export default async function HomePage({ params }: Props) {
   const { locale } = await params;
@@ -21,6 +49,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={LOCAL_BUSINESS_SCHEMA} />
       <HeroSection />
       <ValuePropsSection />
       <HowItWorksSection />

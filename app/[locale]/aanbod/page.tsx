@@ -4,16 +4,19 @@ import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { ProviderCard, type ProviderCardData } from '@/components/providers/provider-card';
+import { buildMetadata } from '@/lib/metadata';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'providers' });
-  return {
+  return buildMetadata({
+    locale,
+    path: 'aanbod',
     title: t('metaTitle'),
     description: t('metaDescription'),
-  };
+  });
 }
 
 async function getProviders(): Promise<ProviderCardData[]> {

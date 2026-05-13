@@ -6,6 +6,8 @@ import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { ArrowLeft, MapPin, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
+import { buildMetadata, SITE_URL } from '@/lib/metadata';
+import { JsonLd } from '@/components/seo/json-ld';
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -90,13 +92,99 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const provider = await getProvider(slug);
   if (!provider) return {};
 
-  const t = await getTranslations({ locale, namespace: 'providers' });
   const name = provider.profiles?.display_name ?? provider.slug;
 
-  return {
-    title: t('profileMetaTitle', { name }),
-    description: t('profileMetaDescription', { name }),
+  const activeServices = provider.provider_services
+    .filter((ps) => ps.is_active && ps.services)
+    .slice(0, 2);
+
+  const serviceNames = activeServices
+    .map((ps) => (locale === 'nl' ? ps.services!.name_nl : ps.services!.name_en))
+    .join(' & ');
+
+  const ratingStr =
+    provider.avg_rating !== null ? ` (${provider.avg_rating.toFixed(1)}★)` : '';
+
+  const title = serviceNames
+    ? `${name}${ratingStr} — ${serviceNames} aan huis in Utrecht | Zenzo`
+    : `${name}${ratingStr} — Massage therapeut in Utrecht | Zenzo`;
+
+  const minPriceCents =
+    activeServices.length > 0
+      ? Math.min(
+          ...activeServices.map(
+            (ps) => ps.custom_price_cents ?? ps.services!.base_price_cents,
+          ),
+        )
+      : null;
+
+  const description = provider.bio
+    ? `${provider.bio.slice(0, 145).trimEnd()}${provider.bio.length > 145 ? '…' : ''}`
+    : [
+        `Boek gecertificeerde ${serviceNames || 'massage'} aan huis bij ${name} in ${provider.city}.`,
+        minPriceCents ? `Vanaf €${Math.floor(minPriceCents / 100)}.` : '',
+        provider.avg_rating && provider.total_reviews > 0
+          ? `Beoordeeld ${provider.avg_rating.toFixed(1)}/5 door ${provider.total_reviews} klanten.`
+          : '',
+      ]
+        .filter(Boolean)
+        .join(' ');
+
+  return buildMetadata({
+    locale,
+    path: `aanbod/${slug}`,
+    title,
+    description,
+  });
+}
+
+function buildProviderSchema(provider: ProviderDetail, locale: string, slug: string) {
+  const displayName = provider.profiles?.display_name ?? provider.slug;
+  const pageUrl = `${SITE_URL}/aanbod/${slug}`;
+
+  const offers = provider.provider_services
+    .filter((ps) => ps.is_active && ps.services)
+    .map((ps) => {
+      const svc = ps.services!;
+      return {
+        '@type': 'Offer',
+        name: locale === 'nl' ? svc.name_nl : svc.name_en,
+        price: (Math.floor((ps.custom_price_cents ?? svc.base_price_cents) / 100)).toString(),
+        priceCurrency: 'EUR',
+        availability: 'https://schema.org/InStock',
+      };
+    });
+
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    '@id': pageUrl,
+    name: displayName,
+    url: pageUrl,
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: provider.city,
+      addressCountry: 'NL',
+    },
+    areaServed: { '@type': 'City', name: provider.city },
+    priceRange: '€€',
+    offers,
   };
+
+  if (provider.bio) schema['description'] = provider.bio;
+  if (provider.profiles?.avatar_url) schema['image'] = provider.profiles.avatar_url;
+
+  if (provider.avg_rating !== null && provider.total_reviews > 0) {
+    schema['aggregateRating'] = {
+      '@type': 'AggregateRating',
+      ratingValue: provider.avg_rating.toFixed(1),
+      reviewCount: provider.total_reviews,
+      bestRating: '5',
+      worstRating: '1',
+    };
+  }
+
+  return schema;
 }
 
 // ── Page ─────────────────────────────────────────────────────────────────────
@@ -116,8 +204,11 @@ export default async function ProviderProfilePage({ params }: Props) {
     (ps) => ps.is_active && ps.services,
   );
 
+  const providerSchema = buildProviderSchema(provider, locale, slug);
+
   return (
     <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 sm:py-14 lg:px-8">
+      <JsonLd data={providerSchema} />
       <BackLink />
       <ProviderHeader provider={provider} />
       <div className="mt-10 grid gap-10 lg:grid-cols-3">

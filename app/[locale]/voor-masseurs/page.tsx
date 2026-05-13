@@ -2,13 +2,14 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { Clock, FileText, Banknote, CheckCircle } from 'lucide-react';
+import { buildMetadata } from '@/lib/metadata';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'forProviders' });
-  return { title: t('metaTitle'), description: t('metaDescription') };
+  return buildMetadata({ locale, path: 'voor-masseurs', title: t('metaTitle'), description: t('metaDescription') });
 }
 
 export default async function ForProvidersPage({ params }: Props) {

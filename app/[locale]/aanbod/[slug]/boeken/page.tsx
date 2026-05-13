@@ -53,7 +53,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const provider = await getProviderForBooking(slug);
   if (!provider) return {};
   const t = await getTranslations({ locale, namespace: 'booking' });
-  return { title: t('metaTitle', { name: provider.profiles?.display_name ?? slug }) };
+  return { title: t('metaTitle', { name: provider.profiles?.display_name ?? slug }), robots: { index: false, follow: false } };
 }
 
 export default async function BookingPage({ params, searchParams }: Props) {

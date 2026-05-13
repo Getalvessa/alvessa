@@ -22,7 +22,7 @@ type Booking = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'myBookings' });
-  return { title: t('metaTitle') };
+  return { title: t('metaTitle'), robots: { index: false, follow: false } };
 }
 
 async function getMyBookings(): Promise<Booking[]> {

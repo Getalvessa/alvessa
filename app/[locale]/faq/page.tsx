@@ -2,20 +2,38 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
+import { buildMetadata } from '@/lib/metadata';
+import { JsonLd } from '@/components/seo/json-ld';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'faq' });
-  return { title: t('metaTitle'), description: t('metaDescription') };
+  return buildMetadata({ locale, path: 'faq', title: t('metaTitle'), description: t('metaDescription') });
 }
 
 export default async function FaqPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
+
+  const t = await getTranslations({ locale, namespace: 'faq' });
+  const faqSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: (['q1','q2','q3','q4','q5','q6','q7'] as const).map((k) => ({
+      '@type': 'Question',
+      name: t(k),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: t(k.replace('q', 'a') as Parameters<typeof t>[0]),
+      },
+    })),
+  };
+
   return (
     <div className="mx-auto max-w-2xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
+      <JsonLd data={faqSchema} />
       <PageHeader />
       <QAList />
       <StillHaveQuestions />
