@@ -270,5 +270,91 @@
   "meta": {
     "defaultTitle": "Zenzo — Premium in-home massage in Utrecht",
     "defaultDescription": "Book a professional massage therapist at home in Utrecht. Certified therapists, flexible hours, secure payment."
+  },
+  "dashboard": {
+    "nav": {
+      "overview": "Overview",
+      "bookings": "Bookings",
+      "availability": "Availability",
+      "services": "Services",
+      "profile": "My profile",
+      "earnings": "Earnings"
+    },
+    "overview": {
+      "title": "Dashboard",
+      "upcomingTitle": "Upcoming bookings (7 days)",
+      "noUpcoming": "No upcoming confirmed bookings.",
+      "statsThisMonth": "Bookings this month",
+      "statsThisMonthEarnings": "Earnings this month"
+    },
+    "bookings": {
+      "title": "Bookings",
+      "empty": "No bookings found.",
+      "labelCustomer": "Customer",
+      "labelService": "Service",
+      "labelDate": "Date",
+      "labelAmount": "Amount",
+      "statusPendingPayment": "Awaiting payment",
+      "statusConfirmed": "Confirmed",
+      "statusCompleted": "Completed",
+      "statusPaymentFailed": "Payment failed",
+      "statusCancelled": "Cancelled",
+      "statusRefunded": "Refunded"
+    },
+    "availability": {
+      "title": "Availability",
+      "subtitle": "Set your weekly working hours. Changes are immediately visible to customers.",
+      "day0": "Sunday",
+      "day1": "Monday",
+      "day2": "Tuesday",
+      "day3": "Wednesday",
+      "day4": "Thursday",
+      "day5": "Friday",
+      "day6": "Saturday",
+      "from": "From",
+      "until": "Until",
+      "activeLabel": "Available",
+      "saveButton": "Save changes",
+      "saving": "Saving...",
+      "savedSuccess": "Availability saved!",
+      "saveError": "Save failed. Please try again."
+    },
+    "services": {
+      "title": "My services",
+      "subtitle": "Choose which services you offer. Optionally set a custom price.",
+      "basePrice": "Base price: {price}",
+      "customPriceLabel": "Custom price in euros (optional)",
+      "customPricePlaceholder": "E.g. 95",
+      "enabledLabel": "Offer this",
+      "duration": "{minutes} min",
+      "saveButton": "Save changes",
+      "saving": "Saving...",
+      "savedSuccess": "Services saved!",
+      "saveError": "Save failed. Please try again."
+    },
+    "profile": {
+      "title": "My profile",
+      "displayNameLabel": "Name",
+      "bioLabel": "About me",
+      "bioPlaceholder": "Tell customers about your approach, specialities and background...",
+      "cityLabel": "Working city",
+      "cityPlaceholder": "Utrecht",
+      "saveButton": "Save profile",
+      "saving": "Saving...",
+      "savedSuccess": "Profile saved!",
+      "saveError": "Save failed. Please try again."
+    },
+    "earnings": {
+      "title": "Earnings",
+      "paidTotal": "Total paid out",
+      "pendingTotal": "Expected earnings",
+      "recentTitle": "Recent payments",
+      "noEarnings": "No earnings yet.",
+      "colDate": "Date",
+      "colService": "Service",
+      "colAmount": "Your share"
+    },
+    "notProvider": "You do not have access to the provider dashboard.",
+    "backToHome": "Back to home"
   }
 }

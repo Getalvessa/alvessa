@@ -8,7 +8,11 @@ const handleI18nRouting = createMiddleware(routing);
 // Routes that require an authenticated session.
 // Checked against the full pathname (after locale prefix when present).
 function isProtectedPath(pathname: string): boolean {
-  return pathname.includes('/mijn-boekingen') || pathname.includes('/boeken');
+  return (
+    pathname.includes('/mijn-boekingen') ||
+    pathname.includes('/boeken') ||
+    pathname.includes('/dashboard')
+  );
 }
 
 export async function proxy(request: NextRequest) {

@@ -270,5 +270,91 @@
   "meta": {
     "defaultTitle": "Zenzo — Premium massage aan huis in Utrecht",
     "defaultDescription": "Boek een professionele masseur aan huis in Utrecht. Gecertificeerde massage therapeuten, flexibele tijden, veilige betaling."
+  },
+  "dashboard": {
+    "nav": {
+      "overview": "Overzicht",
+      "bookings": "Boekingen",
+      "availability": "Beschikbaarheid",
+      "services": "Diensten",
+      "profile": "Mijn profiel",
+      "earnings": "Inkomsten"
+    },
+    "overview": {
+      "title": "Dashboard",
+      "upcomingTitle": "Aankomende boekingen (7 dagen)",
+      "noUpcoming": "Geen aankomende bevestigde boekingen.",
+      "statsThisMonth": "Boekingen deze maand",
+      "statsThisMonthEarnings": "Inkomsten deze maand"
+    },
+    "bookings": {
+      "title": "Boekingen",
+      "empty": "Geen boekingen gevonden.",
+      "labelCustomer": "Klant",
+      "labelService": "Dienst",
+      "labelDate": "Datum",
+      "labelAmount": "Bedrag",
+      "statusPendingPayment": "Wacht op betaling",
+      "statusConfirmed": "Bevestigd",
+      "statusCompleted": "Voltooid",
+      "statusPaymentFailed": "Betaling mislukt",
+      "statusCancelled": "Geannuleerd",
+      "statusRefunded": "Terugbetaald"
+    },
+    "availability": {
+      "title": "Beschikbaarheid",
+      "subtitle": "Stel je wekelijkse werktijden in. Wijzigingen zijn direct zichtbaar voor klanten.",
+      "day0": "Zondag",
+      "day1": "Maandag",
+      "day2": "Dinsdag",
+      "day3": "Woensdag",
+      "day4": "Donderdag",
+      "day5": "Vrijdag",
+      "day6": "Zaterdag",
+      "from": "Van",
+      "until": "Tot",
+      "activeLabel": "Beschikbaar",
+      "saveButton": "Wijzigingen opslaan",
+      "saving": "Opslaan...",
+      "savedSuccess": "Beschikbaarheid opgeslagen!",
+      "saveError": "Opslaan mislukt. Probeer opnieuw."
+    },
+    "services": {
+      "title": "Mijn diensten",
+      "subtitle": "Kies welke diensten je aanbiedt. Stel eventueel een eigen prijs in.",
+      "basePrice": "Standaardprijs: {price}",
+      "customPriceLabel": "Eigen prijs in euro (optioneel)",
+      "customPricePlaceholder": "Bijv. 95",
+      "enabledLabel": "Aanbieden",
+      "duration": "{minutes} min",
+      "saveButton": "Wijzigingen opslaan",
+      "saving": "Opslaan...",
+      "savedSuccess": "Diensten opgeslagen!",
+      "saveError": "Opslaan mislukt. Probeer opnieuw."
+    },
+    "profile": {
+      "title": "Mijn profiel",
+      "displayNameLabel": "Naam",
+      "bioLabel": "Over mij",
+      "bioPlaceholder": "Vertel klanten over jouw aanpak, specialiteiten en achtergrond...",
+      "cityLabel": "Werkstad",
+      "cityPlaceholder": "Utrecht",
+      "saveButton": "Profiel opslaan",
+      "saving": "Opslaan...",
+      "savedSuccess": "Profiel opgeslagen!",
+      "saveError": "Opslaan mislukt. Probeer opnieuw."
+    },
+    "earnings": {
+      "title": "Inkomsten",
+      "paidTotal": "Totaal uitbetaald",
+      "pendingTotal": "Verwachte inkomsten",
+      "recentTitle": "Recente betalingen",
+      "noEarnings": "Nog geen inkomsten.",
+      "colDate": "Datum",
+      "colService": "Dienst",
+      "colAmount": "Jouw deel"
+    },
+    "notProvider": "Je hebt geen toegang tot het provider dashboard.",
+    "backToHome": "Terug naar home"
   }
 }
