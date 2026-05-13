@@ -356,5 +356,64 @@
     },
     "notProvider": "Je hebt geen toegang tot het provider dashboard.",
     "backToHome": "Terug naar home"
+  },
+  "admin": {
+    "nav": {
+      "overview": "Overzicht",
+      "providers": "Aanbieders",
+      "bookings": "Boekingen",
+      "users": "Gebruikers"
+    },
+    "overview": {
+      "title": "Admin",
+      "statsTotalBookings": "Totaal boekingen",
+      "statsTotalRevenue": "Totale omzet",
+      "statsPendingProviders": "Wacht op goedkeuring",
+      "statsConfirmedBookings": "Bevestigde boekingen"
+    },
+    "providers": {
+      "title": "Aanbieders",
+      "colName": "Naam",
+      "colSlug": "Slug",
+      "colCity": "Stad",
+      "colStatus": "Status",
+      "colActions": "Acties",
+      "statusVerified": "Goedgekeurd",
+      "statusPending": "Wacht op goedkeuring",
+      "statusInactive": "Inactief",
+      "actionApprove": "Goedkeuren",
+      "actionDeactivate": "Deactiveren",
+      "actionActivate": "Activeren",
+      "approveSuccess": "Aanbieder goedgekeurd.",
+      "deactivateSuccess": "Aanbieder gedeactiveerd.",
+      "actionError": "Actie mislukt. Probeer opnieuw.",
+      "empty": "Geen aanbieders gevonden."
+    },
+    "bookings": {
+      "title": "Alle boekingen",
+      "colCustomer": "Klant",
+      "colProvider": "Aanbieder",
+      "colService": "Dienst",
+      "colDate": "Datum",
+      "colAmount": "Bedrag",
+      "colStatus": "Status",
+      "colActions": "Acties",
+      "actionComplete": "Voltooien",
+      "actionCancel": "Annuleren",
+      "actionError": "Actie mislukt.",
+      "filterAll": "Alle",
+      "empty": "Geen boekingen gevonden."
+    },
+    "users": {
+      "title": "Gebruikers",
+      "colName": "Naam",
+      "colEmail": "E-mail",
+      "colRoles": "Rollen",
+      "colCreated": "Aangemeld",
+      "roleCustomer": "Klant",
+      "roleProvider": "Aanbieder",
+      "roleAdmin": "Admin",
+      "empty": "Geen gebruikers gevonden."
+    }
   }
 }

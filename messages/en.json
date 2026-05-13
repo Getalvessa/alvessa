@@ -356,5 +356,64 @@
     },
     "notProvider": "You do not have access to the provider dashboard.",
     "backToHome": "Back to home"
+  },
+  "admin": {
+    "nav": {
+      "overview": "Overview",
+      "providers": "Providers",
+      "bookings": "Bookings",
+      "users": "Users"
+    },
+    "overview": {
+      "title": "Admin",
+      "statsTotalBookings": "Total bookings",
+      "statsTotalRevenue": "Total revenue",
+      "statsPendingProviders": "Awaiting approval",
+      "statsConfirmedBookings": "Confirmed bookings"
+    },
+    "providers": {
+      "title": "Providers",
+      "colName": "Name",
+      "colSlug": "Slug",
+      "colCity": "City",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "statusVerified": "Approved",
+      "statusPending": "Awaiting approval",
+      "statusInactive": "Inactive",
+      "actionApprove": "Approve",
+      "actionDeactivate": "Deactivate",
+      "actionActivate": "Activate",
+      "approveSuccess": "Provider approved.",
+      "deactivateSuccess": "Provider deactivated.",
+      "actionError": "Action failed. Please try again.",
+      "empty": "No providers found."
+    },
+    "bookings": {
+      "title": "All bookings",
+      "colCustomer": "Customer",
+      "colProvider": "Provider",
+      "colService": "Service",
+      "colDate": "Date",
+      "colAmount": "Amount",
+      "colStatus": "Status",
+      "colActions": "Actions",
+      "actionComplete": "Mark complete",
+      "actionCancel": "Cancel",
+      "actionError": "Action failed.",
+      "filterAll": "All",
+      "empty": "No bookings found."
+    },
+    "users": {
+      "title": "Users",
+      "colName": "Name",
+      "colEmail": "Email",
+      "colRoles": "Roles",
+      "colCreated": "Joined",
+      "roleCustomer": "Customer",
+      "roleProvider": "Provider",
+      "roleAdmin": "Admin",
+      "empty": "No users found."
+    }
   }
 }

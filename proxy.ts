@@ -11,7 +11,8 @@ function isProtectedPath(pathname: string): boolean {
   return (
     pathname.includes('/mijn-boekingen') ||
     pathname.includes('/boeken') ||
-    pathname.includes('/dashboard')
+    pathname.includes('/dashboard') ||
+    pathname.includes('/admin')
   );
 }
 
