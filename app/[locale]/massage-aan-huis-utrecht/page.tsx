@@ -38,9 +38,9 @@ export default async function MassageAanHuisUtrechtPage({ params }: Props) {
   const localBusinessSchema = {
     '@context': 'https://schema.org',
     '@type': 'LocalBusiness',
-    name: 'Zenzo',
+    name: 'Alvessa',
     url: `${SITE_URL}/massage-aan-huis-utrecht`,
-    email: 'hallo@zenzo.nl',
+    email: 'hallo@alvessa.nl',
     image: `${SITE_URL}/og-image.png`,
     address: {
       '@type': 'PostalAddress',

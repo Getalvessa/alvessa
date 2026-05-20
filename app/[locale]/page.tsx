@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  name: 'Zenzo',
+  name: 'Alvessa',
   description: 'Premium massage aan huis in Utrecht — gecertificeerde masseurs die naar jou toe komen.',
   url: SITE_URL,
-  email: 'hallo@zenzo.nl',
+  email: 'hallo@alvessa.nl',
   image: `${SITE_URL}/og-image.png`,
   address: {
     '@type': 'PostalAddress',

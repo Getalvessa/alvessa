@@ -9,7 +9,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'admin.bookings' });
-  return { title: `${t('title')} — Admin — Zenzo` };
+  return { title: `${t('title')} — Admin — Alvessa` };
 }
 
 type BookingRow = {

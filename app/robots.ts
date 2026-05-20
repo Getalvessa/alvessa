@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zenzo.nl';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alvessa.nl';
 
 const PRIVATE_PATHS = [
   '/dashboard',

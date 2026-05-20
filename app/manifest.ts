@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Zenzo — Massage aan huis',
-    short_name: 'Zenzo',
+    name: 'Alvessa — Massage aan huis',
+    short_name: 'Alvessa',
     description: 'Premium massage aan huis in Utrecht',
     start_url: '/',
     display: 'standalone',

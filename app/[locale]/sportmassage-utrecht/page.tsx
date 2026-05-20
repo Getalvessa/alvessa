@@ -40,7 +40,7 @@ export default async function SportmassageUtrechtPage({ params }: Props) {
     '@type': 'Service',
     name: 'Sportmassage aan huis Utrecht',
     url: `${SITE_URL}/sportmassage-utrecht`,
-    provider: { '@type': 'LocalBusiness', name: 'Zenzo', url: SITE_URL },
+    provider: { '@type': 'LocalBusiness', name: 'Alvessa', url: SITE_URL },
     areaServed: 'Utrecht',
     description: t('metaDescription'),
     offers: { '@type': 'Offer', priceCurrency: 'EUR', price: '75' },

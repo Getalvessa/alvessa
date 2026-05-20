@@ -7,7 +7,7 @@ type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ redi
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'auth' });
-  return { title: `${t('loginTitle')} — Zenzo`, robots: { index: false, follow: false } };
+  return { title: `${t('loginTitle')} — Alvessa`, robots: { index: false, follow: false } };
 }
 
 export default async function LoginPage({ params, searchParams }: Props) {

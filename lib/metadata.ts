@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://zenzo.nl';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alvessa.nl';
 
 /**
  * Builds full page metadata: title, description, canonical, hreflang,
@@ -40,7 +40,7 @@ export function buildMetadata({
       title,
       description,
       url: canonicalUrl,
-      siteName: 'Zenzo',
+      siteName: 'Alvessa',
       locale: locale === 'nl' ? 'nl_NL' : 'en_US',
       type: 'website',
       images: [{ url: ogImage, width: 1200, height: 630, alt: title }],

@@ -40,7 +40,7 @@ export default async function HotelMassageUtrechtPage({ params }: Props) {
     '@type': 'Service',
     name: 'Hotelmassage Utrecht',
     url: `${SITE_URL}/hotel-massage-utrecht`,
-    provider: { '@type': 'LocalBusiness', name: 'Zenzo', url: SITE_URL },
+    provider: { '@type': 'LocalBusiness', name: 'Alvessa', url: SITE_URL },
     areaServed: 'Utrecht',
     description: t('metaDescription'),
     offers: { '@type': 'Offer', priceCurrency: 'EUR', price: '75' },

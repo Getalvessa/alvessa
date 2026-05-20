@@ -7,7 +7,7 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'auth' });
-  return { title: `${t('registerTitle')} — Zenzo`, robots: { index: false, follow: false } };
+  return { title: `${t('registerTitle')} — Alvessa`, robots: { index: false, follow: false } };
 }
 
 export default async function RegisterPage({ params }: Props) {

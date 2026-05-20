@@ -106,8 +106,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     provider.avg_rating !== null ? ` (${provider.avg_rating.toFixed(1)}★)` : '';
 
   const title = serviceNames
-    ? `${name}${ratingStr} — ${serviceNames} aan huis in Utrecht | Zenzo`
-    : `${name}${ratingStr} — Massage therapeut in Utrecht | Zenzo`;
+    ? `${name}${ratingStr} — ${serviceNames} aan huis in Utrecht | Alvessa`
+    : `${name}${ratingStr} — Massage therapeut in Utrecht | Alvessa`;
 
   const minPriceCents =
     activeServices.length > 0
