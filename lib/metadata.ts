@@ -13,7 +13,7 @@ export function buildMetadata({
   path,
   title,
   description,
-  ogImage = '/og-image.png',
+  ogImage = '/og',
 }: {
   locale: string;
   path: string;
