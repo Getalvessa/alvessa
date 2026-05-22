@@ -71,6 +71,6 @@ export const config = {
   matcher: [
     '/',
     '/(nl|en)/:path*',
-    '/((?!_next|_vercel|api|favicon\\.ico|.*\\..*).*)',
+    '/((?!_next|_vercel|api|og|favicon\\.ico|.*\\..*).*)',
   ],
 };
