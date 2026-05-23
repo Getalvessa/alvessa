@@ -678,7 +678,10 @@ export function BookingFlow({
           isPending={isPending}
           error={bookingState.error}
           onBack={() => {
-            if (isStudioOnly) setStep(4);
+            // studio_only: confirm=4, studio-info=3 → back to 3
+            // hybrid+in_studio: confirm=5, studio-info=4 → back to 4
+            // mobile_only / hybrid+at_home: confirm=4 or 5, address=3 → back to 3
+            if (isStudioOnly) setStep(3);
             else if (isHybrid && appointmentType === 'in_studio') setStep(4);
             else setStep(3);
           }}
