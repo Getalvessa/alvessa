@@ -12,6 +12,7 @@ const NAV_ITEMS: NavItem[] = [
   { key: 'bookings',     href: '/dashboard/boekingen' },
   { key: 'availability', href: '/dashboard/beschikbaarheid' },
   { key: 'services',     href: '/dashboard/diensten' },
+  { key: 'serviceMode',  href: '/dashboard/dienstvorm' },
   { key: 'profile',      href: '/dashboard/profiel' },
   { key: 'earnings',     href: '/dashboard/inkomsten' },
 ];

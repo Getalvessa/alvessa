@@ -4,7 +4,8 @@ import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { ArrowLeft, MapPin, Star } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Building2, Home, Shuffle } from 'lucide-react';
+import type { ServiceMode } from '@/lib/types/service-mode';
 import { createClient } from '@/lib/supabase/server';
 import { buildMetadata, SITE_URL } from '@/lib/metadata';
 import { JsonLd } from '@/components/seo/json-ld';
@@ -45,6 +46,13 @@ type ProviderDetail = {
   total_reviews: number;
   service_area_km: number;
   certifications: unknown;
+  service_mode: ServiceMode | null;
+  mobile_radius_km: number | null;
+  mobile_travel_fee_cents: number | null;
+  mobile_notes: string | null;
+  studio_city: string | null;
+  studio_postcode: string | null;
+  studio_notes: string | null;
   profiles: { display_name: string; avatar_url: string | null } | null;
   provider_services: ProviderService[];
 };
@@ -57,6 +65,8 @@ async function getProvider(slug: string): Promise<ProviderDetail | null> {
     .from('providers')
     .select(`
       id, slug, bio, city, avg_rating, total_reviews, service_area_km, certifications,
+      service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
+      studio_city, studio_postcode, studio_notes,
       profiles ( display_name, avatar_url ),
       provider_services (
         id, custom_price_cents, is_active,
@@ -214,6 +224,7 @@ export default async function ProviderProfilePage({ params }: Props) {
       <div className="mt-10 grid gap-10 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-10">
           <AboutSection provider={provider} />
+          <ServiceModeSection provider={provider} />
           <ServicesSection services={activeServices} locale={locale} />
           <ReviewsSection reviews={reviews} />
         </div>
@@ -226,6 +237,68 @@ export default async function ProviderProfilePage({ params }: Props) {
 }
 
 // ── Sections ─────────────────────────────────────────────────────────────────
+
+function ServiceModeSection({ provider }: { provider: ProviderDetail }) {
+  const t = useTranslations('serviceMode');
+  const mode = provider.service_mode;
+  if (!mode) return null;
+
+  const iconMap: Record<ServiceMode, React.ReactNode> = {
+    studio_only: <Building2 className="h-4 w-4 shrink-0" />,
+    mobile_only: <Home className="h-4 w-4 shrink-0" />,
+    hybrid:      <Shuffle className="h-4 w-4 shrink-0" />,
+  };
+  const badgeMap: Record<ServiceMode, string> = {
+    studio_only: t('studioOnlyBadge'),
+    mobile_only: t('mobileBadge'),
+    hybrid:      t('hybridBadge'),
+  };
+
+  const showStudio = mode === 'studio_only' || mode === 'hybrid';
+  const showMobile = mode === 'mobile_only' || mode === 'hybrid';
+
+  return (
+    <section>
+      <div className="mb-3 inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1 text-sm text-muted-foreground">
+        {iconMap[mode]}
+        {badgeMap[mode]}
+      </div>
+
+      <div className="space-y-3 text-sm text-muted-foreground">
+        {showStudio && (provider.studio_city || provider.studio_notes) && (
+          <div className="rounded-xl border border-border p-4 space-y-1">
+            {provider.studio_city && (
+              <p>
+                <span className="font-medium text-foreground">{t('studioSection')}: </span>
+                {[provider.studio_city, provider.studio_postcode].filter(Boolean).join(' ')}
+              </p>
+            )}
+            {provider.studio_notes && (
+              <p className="whitespace-pre-line">{provider.studio_notes}</p>
+            )}
+          </div>
+        )}
+
+        {showMobile && (provider.mobile_radius_km || provider.mobile_notes) && (
+          <div className="rounded-xl border border-border p-4 space-y-1">
+            {provider.mobile_radius_km && (
+              <p>
+                <span className="font-medium text-foreground">Reisafstand: </span>
+                tot {provider.mobile_radius_km} km
+                {provider.mobile_travel_fee_cents != null && provider.mobile_travel_fee_cents > 0
+                  ? ` · reiskosten €${(provider.mobile_travel_fee_cents / 100).toFixed(2)}`
+                  : ' · gratis thuisbezoek'}
+              </p>
+            )}
+            {provider.mobile_notes && (
+              <p className="whitespace-pre-line">{provider.mobile_notes}</p>
+            )}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
 function BackLink() {
   const t = useTranslations('providers');

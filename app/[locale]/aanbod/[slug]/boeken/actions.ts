@@ -23,7 +23,9 @@ export async function createBooking(
   const providerServiceId   = formData.get('provider_service_id')       as string;
   const scheduledAt         = formData.get('scheduled_at')              as string;
   const durationMinutes     = parseInt(formData.get('duration_minutes') as string, 10);
-  const addressLine         = (formData.get('address_line')             as string).trim();
+  const appointmentType     = (formData.get('appointment_type')         as string) || 'at_home';
+  const rawAddressLine      = (formData.get('address_line')             as string | null) ?? '';
+  const addressLine         = rawAddressLine.trim() || null; // null for studio bookings
   const addressCity         = (formData.get('address_city')             as string | null) ?? 'Utrecht';
   const addressNotes        = (formData.get('address_notes')            as string | null) || null;
   const totalCents          = parseInt(formData.get('total_cents')      as string, 10);
@@ -44,7 +46,8 @@ export async function createBooking(
       status:                         'pending_payment',
       scheduled_at:                   scheduledAt,
       duration_minutes:               durationMinutes,
-      address_line:                   addressLine,
+      appointment_type:               appointmentType,
+      address_line:                   addressLine, // null for studio bookings
       address_city:                   addressCity,
       address_notes:                  addressNotes,
       total_cents:                    totalCents,

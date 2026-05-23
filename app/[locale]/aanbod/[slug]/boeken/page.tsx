@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import { BookingFlow } from './booking-flow';
+import type { ServiceMode } from '@/lib/types/service-mode';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -28,6 +29,8 @@ async function getProviderForBooking(slug: string) {
     .from('providers')
     .select(`
       id, slug, city,
+      service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
+      studio_city, studio_postcode, studio_notes,
       profiles ( display_name ),
       provider_services ( id, custom_price_cents, is_active,
         services ( id, name_nl, name_en, duration_minutes, base_price_cents )
@@ -42,6 +45,7 @@ async function getProviderForBooking(slug: string) {
 
   return {
     ...data,
+    service_mode: (data.service_mode as ServiceMode | null) ?? 'mobile_only',
     provider_services: (data.provider_services as Service[]).filter(
       (ps) => ps.is_active && ps.services,
     ),

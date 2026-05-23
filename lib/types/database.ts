@@ -123,6 +123,7 @@ export type Database = {
           address_line: string | null
           address_lng: number | null
           address_notes: string | null
+          appointment_type: string
           cancellation_reason: string | null
           cancelled_at: string | null
           cancelled_by: string | null
@@ -152,6 +153,7 @@ export type Database = {
           address_line?: string | null
           address_lng?: number | null
           address_notes?: string | null
+          appointment_type?: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -181,6 +183,7 @@ export type Database = {
           address_line?: string | null
           address_lng?: number | null
           address_notes?: string | null
+          appointment_type?: string
           cancellation_reason?: string | null
           cancelled_at?: string | null
           cancelled_by?: string | null
@@ -378,11 +381,19 @@ export type Database = {
           id: string
           is_active: boolean
           is_verified: boolean
+          mobile_notes: string | null
+          mobile_radius_km: number | null
+          mobile_travel_fee_cents: number | null
           profile_id: string
           service_area_km: number
+          service_mode: string
           slug: string
           stripe_account_id: string | null
           stripe_onboarding_completed: boolean
+          studio_address: string | null
+          studio_city: string | null
+          studio_notes: string | null
+          studio_postcode: string | null
           total_reviews: number
           updated_at: string
         }
@@ -395,11 +406,19 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          mobile_notes?: string | null
+          mobile_radius_km?: number | null
+          mobile_travel_fee_cents?: number | null
           profile_id: string
           service_area_km?: number
+          service_mode?: string
           slug: string
           stripe_account_id?: string | null
           stripe_onboarding_completed?: boolean
+          studio_address?: string | null
+          studio_city?: string | null
+          studio_notes?: string | null
+          studio_postcode?: string | null
           total_reviews?: number
           updated_at?: string
         }
@@ -412,11 +431,19 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_verified?: boolean
+          mobile_notes?: string | null
+          mobile_radius_km?: number | null
+          mobile_travel_fee_cents?: number | null
           profile_id?: string
           service_area_km?: number
+          service_mode?: string
           slug?: string
           stripe_account_id?: string | null
           stripe_onboarding_completed?: boolean
+          studio_address?: string | null
+          studio_city?: string | null
+          studio_notes?: string | null
+          studio_postcode?: string | null
           total_reviews?: number
           updated_at?: string
         }

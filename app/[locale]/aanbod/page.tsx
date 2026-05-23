@@ -1,12 +1,18 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
+import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import { Link } from '@/i18n/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { ProviderCard, type ProviderCardData } from '@/components/providers/provider-card';
+import { ServiceModeFilter } from '@/components/providers/service-mode-filter';
 import { buildMetadata } from '@/lib/metadata';
 
-type Props = { params: Promise<{ locale: string }> };
+type FilterMode = 'all' | 'studio' | 'home';
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ mode?: string }>;
+};
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
@@ -19,10 +25,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-async function getProviders(): Promise<ProviderCardData[]> {
+async function getProviders(mode: FilterMode): Promise<ProviderCardData[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('providers')
     .select(`
       id,
@@ -32,11 +38,20 @@ async function getProviders(): Promise<ProviderCardData[]> {
       avg_rating,
       total_reviews,
       service_area_km,
+      service_mode,
       profiles ( display_name, avatar_url ),
       provider_services ( custom_price_cents, is_active, services ( base_price_cents ) )
     `)
     .eq('is_active', true)
-    .eq('is_verified', true)
+    .eq('is_verified', true);
+
+  if (mode === 'studio') {
+    query = query.in('service_mode', ['studio_only', 'hybrid']);
+  } else if (mode === 'home') {
+    query = query.in('service_mode', ['mobile_only', 'hybrid']);
+  }
+
+  const { data, error } = await query
     .order('avg_rating', { ascending: false, nullsFirst: false })
     .order('total_reviews', { ascending: false });
 
@@ -48,15 +63,24 @@ async function getProviders(): Promise<ProviderCardData[]> {
   return (data ?? []) as ProviderCardData[];
 }
 
-export default async function ProvidersPage({ params }: Props) {
+export default async function ProvidersPage({ params, searchParams }: Props) {
   const { locale } = await params;
+  const { mode: rawMode } = await searchParams;
   setRequestLocale(locale);
 
-  const providers = await getProviders();
+  const mode: FilterMode =
+    rawMode === 'studio' ? 'studio' : rawMode === 'home' ? 'home' : 'all';
+
+  const providers = await getProviders(mode);
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <PageHeader />
+      <div className="mb-6">
+        <Suspense>
+          <ServiceModeFilter current={mode} />
+        </Suspense>
+      </div>
       {providers.length > 0 ? (
         <ProviderGrid providers={providers} />
       ) : (

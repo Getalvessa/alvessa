@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { Star, MapPin } from 'lucide-react';
+import type { ServiceMode } from '@/lib/types/service-mode';
 
 type ProviderService = {
   custom_price_cents: number | null;
@@ -17,6 +18,7 @@ export type ProviderCardData = {
   avg_rating: number | null;
   total_reviews: number;
   service_area_km: number;
+  service_mode: ServiceMode | null;
   profiles: { display_name: string; avatar_url: string | null } | null;
   provider_services: ProviderService[];
 };
@@ -39,6 +41,21 @@ function getInitials(name: string): string {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+}
+
+function ServiceModeBadge({ mode }: { mode: ServiceMode | null }) {
+  const t = useTranslations('serviceMode');
+  if (!mode) return null;
+  const labelMap: Record<ServiceMode, string> = {
+    studio_only: t('studioOnlyBadge'),
+    mobile_only: t('mobileBadge'),
+    hybrid:      t('hybridBadge'),
+  };
+  return (
+    <span className="rounded-full border border-border px-2 py-0.5 text-xs text-muted-foreground">
+      {labelMap[mode]}
+    </span>
+  );
 }
 
 export function ProviderCard({ provider }: { provider: ProviderCardData }) {
@@ -80,6 +97,11 @@ export function ProviderCard({ provider }: { provider: ProviderCardData }) {
           <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
             <span>{provider.city}</span>
+          </div>
+
+          {/* Service mode badge */}
+          <div className="mt-1.5">
+            <ServiceModeBadge mode={provider.service_mode} />
           </div>
 
           {/* Rating */}
