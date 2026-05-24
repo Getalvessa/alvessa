@@ -41,7 +41,7 @@ export default async function MassageAanHuisUtrechtPage({ params }: Props) {
     name: 'Alvessa',
     url: `${SITE_URL}/massage-aan-huis-utrecht`,
     email: 'hallo@alvessa.nl',
-    image: `${SITE_URL}/og-image.png`,
+    image: `${SITE_URL}/og`,
     address: {
       '@type': 'PostalAddress',
       addressLocality: 'Utrecht',

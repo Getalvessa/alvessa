@@ -225,7 +225,7 @@ export default async function ProviderProfilePage({ params }: Props) {
         <div className="lg:col-span-2 space-y-10">
           <AboutSection provider={provider} />
           <ServiceModeSection provider={provider} />
-          <ServicesSection services={activeServices} locale={locale} />
+          <ServicesSection services={activeServices} locale={locale} providerSlug={provider.slug} />
           <ReviewsSection reviews={reviews} />
         </div>
         <aside className="space-y-6">
@@ -394,9 +394,11 @@ function AboutSection({ provider }: { provider: ProviderDetail }) {
 function ServicesSection({
   services,
   locale,
+  providerSlug,
 }: {
   services: ProviderService[];
   locale: string;
+  providerSlug: string;
 }) {
   const t = useTranslations('providers');
 
@@ -439,7 +441,7 @@ function ServicesSection({
                   €{Math.floor(price / 100)}
                 </span>
                 <Link
-                  href={`/aanbod/${services[0]?.services?.id ?? ''}`}
+                  href={`/aanbod/${providerSlug}/boeken`}
                   className="inline-flex h-8 items-center justify-center rounded-lg bg-foreground px-3 text-xs font-medium text-background transition-colors hover:bg-foreground/90"
                 >
                   {t('bookService')}
