@@ -5,8 +5,19 @@ import { routing } from './i18n/routing';
 
 const handleI18nRouting = createMiddleware(routing);
 
-// Routes that require an authenticated session.
-// Checked against the full pathname (after locale prefix when present).
+function checkBasicAuth(request: NextRequest): boolean {
+  const authPassword = process.env.BASIC_AUTH_PASSWORD;
+  if (!authPassword) return true; // No env var set → open access
+
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Basic ')) return false;
+
+  const credentials = Buffer.from(authHeader.slice(6), 'base64').toString();
+  const colonIndex = credentials.indexOf(':');
+  if (colonIndex === -1) return false;
+  return credentials.slice(colonIndex + 1) === authPassword;
+}
+
 function isProtectedPath(pathname: string): boolean {
   return (
     pathname.includes('/mijn-boekingen') ||
@@ -17,6 +28,14 @@ function isProtectedPath(pathname: string): boolean {
 }
 
 export async function proxy(request: NextRequest) {
+  // Basic Auth gate — active when BASIC_AUTH_PASSWORD env var is set
+  if (!checkBasicAuth(request)) {
+    return new NextResponse('Authentication required', {
+      status: 401,
+      headers: { 'WWW-Authenticate': 'Basic realm="Alvessa", charset="UTF-8"' },
+    });
+  }
+
   // Collect cookies Supabase wants to set during session refresh
   const pendingCookies: Array<{ name: string; value: string; options: Record<string, unknown> }> = [];
 
