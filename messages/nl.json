@@ -440,7 +440,22 @@
       "approveSuccess": "Aanbieder goedgekeurd.",
       "deactivateSuccess": "Aanbieder gedeactiveerd.",
       "actionError": "Actie mislukt. Probeer opnieuw.",
-      "empty": "Geen aanbieders gevonden."
+      "empty": "Geen aanbieders gevonden.",
+      "colTrustStatus": "Vertrouwensstatus",
+      "colTrustLevel": "Vertrouwensniveau",
+      "colReferredBy": "Doorverwezen door",
+      "colStats": "Statistieken",
+      "colInternalNotes": "Interne notities",
+      "trustStatusNew": "Nieuw",
+      "trustStatusTrusted": "Vertrouwd",
+      "trustStatusCore": "Kernlid",
+      "trustStatusRestricted": "Beperkt",
+      "trustStatusBanned": "Geblokkeerd",
+      "actionSaveTrust": "Opslaan",
+      "trustSaved": "Wijzigingen opgeslagen.",
+      "completedShort": "Voltooid",
+      "cancelledShort": "Geannuleerd",
+      "notesPlaceholder": "Interne opmerkingen over deze aanbieder..."
     },
     "bookings": {
       "title": "Alle boekingen",

@@ -139,6 +139,7 @@ export type Database = {
           provider_id: string
           provider_service_id: string
           provider_slug_snapshot: string
+          reassigned_from_provider_id: string | null
           scheduled_at: string
           service_name_en_snapshot: string
           service_name_nl_snapshot: string
@@ -169,6 +170,7 @@ export type Database = {
           provider_id: string
           provider_service_id: string
           provider_slug_snapshot: string
+          reassigned_from_provider_id?: string | null
           scheduled_at: string
           service_name_en_snapshot: string
           service_name_nl_snapshot: string
@@ -199,6 +201,7 @@ export type Database = {
           provider_id?: string
           provider_service_id?: string
           provider_slug_snapshot?: string
+          reassigned_from_provider_id?: string | null
           scheduled_at?: string
           service_name_en_snapshot?: string
           service_name_nl_snapshot?: string
@@ -379,15 +382,19 @@ export type Database = {
           city: string
           created_at: string
           id: string
+          internal_notes: string | null
+          internal_score: number
           is_active: boolean
           is_verified: boolean
           mobile_notes: string | null
           mobile_radius_km: number | null
           mobile_travel_fee_cents: number | null
           profile_id: string
+          referred_by_provider_id: string | null
           service_area_km: number
           service_mode: string
           slug: string
+          status: string
           stripe_account_id: string | null
           stripe_onboarding_completed: boolean
           studio_address: string | null
@@ -395,6 +402,7 @@ export type Database = {
           studio_notes: string | null
           studio_postcode: string | null
           total_reviews: number
+          trust_level: number
           updated_at: string
         }
         Insert: {
@@ -404,15 +412,19 @@ export type Database = {
           city?: string
           created_at?: string
           id?: string
+          internal_notes?: string | null
+          internal_score?: number
           is_active?: boolean
           is_verified?: boolean
           mobile_notes?: string | null
           mobile_radius_km?: number | null
           mobile_travel_fee_cents?: number | null
           profile_id: string
+          referred_by_provider_id?: string | null
           service_area_km?: number
           service_mode?: string
           slug: string
+          status?: string
           stripe_account_id?: string | null
           stripe_onboarding_completed?: boolean
           studio_address?: string | null
@@ -420,6 +432,7 @@ export type Database = {
           studio_notes?: string | null
           studio_postcode?: string | null
           total_reviews?: number
+          trust_level?: number
           updated_at?: string
         }
         Update: {
@@ -429,15 +442,19 @@ export type Database = {
           city?: string
           created_at?: string
           id?: string
+          internal_notes?: string | null
+          internal_score?: number
           is_active?: boolean
           is_verified?: boolean
           mobile_notes?: string | null
           mobile_radius_km?: number | null
           mobile_travel_fee_cents?: number | null
           profile_id?: string
+          referred_by_provider_id?: string | null
           service_area_km?: number
           service_mode?: string
           slug?: string
+          status?: string
           stripe_account_id?: string | null
           stripe_onboarding_completed?: boolean
           studio_address?: string | null
@@ -445,6 +462,7 @@ export type Database = {
           studio_notes?: string | null
           studio_postcode?: string | null
           total_reviews?: number
+          trust_level?: number
           updated_at?: string
         }
         Relationships: [

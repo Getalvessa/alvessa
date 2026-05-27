@@ -440,7 +440,22 @@
       "approveSuccess": "Provider approved.",
       "deactivateSuccess": "Provider deactivated.",
       "actionError": "Action failed. Please try again.",
-      "empty": "No providers found."
+      "empty": "No providers found.",
+      "colTrustStatus": "Trust status",
+      "colTrustLevel": "Trust level",
+      "colReferredBy": "Referred by",
+      "colStats": "Stats",
+      "colInternalNotes": "Internal notes",
+      "trustStatusNew": "New",
+      "trustStatusTrusted": "Trusted",
+      "trustStatusCore": "Core",
+      "trustStatusRestricted": "Restricted",
+      "trustStatusBanned": "Banned",
+      "actionSaveTrust": "Save",
+      "trustSaved": "Changes saved.",
+      "completedShort": "Completed",
+      "cancelledShort": "Cancelled",
+      "notesPlaceholder": "Internal notes about this provider..."
     },
     "bookings": {
       "title": "All bookings",
