@@ -47,7 +47,7 @@
 | `supabase/migrations/202605270001_bookings_update_rls.sql` | Booking UPDATE RLS (field-tampering trigger) |
 | `supabase/migrations/202605270002_bookings_insert_and_confirm_rls.sql` | Drops authenticated INSERT; blocks provider confirm-bypass |
 
-Full migration list: `supabase/migrations/` (15 files, chronological)
+Full migration list: `supabase/migrations/` (18 files, chronological)
 
 ---
 
@@ -132,7 +132,8 @@ Full migration list: `supabase/migrations/` (15 files, chronological)
 | Availability API | ✅ Stable | 30-min slots, UTC+2 fixed |
 | Provider dashboard | ✅ Stable | bookings, schedule, services, earnings |
 | Admin dashboard | ✅ Stable | users, bookings, providers |
-| RLS security | ✅ Stable | 17 migrations applied |
+| RLS security | ✅ Stable | 18 migrations applied |
+| Admin audit log | ✅ Stable | append-only, admin-only read/insert (migration 018) |
 | Provider trust network | ✅ Stable | status/trust_level/referral tracking (migration 016) |
 | i18n (NL + EN) | ✅ Stable | next-intl, all strings in messages/ |
 | SEO pages | ✅ Stable | 4 landing pages + JSON-LD |

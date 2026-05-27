@@ -34,6 +34,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          id: string
+          actor_user_id: string | null
+          target_type: string
+          target_id: string | null
+          action: string
+          metadata: Json | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          actor_user_id?: string | null
+          target_type: string
+          target_id?: string | null
+          action: string
+          metadata?: Json | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          actor_user_id?: string | null
+          target_type?: string
+          target_id?: string | null
+          action?: string
+          metadata?: Json | null
+          created_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_audit_log_actor_user_id_fkey"
+            columns: ["actor_user_id"]
+            isOneToOne: false
+            referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       availability_exceptions: {
         Row: {
           created_at: string

@@ -2,7 +2,7 @@
 READ THIS INSTEAD OF MIGRATION HISTORY.
 Do NOT scan supabase/migrations/ to understand table structure.
 This file is the current schema source of truth.
-Last sync: migration 017 (2026-05-27). Update after every migration.
+Last sync: migration 018 (2026-05-27). Update after every migration.
 ---
 
 # Schema Snapshot — Alvessa Marketplace
@@ -138,6 +138,19 @@ rating*(1–5)  comment  is_published  created_at
 
 Immutable after INSERT (no updated_at, no UPDATE for customers).
 Admin can toggle `is_published`. INSERT validated: booking must be 'completed' AND provider_id must match booking.
+
+---
+
+## admin_audit_log
+
+```
+id*(PK)  actor_user_id*(→auth.users)  target_type*  target_id  action*  metadata(jsonb)  created_at*
+```
+
+Append-only. No UPDATE/DELETE policies.
+RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = actor_user_id AND is_admin()`).
+**target_type values:** `provider` | `booking` | `user`
+**action values:** `provider.approve` | `provider.deactivate` | `provider.activate` | `provider.trust_update` | `booking.complete` | `booking.cancel`
 
 ---
 

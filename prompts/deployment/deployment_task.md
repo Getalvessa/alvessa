@@ -51,7 +51,7 @@ Check: `vercel env ls` — verify all are present for `production` environment.
 ### Database Migrations
 - [ ] `supabase db push` applied all pending migrations
 - [ ] Verify with: `supabase migration list` — all migrations show as applied
-- [ ] Current migration count: 17 files (as of 2026-05-27)
+- [ ] Current migration count: 18 files (as of 2026-05-27)
 - [ ] No pending migrations in `supabase/migrations/` that are not yet applied
 
 ### Stripe
