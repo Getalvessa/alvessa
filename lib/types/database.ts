@@ -72,6 +72,54 @@ export type Database = {
           },
         ]
       }
+      provider_applications: {
+        Row: {
+          id: string
+          full_name: string
+          email: string
+          phone: string
+          city: string
+          service_types: string
+          works_mobile: boolean
+          service_area: string | null
+          experience_years: number | null
+          instagram_or_website: string | null
+          message: string | null
+          status: string
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          full_name: string
+          email: string
+          phone: string
+          city?: string
+          service_types: string
+          works_mobile?: boolean
+          service_area?: string | null
+          experience_years?: number | null
+          instagram_or_website?: string | null
+          message?: string | null
+          status?: string
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          full_name?: string
+          email?: string
+          phone?: string
+          city?: string
+          service_types?: string
+          works_mobile?: boolean
+          service_area?: string | null
+          experience_years?: number | null
+          instagram_or_website?: string | null
+          message?: string | null
+          status?: string
+          created_at?: string
+        }
+        Relationships: []
+      }
       availability_exceptions: {
         Row: {
           created_at: string

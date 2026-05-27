@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { Clock, FileText, Banknote, CheckCircle } from 'lucide-react';
 import { buildMetadata } from '@/lib/metadata';
+import { Link } from '@/i18n/navigation';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -110,12 +111,12 @@ function CtaSection() {
     <div className="rounded-xl bg-foreground p-8 text-center">
       <h2 className="text-xl font-bold text-background">{t('ctaTitle')}</h2>
       <p className="mt-2 text-sm text-background/70">{t('ctaBody')}</p>
-      <a
-        href={`mailto:${t('ctaEmail')}`}
+      <Link
+        href="/voor-masseurs/aanmelden"
         className="mt-6 inline-flex h-11 items-center justify-center rounded-lg bg-background px-8 text-sm font-semibold text-foreground transition-colors hover:bg-background/90"
       >
-        {t('ctaButton')}
-      </a>
+        {t('ctaApplyButton')}
+      </Link>
     </div>
   );
 }

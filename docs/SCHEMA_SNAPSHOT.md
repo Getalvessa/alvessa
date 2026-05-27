@@ -2,7 +2,7 @@
 READ THIS INSTEAD OF MIGRATION HISTORY.
 Do NOT scan supabase/migrations/ to understand table structure.
 This file is the current schema source of truth.
-Last sync: migration 018 (2026-05-27). Update after every migration.
+Last sync: migration 019 (2026-05-27). Update after every migration.
 ---
 
 # Schema Snapshot — Alvessa Marketplace
@@ -151,6 +151,22 @@ Append-only. No UPDATE/DELETE policies.
 RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = actor_user_id AND is_admin()`).
 **target_type values:** `provider` | `booking` | `user`
 **action values:** `provider.approve` | `provider.deactivate` | `provider.activate` | `provider.trust_update` | `booking.complete` | `booking.cancel`
+
+---
+
+## provider_applications
+
+```
+id*(PK)  full_name*  email*  phone*  city*(DEFAULT 'Utrecht')
+service_types*  works_mobile*(DEFAULT true)
+service_area  experience_years(0–80)  instagram_or_website  message
+status*(DEFAULT 'pending', CHECK IN ('pending','approved','rejected'))
+created_at*
+```
+
+Anonymous INSERT allowed (`status='pending'` enforced by RLS).
+Admin SELECT only (`public.is_admin()`). No UPDATE/DELETE policies — manage via Dashboard.
+**status values:** `pending | approved | rejected`
 
 ---
 

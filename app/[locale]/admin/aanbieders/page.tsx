@@ -3,6 +3,7 @@ import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
 import ProvidersTable from './providers-table';
+import ApplicationsList from './applications-list';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -13,6 +14,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 type ProviderStatus = 'new' | 'trusted' | 'core' | 'restricted' | 'banned';
+
+export type ApplicationRow = {
+  id: string;
+  full_name: string;
+  email: string;
+  phone: string;
+  city: string;
+  service_types: string;
+  works_mobile: boolean;
+  service_area: string | null;
+  experience_years: number | null;
+  instagram_or_website: string | null;
+  message: string | null;
+  status: string;
+  created_at: string;
+};
 
 type RawProvider = {
   id: string;
@@ -32,6 +49,16 @@ export type ProviderRow = RawProvider & {
   completed: number;
   cancelled: number;
 };
+
+async function getApplications(): Promise<ApplicationRow[]> {
+  const supabase = await createClient();
+  const { data } = await supabase
+    .from('provider_applications')
+    .select('*')
+    .eq('status', 'pending')
+    .order('created_at', { ascending: false });
+  return (data ?? []) as ApplicationRow[];
+}
 
 async function getAllProviders(): Promise<ProviderRow[]> {
   const supabase = await createClient();
@@ -77,17 +104,29 @@ async function getAllProviders(): Promise<ProviderRow[]> {
 export default async function AdminProvidersPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const providers = await getAllProviders();
+  const [providers, applications] = await Promise.all([getAllProviders(), getApplications()]);
 
-  return <PageContent providers={providers} />;
+  return <PageContent providers={providers} applications={applications} />;
 }
 
-function PageContent({ providers }: { providers: ProviderRow[] }) {
+function PageContent({
+  providers,
+  applications,
+}: {
+  providers: ProviderRow[];
+  applications: ApplicationRow[];
+}) {
   const t = useTranslations('admin.providers');
   return (
-    <div className="space-y-6">
-      <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
-      <ProvidersTable providers={providers} />
+    <div className="space-y-10">
+      <div className="space-y-4">
+        <h2 className="text-lg font-semibold text-foreground">{t('applicationsTitle')}</h2>
+        <ApplicationsList applications={applications} />
+      </div>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-bold tracking-tight text-foreground">{t('title')}</h1>
+        <ProvidersTable providers={providers} />
+      </div>
     </div>
   );
 }
