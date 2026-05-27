@@ -466,20 +466,13 @@ function ConfirmStep({
       )}
 
       <form action={formAction}>
-        <input type="hidden" name="provider_id"            value={provider.id} />
+        {/* Only submit user-selection inputs — all financial/snapshot data is resolved server-side */}
         <input type="hidden" name="provider_service_id"    value={service.id} />
         <input type="hidden" name="scheduled_at"           value={scheduled} />
-        <input type="hidden" name="duration_minutes"       value={service.services!.duration_minutes} />
-        <input type="hidden" name="appointment_type"        value={appointmentType} />
+        <input type="hidden" name="appointment_type"       value={appointmentType} />
         <input type="hidden" name="address_line"           value={appointmentType === 'at_home' ? addressLine : ''} />
         <input type="hidden" name="address_city"           value={city} />
         <input type="hidden" name="address_notes"          value={addressNotes} />
-        <input type="hidden" name="total_cents"            value={price} />
-        <input type="hidden" name="service_name_nl"        value={service.services!.name_nl} />
-        <input type="hidden" name="service_name_en"        value={service.services!.name_en} />
-        <input type="hidden" name="service_price_cents"    value={price} />
-        <input type="hidden" name="provider_display_name"  value={provider.profiles?.display_name ?? provider.slug} />
-        <input type="hidden" name="provider_slug"          value={provider.slug} />
         <input type="hidden" name="locale"                 value={locale} />
 
         <div className="flex gap-3">

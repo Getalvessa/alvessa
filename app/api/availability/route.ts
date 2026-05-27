@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
 // Amsterdam is UTC+2 (CEST, summer) — fixed offset for MVP.
@@ -72,10 +72,13 @@ export async function GET(request: Request) {
   const endHHMM = (exception?.end_time ?? schedule.end_time).slice(0, 5);
 
   // 3. Existing confirmed bookings that day (UTC range)
+  // Uses service_role to bypass RLS — the user-scoped client only sees the caller's own
+  // bookings, which would leave other customers' confirmed slots invisible and show false
+  // availability. Only scheduled_at and end_at are selected; no PII is exposed.
   const dayStartUTC = toUTC(date, '00:00').toISOString();
   const dayEndUTC = toUTC(date, '23:59').toISOString();
 
-  const { data: existingBookings } = await supabase
+  const { data: existingBookings } = await createServiceRoleClient()
     .from('bookings')
     .select('scheduled_at, end_at')
     .eq('provider_id', providerId)

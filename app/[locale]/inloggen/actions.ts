@@ -12,13 +12,20 @@ function mapError(message: string): string {
   return 'errorGeneric';
 }
 
+function sanitizeRedirect(value: string | null): string | null {
+  if (!value) return null;
+  // Must start with '/' but not '//' (protocol-relative), and must not contain ':' (scheme)
+  if (value.startsWith('/') && !value.startsWith('//') && !value.includes(':')) return value;
+  return '/';
+}
+
 export async function loginAction(
   _prev: AuthState,
   formData: FormData,
 ): Promise<AuthState> {
   const email = (formData.get('email') as string).trim();
   const password = formData.get('password') as string;
-  const redirectTo = (formData.get('redirect_to') as string | null) ?? '/mijn-boekingen';
+  const redirectTo = sanitizeRedirect(formData.get('redirect_to') as string | null) ?? '/mijn-boekingen';
 
   const supabase = await createClient();
   const { error } = await supabase.auth.signInWithPassword({ email, password });

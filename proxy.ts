@@ -27,6 +27,14 @@ function isProtectedPath(pathname: string): boolean {
   );
 }
 
+function isAdminPath(pathname: string): boolean {
+  return pathname.includes('/admin');
+}
+
+function isProviderPath(pathname: string): boolean {
+  return pathname.includes('/dashboard');
+}
+
 export async function proxy(request: NextRequest) {
   // Basic Auth gate — active when BASIC_AUTH_PASSWORD env var is set
   if (!checkBasicAuth(request)) {
@@ -73,6 +81,33 @@ export async function proxy(request: NextRequest) {
       redirectResponse.cookies.set(name, value, options as Parameters<typeof redirectResponse.cookies.set>[2]),
     );
     return redirectResponse;
+  }
+
+  // Role-based access control for /admin and /dashboard
+  if (user && (isAdminPath(pathname) || isProviderPath(pathname))) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('is_admin, is_provider')
+      .eq('id', user.id)
+      .single();
+
+    const isAdmin    = profile?.is_admin    ?? false;
+    const isProvider = profile?.is_provider ?? false;
+
+    const denied =
+      (isAdminPath(pathname)    && !isAdmin) ||
+      (isProviderPath(pathname) && !isProvider && !isAdmin);
+
+    if (denied) {
+      const homeUrl = request.nextUrl.clone();
+      homeUrl.pathname = '/';
+      homeUrl.search = '';
+      const redirectResponse = NextResponse.redirect(homeUrl);
+      pendingCookies.forEach(({ name, value, options }) =>
+        redirectResponse.cookies.set(name, value, options as Parameters<typeof redirectResponse.cookies.set>[2]),
+      );
+      return redirectResponse;
+    }
   }
 
   // Let next-intl handle locale detection and routing
