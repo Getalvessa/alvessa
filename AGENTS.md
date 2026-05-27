@@ -98,14 +98,60 @@ Non-negotiable. Codex must flag any violation immediately as CRITICAL.
 
 ---
 
-## Context Management Rules
+## Context Loading Protocol
 
-- Start with `docs/PROJECT_MAP.md` before any broad search — it maps every subsystem to its files.
-- Prefer targeted file reads over repo-wide grep. Read only the subsystem files relevant to the current task.
-- Do not inspect `node_modules/` unless explicitly required to check a framework API.
-- Do not scan `supabase/migrations/` unless the task is explicitly database/security related.
-- Do not scan `messages/` unless the task is explicitly copy/i18n/legal related.
-- For small changes, read only the target subsystem files listed in `docs/PROJECT_MAP.md`.
-- Check `docs/STABLE_MODULES.md` before touching booking, payment, RLS, auth, or webhook code.
-- Ask for confirmation before expanding scope beyond the declared subsystem.
-- Full workflow rules: `docs/AI_WORKFLOW.md`.
+### Before ANY task — mandatory load sequence
+
+```
+Step 1: docs/PROJECT_MAP.md          (always, ~140 lines)
+Step 2: docs/SCHEMA_SNAPSHOT.md      (only if task touches database/types/schema)
+Step 3: docs/STABLE_MODULES.md       (only if task touches booking/payment/RLS/auth/webhook)
+Step 4: ONE template from prompts/   (the single template matching this task type)
+        → see docs/FEATURE_OWNERSHIP.md to identify which template
+        → if no template matches: proceed without one
+```
+
+**NEVER load** all `prompts/*` templates at session start.
+**NEVER load** templates for subsystems not involved in the current task.
+
+### Schema understanding rule
+
+```
+Migration history is NOT the schema source of truth for reading.
+docs/SCHEMA_SNAPSHOT.md IS the schema source of truth.
+
+NEVER read supabase/migrations/ to understand current table structure.
+READ docs/SCHEMA_SNAPSHOT.md instead.
+
+ALLOWED to read migration files only when:
+  - Writing a new migration (verify no conflicts with adjacent migration)
+  - Auditing a specific named trigger/policy
+  - Task is explicitly "review migration N"
+  Max: 2 migration files per task.
+```
+
+### TASK_GATE — mandatory before any tool call
+
+Output the TASK_GATE block (defined in `docs/TASK_GATE.md`) before the first tool call of any task.
+If DECOMPOSITION is required: list sub-tasks and wait for user selection before starting.
+
+### Context limits
+
+See `docs/CONTEXT_BUDGET.md` for per-task file and line budgets.
+Checkpoints: warn at 500 lines, hard stop at 1200 lines.
+Terminal output: summarize; never dump full psql/docker/build output.
+
+### Cross-subsystem tasks
+
+If a task touches files from 2+ of: `supabase/migrations/`, `app/`, `messages/`, `lib/types/`:
+→ STOP. See `docs/FEATURE_OWNERSHIP.md` for decomposition protocol.
+→ Output decomposed task list. Wait for user to select which task to start.
+
+### Scope expansion
+
+If during a task a fix requires a file outside ALLOWED FILES:
+1. Stop at that point.
+2. Report what was found and why expansion would be needed.
+3. Wait for explicit user instruction before touching the out-of-scope file.
+
+Full rules: `docs/AI_WORKFLOW.md` · `docs/TASK_GATE.md` · `docs/CONTEXT_BUDGET.md` · `docs/FEATURE_OWNERSHIP.md`

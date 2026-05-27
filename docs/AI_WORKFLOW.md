@@ -102,12 +102,71 @@ NEXT SUGGESTED STEP: [one sentence]
 
 ---
 
+## Cross-Subsystem Task Protocol
+
+A cross-subsystem task is any task where the implementation requires reading or writing files
+from two or more of the following directories:
+
+```
+supabase/migrations/    (Subsystem B — Security/Schema)
+app/[locale]/admin/     (Subsystem E — Admin)
+app/[locale]/dashboard/ (Subsystem D — Provider Dashboard)
+app/[locale]/*/         (Subsystem A/F — Booking/Public)
+messages/               (Subsystem C — i18n)
+lib/types/              (cross-cutting — types only, never standalone)
+```
+
+### Detection triggers (stop and decompose when ANY of these are true)
+
+- Task description contains more than one of: "migration", "UI", "copy/translation", "admin", "dashboard"
+- ALLOWED FILES list spans 2+ subsystem directories
+- Task requires both `supabase/migrations/` AND `app/` writes
+- Task requires both schema change AND i18n key additions
+
+### Required action when cross-subsystem detected
+
+```
+1. STOP before any file read or write.
+2. Output decomposed task list:
+
+   "This task requires decomposition into N sequential tasks:
+
+   Task 1 [Subsystem B]: [schema/migration scope] — budget: 200 lines
+   Task 2 [Subsystem E]: [admin UI scope] — budget: 250 lines
+   Task 3 [Subsystem C]: [i18n scope] — budget: 80 lines
+
+   Which task should I start with?"
+
+3. Wait for user to select a task.
+4. Output a TASK_GATE block for that specific task.
+5. Execute ONLY that task.
+6. After completion: report done, ask which task is next.
+```
+
+### What NOT to do
+
+```
+❌ Execute all sub-tasks in one session without asking
+❌ "I'll just do the schema and a quick UI update together"
+❌ Update lib/types/database.ts in an i18n task
+❌ Add i18n keys "while you're in" a migration task
+```
+
+### lib/types/database.ts rule
+
+`lib/types/database.ts` is a cross-cutting file. It is always a child of a Subsystem B task.
+- Update it ONLY as part of the migration task that adds the columns.
+- Never update it in a UI or i18n task.
+- Never update it as a standalone task.
+
+---
+
 ## Scope Expansion Rule
 
-If during a task you discover that the fix requires touching a file outside the declared subsystem:
+If during a task you discover that the fix requires touching a file outside ALLOWED FILES:
 
-1. Stop.
-2. Report what you found and why expansion is needed.
+1. Stop at that point.
+2. Report what was found and why expansion is needed.
 3. Wait for explicit confirmation before expanding scope.
 
 Do NOT silently expand scope. Do NOT assume "it's just one more file."

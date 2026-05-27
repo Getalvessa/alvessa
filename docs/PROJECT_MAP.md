@@ -132,7 +132,8 @@ Full migration list: `supabase/migrations/` (15 files, chronological)
 | Availability API | ✅ Stable | 30-min slots, UTC+2 fixed |
 | Provider dashboard | ✅ Stable | bookings, schedule, services, earnings |
 | Admin dashboard | ✅ Stable | users, bookings, providers |
-| RLS security | ✅ Stable | 15 migrations applied |
+| RLS security | ✅ Stable | 17 migrations applied |
+| Provider trust network | ✅ Stable | status/trust_level/referral tracking (migration 016) |
 | i18n (NL + EN) | ✅ Stable | next-intl, all strings in messages/ |
 | SEO pages | ✅ Stable | 4 landing pages + JSON-LD |
 | Self-service cancellation | ❌ Not built | Copy directs to hallo@alvessa.nl |
