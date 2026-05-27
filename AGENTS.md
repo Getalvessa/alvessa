@@ -95,3 +95,17 @@ Non-negotiable. Codex must flag any violation immediately as CRITICAL.
 3. **Auth must never be weakened.** No authentication check may be removed, skipped, or bypassed without explicit project owner approval.
 4. **Stripe stays in test mode** until the project owner explicitly approves live mode in writing.
 5. **Internal routes must be protected.** Admin and provider routes must be enforced at the middleware level — never rely on UI-only guards.
+
+---
+
+## Context Management Rules
+
+- Start with `docs/PROJECT_MAP.md` before any broad search — it maps every subsystem to its files.
+- Prefer targeted file reads over repo-wide grep. Read only the subsystem files relevant to the current task.
+- Do not inspect `node_modules/` unless explicitly required to check a framework API.
+- Do not scan `supabase/migrations/` unless the task is explicitly database/security related.
+- Do not scan `messages/` unless the task is explicitly copy/i18n/legal related.
+- For small changes, read only the target subsystem files listed in `docs/PROJECT_MAP.md`.
+- Check `docs/STABLE_MODULES.md` before touching booking, payment, RLS, auth, or webhook code.
+- Ask for confirmation before expanding scope beyond the declared subsystem.
+- Full workflow rules: `docs/AI_WORKFLOW.md`.
