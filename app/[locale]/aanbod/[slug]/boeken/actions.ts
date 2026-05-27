@@ -144,8 +144,11 @@ export async function createBooking(
     return { error: 'errorSlotTaken' };
   }
 
-  // 4. Create booking record using only server-derived values for financial fields
-  const { data: booking, error: dbError } = await supabase
+  // 4. Create booking record using only server-derived values for financial fields.
+  // Uses service_role so that the authenticated INSERT policy is NOT required.
+  // Removing the INSERT policy for authenticated users prevents clients from forging
+  // bookings directly against the Supabase REST API, bypassing this server action.
+  const { data: booking, error: dbError } = await createServiceRoleClient()
     .from('bookings')
     .insert({
       customer_id:                    user.id,
