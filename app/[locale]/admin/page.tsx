@@ -21,14 +21,14 @@ async function getAdminStats() {
     { count: pendingProviders },
     { data: payments },
   ] = await Promise.all([
-    supabase.from('bookings').select('*', { count: 'exact', head: true }),
+    supabase.from('bookings').select('id', { count: 'exact', head: true }),
     supabase
       .from('bookings')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('status', 'confirmed'),
     supabase
       .from('providers')
-      .select('*', { count: 'exact', head: true })
+      .select('id', { count: 'exact', head: true })
       .eq('is_verified', false)
       .eq('is_active', true),
     supabase.from('payments').select('amount_cents').eq('status', 'paid'),

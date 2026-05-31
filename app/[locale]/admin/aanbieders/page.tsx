@@ -1,7 +1,7 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 import ProvidersTable from './providers-table';
 import ApplicationsList from './applications-list';
 
@@ -63,8 +63,24 @@ async function getApplications(): Promise<ApplicationRow[]> {
 async function getAllProviders(): Promise<ProviderRow[]> {
   const supabase = await createClient();
 
+  // Local admin verification — do not rely on layout.tsx or proxy.ts alone
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: adminProfile } = await supabase
+    .from('profiles')
+    .select('is_admin')
+    .eq('id', user.id)
+    .single();
+
+  if (!adminProfile?.is_admin) return [];
+
+  // Privileged query: internal_notes and referred_by_provider_id may require
+  // service role once column-level restrictions are applied.
+  const serviceRole = createServiceRoleClient();
+
   const [{ data: providers }, { data: bookingStats }] = await Promise.all([
-    supabase
+    serviceRole
       .from('providers')
       .select(
         'id, slug, city, is_verified, is_active, status, trust_level, referred_by_provider_id, internal_notes, profile:profiles!providers_profile_id_fkey(display_name)',
