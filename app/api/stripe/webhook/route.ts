@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
   }
 
   if (event.type === 'checkout.session.completed') {
-    const session  = event.data.object as Stripe.Checkout.Session;
+    const session   = event.data.object as Stripe.Checkout.Session;
     const bookingId = session.metadata?.booking_id;
 
     if (!bookingId) {
@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
           status:                   'paid',
           amount_cents:             session.amount_total ?? 0,
           platform_fee_cents:       0,
-          provider_amount_cents:    0, // No payout — full amount must be refunded to customer
+          provider_amount_cents:    0,
         });
 
         console.error('[webhook] SLOT_CONFLICT_REQUIRES_MANUAL_REFUND', JSON.stringify({
@@ -92,7 +92,6 @@ export async function POST(request: NextRequest) {
         }));
 
         // Return 200 — slot conflict is a business error, not a transient server error.
-        // Returning 200 prevents Stripe from retrying, which would be futile.
         return NextResponse.json({ received: true });
       }
 
@@ -114,8 +113,8 @@ export async function POST(request: NextRequest) {
       });
 
     if (paymentError) {
-      // Booking is already confirmed — log but don't fail the webhook
       console.error('Webhook: failed to insert payment record:', paymentError.message);
+      return NextResponse.json({ error: 'Payment record failed' }, { status: 500 });
     }
 
     // ── Send email notifications ──────────────────────────────────────────────
