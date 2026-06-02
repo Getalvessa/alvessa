@@ -331,6 +331,7 @@ export type Database = {
           refund_amount_cents: number
           status: string
           stripe_charge_id: string | null
+          stripe_event_id: string | null
           stripe_payment_intent_id: string
           stripe_refund_id: string | null
           stripe_transfer_id: string | null
@@ -346,6 +347,7 @@ export type Database = {
           refund_amount_cents?: number
           status?: string
           stripe_charge_id?: string | null
+          stripe_event_id?: string | null
           stripe_payment_intent_id: string
           stripe_refund_id?: string | null
           stripe_transfer_id?: string | null
@@ -361,6 +363,7 @@ export type Database = {
           refund_amount_cents?: number
           status?: string
           stripe_charge_id?: string | null
+          stripe_event_id?: string | null
           stripe_payment_intent_id?: string
           stripe_refund_id?: string | null
           stripe_transfer_id?: string | null

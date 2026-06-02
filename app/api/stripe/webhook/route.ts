@@ -32,7 +32,20 @@ export async function POST(request: NextRequest) {
 
     const supabase = createServiceRoleClient();
 
-    // Confirm the booking
+    // ── Idempotency guard ─────────────────────────────────────────────────────
+    // Stripe retries on 5xx or timeout. If a payment row already carries this
+    // event ID, the event was fully processed — return 200 immediately.
+    const { data: existingPayment } = await supabase
+      .from('payments')
+      .select('id')
+      .eq('stripe_event_id', event.id)
+      .maybeSingle();
+
+    if (existingPayment) {
+      return NextResponse.json({ received: true });
+    }
+
+    // ── Confirm the booking ───────────────────────────────────────────────────
     const { error: bookingError } = await supabase
       .from('bookings')
       .update({ status: 'confirmed' })
@@ -59,6 +72,7 @@ export async function POST(request: NextRequest) {
         const { error: conflictPaymentError } = await supabase.from('payments').insert({
           booking_id:               bookingId,
           stripe_payment_intent_id: session.payment_intent as string,
+          stripe_event_id:          event.id,
           status:                   'paid',
           amount_cents:             session.amount_total ?? 0,
           platform_fee_cents:       0,
@@ -82,12 +96,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'DB update failed' }, { status: 500 });
     }
 
-    // Record the payment
+    // ── Record the payment ────────────────────────────────────────────────────
     const { error: paymentError } = await supabase
       .from('payments')
       .insert({
         booking_id:               bookingId,
         stripe_payment_intent_id: session.payment_intent as string,
+        stripe_event_id:          event.id,
         status:                   'paid',
         amount_cents:             session.amount_total ?? 0,
         platform_fee_cents:       0,
