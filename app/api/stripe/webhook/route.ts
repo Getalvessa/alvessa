@@ -3,6 +3,10 @@ import { NextResponse } from 'next/server';
 import type Stripe from 'stripe';
 import { createStripeClient } from '@/lib/stripe';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import {
+  sendCustomerConfirmation,
+  sendProviderNotification,
+} from '@/lib/email';
 
 export async function POST(request: NextRequest) {
   const body = await request.text();
@@ -112,6 +116,95 @@ export async function POST(request: NextRequest) {
     if (paymentError) {
       // Booking is already confirmed — log but don't fail the webhook
       console.error('Webhook: failed to insert payment record:', paymentError.message);
+    }
+
+    // ── Send email notifications ──────────────────────────────────────────────
+    // Runs after DB is settled. Failures are caught and logged — they must not
+    // cause a 5xx response that would trigger a Stripe retry.
+    try {
+      const { data: booking } = await supabase
+        .from('bookings')
+        .select(`customer_id, provider_id, service_name_nl_snapshot, scheduled_at,
+                 duration_minutes, address_line, address_city, address_notes,
+                 appointment_type, total_cents, provider_display_name_snapshot`)
+        .eq('id', bookingId)
+        .single();
+
+      if (!booking) throw new Error('booking row not found for emails');
+
+      const [
+        { data: customerProfile },
+        { data: { user: customerUser }, error: customerAuthError },
+        { data: providerRecord },
+      ] = await Promise.all([
+        supabase.from('profiles').select('display_name, phone').eq('id', booking.customer_id).single(),
+        supabase.auth.admin.getUserById(booking.customer_id),
+        supabase.from('providers').select('profile_id').eq('id', booking.provider_id).single(),
+      ]);
+
+      if (customerAuthError) throw customerAuthError;
+
+      const { data: { user: providerUser }, error: providerAuthError } =
+        await supabase.auth.admin.getUserById(providerRecord!.profile_id);
+
+      if (providerAuthError) throw providerAuthError;
+
+      const customerEmail = customerUser?.email;
+      const providerEmail = providerUser?.email;
+
+      const emailBase = {
+        serviceName:     booking.service_name_nl_snapshot,
+        scheduledAt:     booking.scheduled_at,
+        durationMinutes: booking.duration_minutes,
+        appointmentType: booking.appointment_type,
+        addressLine:     booking.address_line,
+        addressCity:     booking.address_city,
+        totalCents:      booking.total_cents,
+        bookingId,
+      };
+
+      const sends: Promise<void>[] = [];
+
+      if (customerEmail) {
+        sends.push(
+          sendCustomerConfirmation({
+            ...emailBase,
+            toEmail:      customerEmail,
+            customerName: customerProfile?.display_name ?? 'Klant',
+            providerName: booking.provider_display_name_snapshot,
+          }),
+        );
+      }
+
+      if (providerEmail) {
+        sends.push(
+          sendProviderNotification({
+            ...emailBase,
+            toEmail:       providerEmail,
+            providerName:  booking.provider_display_name_snapshot,
+            customerName:  customerProfile?.display_name ?? 'Klant',
+            customerEmail: customerEmail ?? '(niet beschikbaar)',
+            customerPhone: customerProfile?.phone ?? null,
+            addressNotes:  booking.address_notes,
+          }),
+        );
+      }
+
+      const results = await Promise.allSettled(sends);
+      results.forEach((r) => {
+        if (r.status === 'rejected') {
+          // Log the error message only — no personal data (email addresses, names)
+          console.error('[webhook] email send failed:', {
+            booking_id: bookingId,
+            error: r.reason instanceof Error ? r.reason.message : 'unknown',
+          });
+        }
+      });
+    } catch (emailSetupErr) {
+      console.error('[webhook] email setup failed:', {
+        booking_id: bookingId,
+        error: emailSetupErr instanceof Error ? emailSetupErr.message : 'unknown',
+      });
     }
   }
 
