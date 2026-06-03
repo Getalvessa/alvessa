@@ -129,6 +129,7 @@ Full migration list: `supabase/migrations/` (18 files, chronological)
 | Auth (login/register/OAuth) | ✅ Stable | Supabase Auth |
 | Booking flow (4-step) | ✅ Stable | service_role INSERT, Stripe Checkout |
 | Payment (Stripe Checkout) | ✅ Stable | webhook confirms booking |
+| Email notifications (Phase 5B) | ✅ Stable | Resend; customer "Boeking bevestigd" + provider "Nieuwe boeking"; verified 2026-06-03 |
 | Availability API | ✅ Stable | 30-min slots, UTC+2 fixed |
 | Provider dashboard | ✅ Stable | bookings, schedule, services, earnings |
 | Admin dashboard | ✅ Stable | users, bookings, providers |
