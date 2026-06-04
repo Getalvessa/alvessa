@@ -146,6 +146,39 @@ export default function ProvidersTable({ providers }: { providers: ProviderRow[]
               </div>
             </div>
 
+            {/* Readiness indicators */}
+            <div className="flex flex-wrap gap-2 border-t border-border px-5 py-3">
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  p.is_verified
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {p.is_verified ? `✓ ${t('readinessVerified')}` : `✗ ${t('readinessNotVerified')}`}
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  p.is_active
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {p.is_active ? `✓ ${t('readinessActive')}` : `✗ ${t('readinessInactive')}`}
+              </span>
+              <span
+                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+                  p.service_count > 0
+                    ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+                    : 'bg-muted text-muted-foreground'
+                }`}
+              >
+                {p.service_count > 0
+                  ? `✓ ${t('readinessServices')} (${p.service_count})`
+                  : `✗ ${t('readinessNoServices')}`}
+              </span>
+            </div>
+
             {/* Trust edit form */}
             <div className="border-t border-border px-5 py-4 space-y-3">
               <div className="flex flex-wrap gap-3">

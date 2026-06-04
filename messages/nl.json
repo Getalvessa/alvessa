@@ -488,7 +488,21 @@
       "appColCity": "Stad",
       "appColServices": "Massages",
       "appColExperience": "Jaren ervaring",
-      "appColDate": "Ontvangen op"
+      "appColDate": "Ontvangen op",
+      "appColActions": "Acties",
+      "appActionApprove": "Goedkeuren",
+      "appActionReject": "Afwijzen",
+      "appApproveSuccess": "Aanmelding goedgekeurd.",
+      "appApproveSuccessLinked": "Aanbieder account aangemaakt.",
+      "appApproveSuccessNoUser": "Goedgekeurd — nog geen account gevonden voor dit e-mailadres.",
+      "appRejectSuccess": "Aanmelding afgewezen.",
+      "appActionError": "Actie mislukt. Probeer opnieuw.",
+      "readinessServices": "Diensten",
+      "readinessNoServices": "Geen diensten",
+      "readinessVerified": "Geverifieerd",
+      "readinessNotVerified": "Niet geverifieerd",
+      "readinessActive": "Actief",
+      "readinessInactive": "Inactief"
     },
     "bookings": {
       "title": "Alle boekingen",

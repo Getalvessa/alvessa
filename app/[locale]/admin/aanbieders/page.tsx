@@ -48,6 +48,7 @@ export type ProviderRow = RawProvider & {
   referred_by_name: string | null;
   completed: number;
   cancelled: number;
+  service_count: number;
 };
 
 async function getApplications(): Promise<ApplicationRow[]> {
@@ -79,7 +80,7 @@ async function getAllProviders(): Promise<ProviderRow[]> {
   // service role once column-level restrictions are applied.
   const serviceRole = createServiceRoleClient();
 
-  const [{ data: providers }, { data: bookingStats }] = await Promise.all([
+  const [{ data: providers }, { data: bookingStats }, { data: activeServices }] = await Promise.all([
     serviceRole
       .from('providers')
       .select(
@@ -91,6 +92,11 @@ async function getAllProviders(): Promise<ProviderRow[]> {
       .from('bookings')
       .select('provider_id, status')
       .in('status', ['completed', 'cancelled']),
+
+    serviceRole
+      .from('provider_services')
+      .select('provider_id')
+      .eq('is_active', true),
   ]);
 
   const rawProviders = (providers ?? []) as unknown as RawProvider[];
@@ -109,11 +115,19 @@ async function getAllProviders(): Promise<ProviderRow[]> {
     if (row.status === 'cancelled') statsMap[row.provider_id].cancelled++;
   }
 
+  // Aggregate active service counts per provider
+  const serviceCountMap: Record<string, number> = {};
+  for (const ps of activeServices ?? []) {
+    const row = ps as { provider_id: string };
+    serviceCountMap[row.provider_id] = (serviceCountMap[row.provider_id] ?? 0) + 1;
+  }
+
   return rawProviders.map((p) => ({
     ...p,
     referred_by_name: p.referred_by_provider_id ? (nameMap[p.referred_by_provider_id] ?? null) : null,
     completed: statsMap[p.id]?.completed ?? 0,
     cancelled: statsMap[p.id]?.cancelled ?? 0,
+    service_count: serviceCountMap[p.id] ?? 0,
   }));
 }
 

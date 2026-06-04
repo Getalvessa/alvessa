@@ -1,11 +1,52 @@
+'use client';
+
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
+import { approveApplicationAction, rejectApplicationAction } from './actions';
 import type { ApplicationRow } from './page';
 
 export default function ApplicationsList({ applications }: { applications: ApplicationRow[] }) {
   const t = useTranslations('admin.providers');
 
-  if (applications.length === 0) {
+  const [busy, setBusy] = useState<string | null>(null);
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const [feedback, setFeedback] = useState<Record<string, string>>({});
+
+  const visible = applications.filter((a) => !dismissed.has(a.id));
+
+  if (visible.length === 0) {
     return <p className="text-sm text-muted-foreground">{t('applicationsEmpty')}</p>;
+  }
+
+  async function handleApprove(app: ApplicationRow) {
+    setBusy(app.id);
+    const result = await approveApplicationAction(app.id);
+    if (result.error) {
+      setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+      setBusy(null);
+      return;
+    }
+    const msg = result.userFound
+      ? result.providerCreated
+        ? t('appApproveSuccessLinked')
+        : t('appApproveSuccess')
+      : t('appApproveSuccessNoUser');
+    setFeedback((prev) => ({ ...prev, [app.id]: msg }));
+    setBusy(null);
+    setTimeout(() => setDismissed((prev) => new Set(prev).add(app.id)), 1800);
+  }
+
+  async function handleReject(app: ApplicationRow) {
+    setBusy(`reject-${app.id}`);
+    const { error } = await rejectApplicationAction(app.id);
+    if (error) {
+      setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+      setBusy(null);
+      return;
+    }
+    setFeedback((prev) => ({ ...prev, [app.id]: t('appRejectSuccess') }));
+    setBusy(null);
+    setTimeout(() => setDismissed((prev) => new Set(prev).add(app.id)), 1800);
   }
 
   return (
@@ -20,26 +61,56 @@ export default function ApplicationsList({ applications }: { applications: Appli
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColServices')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColExperience')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColDate')}</th>
+            <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColActions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-border">
-          {applications.map((app) => (
-            <tr key={app.id} className="hover:bg-muted/20">
-              <td className="px-4 py-3 font-medium text-foreground">{app.full_name}</td>
-              <td className="px-4 py-3 text-foreground">{app.email}</td>
-              <td className="px-4 py-3 text-foreground">{app.phone}</td>
-              <td className="px-4 py-3 text-foreground">{app.city}</td>
-              <td className="max-w-[180px] truncate px-4 py-3 text-foreground">{app.service_types}</td>
-              <td className="px-4 py-3 text-foreground">{app.experience_years ?? '—'}</td>
-              <td className="px-4 py-3 text-muted-foreground">
-                {new Date(app.created_at).toLocaleDateString('nl-NL', {
-                  day: 'numeric',
-                  month: 'short',
-                  year: 'numeric',
-                })}
-              </td>
-            </tr>
-          ))}
+          {visible.map((app) => {
+            const isApproving = busy === app.id;
+            const isRejecting = busy === `reject-${app.id}`;
+            const isBusy = isApproving || isRejecting;
+            const msg = feedback[app.id];
+
+            return (
+              <tr key={app.id} className="hover:bg-muted/20">
+                <td className="px-4 py-3 font-medium text-foreground">{app.full_name}</td>
+                <td className="px-4 py-3 text-foreground">{app.email}</td>
+                <td className="px-4 py-3 text-foreground">{app.phone}</td>
+                <td className="px-4 py-3 text-foreground">{app.city}</td>
+                <td className="max-w-[180px] truncate px-4 py-3 text-foreground">{app.service_types}</td>
+                <td className="px-4 py-3 text-foreground">{app.experience_years ?? '—'}</td>
+                <td className="px-4 py-3 text-muted-foreground">
+                  {new Date(app.created_at).toLocaleDateString('nl-NL', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </td>
+                <td className="px-4 py-3">
+                  {msg ? (
+                    <span className="text-xs text-muted-foreground">{msg}</span>
+                  ) : (
+                    <div className="flex gap-2">
+                      <button
+                        disabled={isBusy}
+                        onClick={() => handleApprove(app)}
+                        className="rounded-lg bg-foreground px-2.5 py-1 text-xs font-semibold text-background hover:bg-foreground/90 disabled:opacity-50"
+                      >
+                        {isApproving ? '…' : t('appActionApprove')}
+                      </button>
+                      <button
+                        disabled={isBusy}
+                        onClick={() => handleReject(app)}
+                        className="rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+                      >
+                        {isRejecting ? '…' : t('appActionReject')}
+                      </button>
+                    </div>
+                  )}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

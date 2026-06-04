@@ -488,7 +488,21 @@
       "appColCity": "City",
       "appColServices": "Massages",
       "appColExperience": "Years exp.",
-      "appColDate": "Received on"
+      "appColDate": "Received on",
+      "appColActions": "Actions",
+      "appActionApprove": "Approve",
+      "appActionReject": "Reject",
+      "appApproveSuccess": "Application approved.",
+      "appApproveSuccessLinked": "Provider account created.",
+      "appApproveSuccessNoUser": "Approved — no account found for this email yet.",
+      "appRejectSuccess": "Application rejected.",
+      "appActionError": "Action failed. Please try again.",
+      "readinessServices": "Services",
+      "readinessNoServices": "No services",
+      "readinessVerified": "Verified",
+      "readinessNotVerified": "Not verified",
+      "readinessActive": "Active",
+      "readinessInactive": "Inactive"
     },
     "bookings": {
       "title": "All bookings",
