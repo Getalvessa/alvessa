@@ -497,6 +497,7 @@
       "appApproveSuccessNoUser": "No account found. Application remains pending.",
       "appRejectSuccess": "Application rejected.",
       "appActionError": "Action failed. Please try again.",
+      "appOpenDashboard": "Open dashboard",
       "readinessServices": "Services",
       "readinessNoServices": "No services",
       "readinessVerified": "Verified",

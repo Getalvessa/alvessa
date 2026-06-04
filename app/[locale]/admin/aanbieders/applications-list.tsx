@@ -3,8 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import Link from 'next/link';
 import { approveApplicationAction, rejectApplicationAction } from './actions';
 import type { ApplicationRow } from './page';
+
+type FeedbackEntry = { message: string; showDashboardLink?: boolean };
 
 export default function ApplicationsList({ applications }: { applications: ApplicationRow[] }) {
   const t = useTranslations('admin.providers');
@@ -12,7 +15,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
 
   const [busy, setBusy] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
-  const [feedback, setFeedback] = useState<Record<string, string>>({});
+  const [feedback, setFeedback] = useState<Record<string, FeedbackEntry>>({});
 
   const visible = applications.filter((a) => !dismissed.has(a.id));
 
@@ -25,7 +28,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
     try {
       const result = await approveApplicationAction(app.id);
       if (result.error) {
-        setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+        setFeedback((prev) => ({ ...prev, [app.id]: { message: t('appActionError') } }));
         return;
       }
       const msg = result.userFound
@@ -33,8 +36,8 @@ export default function ApplicationsList({ applications }: { applications: Appli
           ? t('appApproveSuccessLinked')
           : t('appApproveSuccess')
         : t('appApproveSuccessNoUser');
-      setFeedback((prev) => ({ ...prev, [app.id]: msg }));
       if (!result.userFound) {
+        setFeedback((prev) => ({ ...prev, [app.id]: { message: msg } }));
         // No account registered yet — clear the message after 5 s so admin can retry.
         setTimeout(
           () => setFeedback((prev) => { const next = { ...prev }; delete next[app.id]; return next; }),
@@ -42,10 +45,13 @@ export default function ApplicationsList({ applications }: { applications: Appli
         );
         return;
       }
-      setDismissed((prev) => new Set(prev).add(app.id));
-      router.refresh();
+      setFeedback((prev) => ({ ...prev, [app.id]: { message: msg, showDashboardLink: true } }));
+      setTimeout(() => {
+        setDismissed((prev) => new Set(prev).add(app.id));
+        router.refresh();
+      }, 5000);
     } catch {
-      setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+      setFeedback((prev) => ({ ...prev, [app.id]: { message: t('appActionError') } }));
     } finally {
       setBusy(null);
     }
@@ -56,14 +62,14 @@ export default function ApplicationsList({ applications }: { applications: Appli
     try {
       const { error } = await rejectApplicationAction(app.id);
       if (error) {
-        setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+        setFeedback((prev) => ({ ...prev, [app.id]: { message: t('appActionError') } }));
         return;
       }
-      setFeedback((prev) => ({ ...prev, [app.id]: t('appRejectSuccess') }));
+      setFeedback((prev) => ({ ...prev, [app.id]: { message: t('appRejectSuccess') } }));
       setDismissed((prev) => new Set(prev).add(app.id));
       router.refresh();
     } catch {
-      setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+      setFeedback((prev) => ({ ...prev, [app.id]: { message: t('appActionError') } }));
     } finally {
       setBusy(null);
     }
@@ -89,7 +95,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
             const isApproving = busy === app.id;
             const isRejecting = busy === `reject-${app.id}`;
             const isBusy = isApproving || isRejecting;
-            const msg = feedback[app.id];
+            const entry = feedback[app.id];
 
             return (
               <tr key={app.id} className="hover:bg-muted/20">
@@ -107,8 +113,18 @@ export default function ApplicationsList({ applications }: { applications: Appli
                   })}
                 </td>
                 <td className="px-4 py-3">
-                  {msg ? (
-                    <span className="text-xs text-muted-foreground">{msg}</span>
+                  {entry ? (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">{entry.message}</span>
+                      {entry.showDashboardLink && (
+                        <Link
+                          href="/dashboard"
+                          className="rounded-lg border border-border px-2.5 py-1 text-xs font-medium text-foreground hover:bg-muted"
+                        >
+                          {t('appOpenDashboard')}
+                        </Link>
+                      )}
+                    </div>
                   ) : (
                     <div className="flex gap-2">
                       <button

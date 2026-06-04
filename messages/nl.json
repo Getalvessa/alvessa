@@ -497,6 +497,7 @@
       "appApproveSuccessNoUser": "Geen account gevonden. Aanmelding blijft open.",
       "appRejectSuccess": "Aanmelding afgewezen.",
       "appActionError": "Actie mislukt. Probeer opnieuw.",
+      "appOpenDashboard": "Dashboard openen",
       "readinessServices": "Diensten",
       "readinessNoServices": "Geen diensten",
       "readinessVerified": "Geverifieerd",
