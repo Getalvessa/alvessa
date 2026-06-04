@@ -1,185 +1,178 @@
-# AI Workflow Rules — Alvessa Marketplace
+# AI Execution Rules — Alvessa Marketplace
 
-> These rules exist to prevent context explosion, unintended scope creep, and accidental mutations to stable security-critical modules.
-
----
-
-## Core Principle
-
-**One task = one subsystem = one scope boundary.**
-
-Never start a task without first reading `docs/PROJECT_MAP.md` to identify which subsystem is relevant, then reading only the files in that subsystem.
+> Prevents context explosion, scope creep, and accidental mutations to security-critical modules.
 
 ---
 
-## Before Starting Any Task
+## Core Rules
 
-1. Read `docs/PROJECT_MAP.md` — identify which subsystem(s) are in scope.
-2. Read only the files listed for that subsystem.
-3. Check `docs/STABLE_MODULES.md` — if the task touches a stable module, require explicit confirmation before proceeding.
-4. State the scope boundary out loud: "This task touches subsystem X. I will NOT touch subsystem Y."
+1. **One window = one task.** Start one task, finish it, stop.
+2. **Use exact allowed file list.** The task prompt specifies ALLOWED FILES. Read and write only those files.
+3. **Need another file? Stop and ask.** Do not expand scope silently.
+4. **Never continue into follow-up work.** After completing the task, report done and stop.
+5. **Do not add dependencies, migrations, env vars, or docs** unless explicitly listed in ALLOWED FILES.
+6. **ctx 30%:** Wrap up current step, output progress, ask what's next.
+7. **ctx 40%:** Hard stop. Output handoff summary only. Do not start new work.
 
 ---
 
-## Scope Rules by Task Type
+## TASK_GATE
 
-### Copy / i18n / Legal task
-- Read: `messages/nl.json`, `messages/en.json`, and the relevant page file only.
-- Do NOT read: booking code, RLS migrations, dashboard code.
-- Do NOT modify: any `.ts` or `.tsx` logic file.
-- Output: diff of changed message keys only.
+Output this block **before the first tool call** of any task. No exceptions.
 
-### Booking / Payment task
-- Read: subsystem A files from PROJECT_MAP.md only.
-- Do NOT read: dashboard, admin, marketing pages.
-- If touching `actions.ts` or `webhook/route.ts`: treat as HIGH RISK — see STABLE_MODULES.md.
-- Must run `npm run lint` and `npm run build` after any change.
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TASK SCOPE:       [one sentence — what changes, nothing else]
+READ LIMIT:       [N files, M lines — from docs/CONTEXT_BUDGET.md]
+ALLOWED FILES:    [exact file list from PROJECT_MAP.md subsystem]
+FORBIDDEN FILES:  [dirs/subsystems explicitly out of scope]
+EXPECTED MODULE:  [A / B / C / D / E / F / docs-only]
+CONTEXT BUDGET:   [e.g. "300 lines read, 30 lines terminal"]
+STOP CONDITION:   [what triggers a pause or decomposition]
+DECOMPOSITION:    [required / not required]
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+```
 
-### RLS / Database / Security task
-- Read: subsystem B files + relevant migration files only.
-- This is the highest-risk category. A single wrong policy can expose all user data.
-- Requires dedicated single-purpose task — never combine with UI or copy work.
-- Must create a new migration file — never modify existing migrations.
-- Must include rollback SQL in the migration comment block.
-- Must run `npm run build` after changes.
+Full field definitions and worked examples: `docs/TASK_GATE.md`.
+If DECOMPOSITION = required: list sub-tasks, wait for user selection — do not start Task 1 unilaterally.
 
-### Provider Dashboard task
-- Read: subsystem D files only.
-- These are provider-only routes protected by middleware. Low blast radius.
-- Do NOT modify RLS policies or payment code.
+---
 
-### Admin task
-- Read: subsystem E files only.
-- Admin routes are protected at middleware level. Do not weaken auth guards.
-- Admin may read all bookings but must not bypass payment state machine.
+## Context Budget
 
-### Public page / SEO task
-- Read: subsystem F files + relevant message keys only.
-- These pages have no mutations — lowest risk category.
-- Do NOT rewrite copy beyond what is explicitly requested.
+Per-task file and line budgets: `docs/CONTEXT_BUDGET.md`.
+
+```
+< 500 lines read → proceed normally
+  500 lines      → pause: "Checkpoint — N lines read. Still within scope?"
+  800 lines      → WARN: reading more requires explicit user approval
+ 1200 lines      → HARD STOP — report findings, do not read further
+```
+
+Terminal output > 20 lines must be summarized; never dump full build/psql/docker output.
+
+---
+
+## Security / Payment / RLS Tasks
+
+These require a **separate, dedicated task + explicit user confirmation** before starting:
+- Any change to `supabase/migrations/`
+- Any change to `app/api/stripe/webhook/route.ts` or Stripe config
+- Any change to RLS policies or auth middleware (`proxy.ts`)
+- Any new environment variable
+
+Never combine security/payment tasks with UI or i18n work in the same session.
 
 ---
 
 ## Forbidden Behaviors (Always)
 
-- **Never scan `node_modules/`** unless explicitly required to check a framework API.
-- **Never scan `supabase/migrations/`** unless the task is explicitly database/security related.
-- **Never scan `messages/`** unless the task is explicitly copy/i18n/legal related.
-- **Never perform large-scale grep across the entire repo** for a task that is clearly scoped to one subsystem.
-- **Never combine two independent issues in one task.** If a second issue is discovered while working on another, flag it and stop — do not fix it inline.
-- **Never refactor code that is not directly related to the task.** No opportunistic cleanup.
-- **Never modify Stripe configuration** without explicit written approval.
-- **Never modify RLS policies** without explicit written approval.
-- **Never add npm dependencies** without explicit written approval.
-- **Never add environment variables** without explicit written approval.
-- **Never run `supabase db reset`** — this destroys production data.
-- **Never commit `.env` files.**
+- Never scan `node_modules/` unless explicitly required
+- Never read `supabase/migrations/` to understand current schema — use `docs/SCHEMA_SNAPSHOT.md` instead (allowed only when writing a new migration or auditing a specific trigger/policy by name; max 2 files per task)
+- Never scan `supabase/migrations/` for general orientation unless task is explicitly database/security
+- Never scan `messages/` unless task is explicitly copy/i18n
+- Never combine two independent issues in one task — flag and stop
+- Never refactor code unrelated to the task
+- Never modify Stripe config without explicit written approval
+- Never modify RLS policies without explicit written approval
+- Never add npm dependencies without explicit written approval
+- Never run `supabase db reset` — this destroys production data
+- Never commit `.env` files
+- Never modify an existing migration file; migrations are append-only
+- Never run DROP TABLE, TRUNCATE, or hard-delete bookings/payments records
+
+---
+
+## Scope Expansion
+
+If fix requires a file outside ALLOWED FILES:
+1. Stop immediately.
+2. Report what was found and why expansion is needed.
+3. Wait for explicit user instruction before touching the out-of-scope file.
+
+---
+
+## Cross-Subsystem Protocol
+
+A task touching files from 2+ of these directories has no valid budget and must be decomposed:
+
+```
+supabase/migrations/      (B — Security/Schema)
+app/[locale]/admin/       (E — Admin)
+app/[locale]/dashboard/   (D — Provider Dashboard)
+app/[locale]/*            (A/F — Booking/Public routes)
+messages/                 (C — i18n)
+lib/types/                (cross-cutting — types only)
+```
+
+`lib/types/database.ts` rule:
+- Update ONLY as a child step of a Subsystem B (migration) task.
+- Never update it standalone.
+- Never update it inside a UI or i18n task.
+
+When cross-subsystem detected — STOP before any read or write:
+1. Output decomposed task list (scope + subsystem + budget for each)
+2. Wait for user to select which task to start
+3. Complete only that task, then ask what's next — never auto-continue to the next sub-task
+
+Full protocol and detection triggers: `docs/FEATURE_OWNERSHIP.md`.
+
+---
+
+## Task Templates
+
+`prompts/` contains per-category templates. Load ONE matching template per task — after reading `docs/PROJECT_MAP.md`. Check `docs/FEATURE_OWNERSHIP.md` to identify which template applies.
+
+| Task category | Template |
+|---|---|
+| Copy / i18n | `prompts/copy/copy_task.md` |
+| Booking / payment | `prompts/booking/booking_task.md` |
+| Security / RLS / migration | `prompts/security/security_task.md` |
+| Provider dashboard | `prompts/provider/provider_task.md` |
+| Audit / review | `prompts/audit/audit_task.md` |
+| Deployment | `prompts/deployment/deployment_task.md` |
+
+NEVER load all templates at session start. NEVER load a template for a subsystem not in scope.
 
 ---
 
 ## Required Output Format
 
-After every task, output this checklist:
+After every task:
 
 ```
 ## Task Complete
 
 FILES CHANGED:
-- path/to/file.ts — [what changed and why]
-
-AFFECTED SUBSYSTEM: [A / B / C / D / E / F from PROJECT_MAP.md]
+- path/to/file — [what changed and why]
 
 TOUCHES RLS / PAYMENT / AUTH: [Yes — explain / No]
 
 BUILD STATUS:
-- npm run lint: [✅ 0 errors / ❌ see below]
-- npm run build: [✅ success / ❌ see below / ⏭️ not required for this task type]
+- npm run lint:  [✅ 0 errors / ❌ see below / ⏭️ not required]
+- npm run build: [✅ success  / ❌ see below / ⏭️ not required]
 
-STABLE MODULES AFFECTED: [Yes — list which / No]
+Required for:
+  - Subsystem A (booking/payment) tasks — always
+  - Subsystem B (RLS/migration) tasks — always
+  - Any task where TOUCHES RLS / PAYMENT / AUTH = Yes
+
+Not required (mark ⏭️):
+  - Subsystem C (copy/i18n) tasks
+  - docs-only changes
 
 NEXT SUGGESTED STEP: [one sentence]
 ```
 
 ---
 
-## Cross-Subsystem Task Protocol
+## Subsystem Risk Levels
 
-A cross-subsystem task is any task where the implementation requires reading or writing files
-from two or more of the following directories:
-
-```
-supabase/migrations/    (Subsystem B — Security/Schema)
-app/[locale]/admin/     (Subsystem E — Admin)
-app/[locale]/dashboard/ (Subsystem D — Provider Dashboard)
-app/[locale]/*/         (Subsystem A/F — Booking/Public)
-messages/               (Subsystem C — i18n)
-lib/types/              (cross-cutting — types only, never standalone)
-```
-
-### Detection triggers (stop and decompose when ANY of these are true)
-
-- Task description contains more than one of: "migration", "UI", "copy/translation", "admin", "dashboard"
-- ALLOWED FILES list spans 2+ subsystem directories
-- Task requires both `supabase/migrations/` AND `app/` writes
-- Task requires both schema change AND i18n key additions
-
-### Required action when cross-subsystem detected
-
-```
-1. STOP before any file read or write.
-2. Output decomposed task list:
-
-   "This task requires decomposition into N sequential tasks:
-
-   Task 1 [Subsystem B]: [schema/migration scope] — budget: 200 lines
-   Task 2 [Subsystem E]: [admin UI scope] — budget: 250 lines
-   Task 3 [Subsystem C]: [i18n scope] — budget: 80 lines
-
-   Which task should I start with?"
-
-3. Wait for user to select a task.
-4. Output a TASK_GATE block for that specific task.
-5. Execute ONLY that task.
-6. After completion: report done, ask which task is next.
-```
-
-### What NOT to do
-
-```
-❌ Execute all sub-tasks in one session without asking
-❌ "I'll just do the schema and a quick UI update together"
-❌ Update lib/types/database.ts in an i18n task
-❌ Add i18n keys "while you're in" a migration task
-```
-
-### lib/types/database.ts rule
-
-`lib/types/database.ts` is a cross-cutting file. It is always a child of a Subsystem B task.
-- Update it ONLY as part of the migration task that adds the columns.
-- Never update it in a UI or i18n task.
-- Never update it as a standalone task.
-
----
-
-## Scope Expansion Rule
-
-If during a task you discover that the fix requires touching a file outside ALLOWED FILES:
-
-1. Stop at that point.
-2. Report what was found and why expansion is needed.
-3. Wait for explicit confirmation before expanding scope.
-
-Do NOT silently expand scope. Do NOT assume "it's just one more file."
-
----
-
-## Task Size Guideline
-
-| Change size | Example | Action |
-|-------------|---------|--------|
-| 1-3 message keys | Fix one copy issue | Proceed immediately |
-| 1-2 component files | Fix a UI bug | Proceed immediately |
-| New migration | Add/change RLS | Ask before writing |
-| New API route | Add endpoint | Ask before writing |
-| Cross-subsystem change | Touches A + B | Always ask first |
-| New npm package | Any dependency | Always ask first |
+| Subsystem | Risk | Key constraint |
+|-----------|------|----------------|
+| A — Booking / Payment | 🔴 HIGH | Read STABLE_MODULES.md before touching |
+| B — Security / RLS | 🔴 HIGH | Dedicated task + review required |
+| C — i18n / Copy | 🟡 MEDIUM | Touch only messages/* and relevant page |
+| D — Provider Dashboard | 🟢 LOW | Self-contained, provider-only routes |
+| E — Admin | 🟡 MEDIUM | Never weaken auth guards |
+| F — Public Pages | 🟢 LOW | No mutations, lowest risk |

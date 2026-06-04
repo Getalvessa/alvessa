@@ -92,10 +92,14 @@ Tasks touching 2+ subsystems have no valid budget — they must be decomposed.
 
 ```
 If task requires reading files from 2+ of:
-  supabase/migrations/  (subsystem B)
-  app/[locale]/admin/   (subsystem E)
-  messages/             (subsystem C)
-  app/[locale]/dashboard/ (subsystem D)
+  supabase/migrations/      (B — Security/Schema)
+  app/[locale]/admin/       (E — Admin)
+  app/[locale]/dashboard/   (D — Provider Dashboard)
+  app/[locale]/*            (A/F — Booking/Public routes)
+  messages/                 (C — i18n)
+  lib/types/                (cross-cutting — types only)
 
 → STOP. See docs/FEATURE_OWNERSHIP.md for decomposition.
 ```
+
+`lib/types/database.ts` may only be updated as a child step of a Subsystem B (migration) task. Never standalone. Never inside a UI or i18n task.

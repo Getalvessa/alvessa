@@ -14,7 +14,7 @@ For implementation workflows, subsystem file maps, stable module invariants, and
 - Read `docs/PROJECT_MAP.md` — subsystem file map and module status
 - Read `docs/AI_WORKFLOW.md` — task scoping, forbidden actions, output format
 - Read `docs/STABLE_MODULES.md` — what must never change accidentally
-- Use `prompts/*` templates — one template per task category
+- Use ONE `prompts/*` template per task category (see `docs/FEATURE_OWNERSHIP.md` for which template matches)
 
 Do not treat this file as the full implementation guide. Do not scan the full repo without first reading `docs/PROJECT_MAP.md`.
 
