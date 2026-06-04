@@ -2,6 +2,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { BookingActions } from './booking-actions';
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -25,6 +26,18 @@ type ProviderBooking = {
 
 async function getProviderBookings(): Promise<ProviderBooking[]> {
   const supabase = await createClient();
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return [];
+
+  const { data: provider } = await supabase
+    .from('providers')
+    .select('id')
+    .eq('profile_id', user.id)
+    .single();
+
+  if (!provider) return [];
+
   const { data } = await supabase
     .from('bookings')
     .select(
@@ -32,6 +45,7 @@ async function getProviderBookings(): Promise<ProviderBooking[]> {
        service_name_nl_snapshot, service_name_en_snapshot, address_city,
        customer:profiles!bookings_customer_id_fkey(display_name)`,
     )
+    .eq('provider_id', provider.id)
     .order('scheduled_at', { ascending: false });
 
   return (data ?? []) as unknown as ProviderBooking[];
@@ -120,6 +134,7 @@ function BookingsList({
                     </span>
                   </div>
                 </div>
+                {b.status === 'confirmed' && <BookingActions bookingId={b.id} />}
               </div>
             );
           })}

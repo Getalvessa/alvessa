@@ -30,9 +30,27 @@ export async function saveServicesAction(
     .select('id, service_id, is_active')
     .eq('provider_id', provider.id);
 
+  // Re-fetch active service IDs from DB to ignore unknown or inactive submissions
+  const { data: activeServices } = await supabase
+    .from('services')
+    .select('id')
+    .eq('is_active', true);
+
+  const activeServiceIds = new Set((activeServices ?? []).map((s) => s.id));
+
   const existingMap = new Map((existing ?? []).map((r) => [r.service_id, r]));
 
   for (const s of settings) {
+    // Ignore service IDs not present in the active services list
+    if (!activeServiceIds.has(s.serviceId)) continue;
+
+    // Validate custom price: must be null or a positive integer in cents (max €9,999.99)
+    if (s.customPriceCents !== null) {
+      if (!Number.isInteger(s.customPriceCents) || s.customPriceCents <= 0 || s.customPriceCents > 999_999) {
+        return { error: `Invalid custom price for service ${s.serviceId}` };
+      }
+    }
+
     const current = existingMap.get(s.serviceId);
 
     if (current) {

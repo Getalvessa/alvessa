@@ -376,7 +376,10 @@
       "statusCompleted": "Completed",
       "statusPaymentFailed": "Payment failed",
       "statusCancelled": "Cancelled",
-      "statusRefunded": "Refunded"
+      "statusRefunded": "Refunded",
+      "actionComplete": "Mark as completed",
+      "actionCancel": "Cancel booking",
+      "actionError": "An error occurred. Please try again."
     },
     "availability": {
       "title": "Availability",

@@ -376,7 +376,10 @@
       "statusCompleted": "Voltooid",
       "statusPaymentFailed": "Betaling mislukt",
       "statusCancelled": "Geannuleerd",
-      "statusRefunded": "Terugbetaald"
+      "statusRefunded": "Terugbetaald",
+      "actionComplete": "Markeer als voltooid",
+      "actionCancel": "Boeking annuleren",
+      "actionError": "Er is een fout opgetreden. Probeer opnieuw."
     },
     "availability": {
       "title": "Beschikbaarheid",

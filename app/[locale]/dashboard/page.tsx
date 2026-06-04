@@ -26,6 +26,17 @@ type UpcomingBooking = {
 async function getDashboardData() {
   const supabase = await createClient();
 
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { upcoming: [], monthBookingCount: 0, monthEarnings: 0 };
+
+  const { data: provider } = await supabase
+    .from('providers')
+    .select('id')
+    .eq('profile_id', user.id)
+    .single();
+
+  if (!provider) return { upcoming: [], monthBookingCount: 0, monthEarnings: 0 };
+
   const now = new Date().toISOString();
   const sevenDaysLater = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
   const monthStart = new Date(
@@ -34,7 +45,7 @@ async function getDashboardData() {
     1,
   ).toISOString();
 
-  const [{ data: upcoming }, { data: monthBookings }, { data: payments }] =
+  const [{ data: upcoming }, { data: monthBookings }, { data: allProviderBookings }] =
     await Promise.all([
       supabase
         .from('bookings')
@@ -44,6 +55,7 @@ async function getDashboardData() {
            address_city, total_cents,
            customer:profiles!bookings_customer_id_fkey(display_name)`,
         )
+        .eq('provider_id', provider.id)
         .eq('status', 'confirmed')
         .gte('scheduled_at', now)
         .lte('scheduled_at', sevenDaysLater)
@@ -51,14 +63,29 @@ async function getDashboardData() {
       supabase
         .from('bookings')
         .select('id')
+        .eq('provider_id', provider.id)
         .in('status', ['confirmed', 'completed'])
         .gte('scheduled_at', monthStart),
+      // All booking IDs for this provider — used to scope the payments query.
+      // Cannot reuse monthBookings here: a booking scheduled last month but paid
+      // this month must still count toward this month's earnings.
       supabase
+        .from('bookings')
+        .select('id')
+        .eq('provider_id', provider.id),
+    ]);
+
+  // Filter payments by created_at (payment date) not by booking scheduled_at,
+  // scoped to this provider's bookings so we never read another provider's data.
+  const allProviderBookingIds = (allProviderBookings ?? []).map((b) => b.id);
+  const { data: payments } = allProviderBookingIds.length > 0
+    ? await supabase
         .from('payments')
         .select('provider_amount_cents')
+        .in('booking_id', allProviderBookingIds)
         .eq('status', 'paid')
-        .gte('created_at', monthStart),
-    ]);
+        .gte('created_at', monthStart)
+    : { data: [] };
 
   const monthEarnings = (payments ?? []).reduce(
     (sum, p) => sum + (p.provider_amount_cents ?? 0),

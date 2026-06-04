@@ -25,27 +25,51 @@ type PaymentRow = {
 async function getEarningsData() {
   const supabase = await createClient();
 
-  const [{ data: payments }, { data: pendingBookings }] = await Promise.all([
-    supabase
-      .from('payments')
-      .select(
-        `id, created_at, provider_amount_cents,
-         booking:bookings!payments_booking_id_fkey(service_name_nl_snapshot, service_name_en_snapshot)`,
-      )
-      .eq('status', 'paid')
-      .order('created_at', { ascending: false }),
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return { payments: [], paidTotal: 0, pendingTotal: 0 };
+
+  const { data: provider } = await supabase
+    .from('providers')
+    .select('id')
+    .eq('profile_id', user.id)
+    .single();
+
+  if (!provider) return { payments: [], paidTotal: 0, pendingTotal: 0 };
+
+  // Fetch booking IDs and pending bookings for this provider in parallel
+  const [{ data: allBookings }, { data: pendingBookings }] = await Promise.all([
     supabase
       .from('bookings')
-      .select('total_cents')
+      .select('id')
+      .eq('provider_id', provider.id),
+    supabase
+      .from('bookings')
+      .select('total_cents, platform_fee_cents')
+      .eq('provider_id', provider.id)
       .eq('status', 'confirmed'),
   ]);
+
+  // Query payments through explicit booking ownership, not relying on RLS alone
+  const allBookingIds = (allBookings ?? []).map((b) => b.id);
+  const { data: payments } = allBookingIds.length > 0
+    ? await supabase
+        .from('payments')
+        .select(
+          `id, created_at, provider_amount_cents,
+           booking:bookings!payments_booking_id_fkey(service_name_nl_snapshot, service_name_en_snapshot)`,
+        )
+        .in('booking_id', allBookingIds)
+        .eq('status', 'paid')
+        .order('created_at', { ascending: false })
+    : { data: [] };
 
   const paidTotal = (payments ?? []).reduce(
     (sum, p) => sum + (p.provider_amount_cents ?? 0),
     0,
   );
+  // Pending = gross price minus platform fee (provider's expected payout, not customer total)
   const pendingTotal = (pendingBookings ?? []).reduce(
-    (sum, b) => sum + (b.total_cents ?? 0),
+    (sum, b) => sum + ((b.total_cents ?? 0) - (b.platform_fee_cents ?? 0)),
     0,
   );
 
