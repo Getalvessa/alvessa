@@ -1,5 +1,5 @@
 # ============================================================
-# Zenzo Marketplace — .gitignore
+# Alvessa Marketplace — .gitignore
 # ============================================================
 
 # --- Dependencies ---
@@ -63,6 +63,9 @@ next-env.d.ts
 
 # --- Certificates ---
 *.pem
+
+# --- Claude Code local config (tool permissions — never commit) ---
+/.claude/settings.local.json
 
 # --- Misc ---
 .turbo
