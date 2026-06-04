@@ -494,7 +494,7 @@
       "appActionReject": "Reject",
       "appApproveSuccess": "Application approved.",
       "appApproveSuccessLinked": "Provider account created.",
-      "appApproveSuccessNoUser": "Approved — no account found for this email yet.",
+      "appApproveSuccessNoUser": "No account found. Application remains pending.",
       "appRejectSuccess": "Application rejected.",
       "appActionError": "Action failed. Please try again.",
       "readinessServices": "Services",

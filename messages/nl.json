@@ -494,7 +494,7 @@
       "appActionReject": "Afwijzen",
       "appApproveSuccess": "Aanmelding goedgekeurd.",
       "appApproveSuccessLinked": "Aanbieder account aangemaakt.",
-      "appApproveSuccessNoUser": "Goedgekeurd — nog geen account gevonden voor dit e-mailadres.",
+      "appApproveSuccessNoUser": "Geen account gevonden. Aanmelding blijft open.",
       "appRejectSuccess": "Aanmelding afgewezen.",
       "appActionError": "Actie mislukt. Probeer opnieuw.",
       "readinessServices": "Diensten",

@@ -33,6 +33,14 @@ export default function ApplicationsList({ applications }: { applications: Appli
       : t('appApproveSuccessNoUser');
     setFeedback((prev) => ({ ...prev, [app.id]: msg }));
     setBusy(null);
+    if (!result.userFound) {
+      // No account registered yet — clear the message after 5 s so admin can retry.
+      setTimeout(
+        () => setFeedback((prev) => { const next = { ...prev }; delete next[app.id]; return next; }),
+        5000,
+      );
+      return;
+    }
     setTimeout(() => setDismissed((prev) => new Set(prev).add(app.id)), 1800);
   }
 

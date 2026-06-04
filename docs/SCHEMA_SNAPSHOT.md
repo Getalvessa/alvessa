@@ -149,8 +149,9 @@ id*(PK)  actor_user_id*(→auth.users)  target_type*  target_id  action*  metada
 
 Append-only. No UPDATE/DELETE policies.
 RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = actor_user_id AND is_admin()`).
-**target_type values:** `provider` | `booking` | `user`
-**action values:** `provider.approve` | `provider.deactivate` | `provider.activate` | `provider.trust_update` | `booking.complete` | `booking.cancel`
+**target_type values:** `provider` | `booking` | `user` | `application`
+**action values:** `provider.approve` | `provider.deactivate` | `provider.activate` | `provider.trust_update` | `booking.complete` | `booking.cancel` | `application.approve` | `application.reject` | `application.user_missing`
+- `application.user_missing` — admin triggered approve but no registered auth account matched the applicant email; application status remains `pending`.
 
 ---
 

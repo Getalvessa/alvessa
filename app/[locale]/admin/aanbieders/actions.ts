@@ -5,6 +5,10 @@ import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 
 const VALID_PROVIDER_STATUS = ['new', 'trusted', 'core', 'restricted', 'banned'] as const;
 type ProviderStatus = (typeof VALID_PROVIDER_STATUS)[number];
+type AdminUser = { id: string; email?: string | null };
+
+const USER_LOOKUP_PER_PAGE = 1000;
+const USER_LOOKUP_MAX_PAGES = 20;
 
 function generateSlug(fullName: string): string {
   const base = fullName
@@ -16,6 +20,33 @@ function generateSlug(fullName: string): string {
     .replace(/\s+/g, '-');
   const suffix = Math.random().toString(36).slice(2, 6);
   return `${base}-${suffix}`;
+}
+
+function normalizeEmail(email: string): string {
+  return email.trim().toLowerCase();
+}
+
+async function findAuthUserByEmail(
+  serviceRole: ReturnType<typeof createServiceRoleClient>,
+  email: string,
+): Promise<{ user: AdminUser | null; error: string | null }> {
+  const targetEmail = normalizeEmail(email);
+
+  for (let page = 1; page <= USER_LOOKUP_MAX_PAGES; page++) {
+    const { data, error } = await serviceRole.auth.admin.listUsers({
+      page,
+      perPage: USER_LOOKUP_PER_PAGE,
+    });
+
+    if (error) return { user: null, error: error.message };
+
+    const matchedUser =
+      data.users.find((user) => user.email && normalizeEmail(user.email) === targetEmail) ?? null;
+    if (matchedUser) return { user: matchedUser, error: null };
+    if (data.users.length < USER_LOOKUP_PER_PAGE) break;
+  }
+
+  return { user: null, error: null };
 }
 
 export async function approveApplicationAction(
@@ -36,23 +67,17 @@ export async function approveApplicationAction(
   if (fetchError || !app) return { error: 'Application not found', providerCreated: false, userFound: false };
   if (app.status !== 'pending') return { error: 'Application is not pending', providerCreated: false, userFound: false };
 
-  const { error: updateError } = await serviceRole
-    .from('provider_applications')
-    .update({ status: 'approved' })
-    .eq('id', applicationId);
-
-  if (updateError) return { error: updateError.message, providerCreated: false, userFound: false };
-
-  const { data: usersData } = await serviceRole.auth.admin.listUsers({ perPage: 1000 });
-  const matchedUser = usersData?.users?.find((u) => u.email === app.email) ?? null;
+  const { user: matchedUser, error: userLookupError } = await findAuthUserByEmail(serviceRole, app.email);
+  if (userLookupError) return { error: userLookupError, providerCreated: false, userFound: false };
 
   if (!matchedUser) {
+    // No registered account yet — record the lookup attempt but do NOT approve the application.
     await supabase.from('admin_audit_log').insert({
       actor_user_id: userId,
-      target_type: 'user',
+      target_type: 'application',
       target_id: applicationId,
-      action: 'application.approve',
-      metadata: { email: app.email, user_found: false },
+      action: 'application.user_missing',
+      metadata: { email: app.email },
     });
     revalidatePath('/admin/aanbieders');
     return { error: null, providerCreated: false, userFound: false };
@@ -60,13 +85,20 @@ export async function approveApplicationAction(
 
   const profileId = matchedUser.id;
 
-  await serviceRole.from('profiles').update({ is_provider: true }).eq('id', profileId);
+  const { error: profileError } = await serviceRole
+    .from('profiles')
+    .update({ is_provider: true })
+    .eq('id', profileId);
 
-  const { data: existingProvider } = await serviceRole
+  if (profileError) return { error: profileError.message, providerCreated: false, userFound: true };
+
+  const { data: existingProvider, error: providerLookupError } = await serviceRole
     .from('providers')
     .select('id')
     .eq('profile_id', profileId)
     .maybeSingle();
+
+  if (providerLookupError) return { error: providerLookupError.message, providerCreated: false, userFound: true };
 
   let providerCreated = false;
   if (!existingProvider) {
@@ -74,19 +106,30 @@ export async function approveApplicationAction(
       profile_id: profileId,
       slug: generateSlug(app.full_name),
       city: app.city,
-      service_mode: app.works_mobile ? 'mobile' : 'studio',
+      service_mode: app.works_mobile ? 'mobile_only' : 'studio_only',
       is_active: false,
       is_verified: false,
       status: 'new',
       trust_level: 0,
     });
-    if (!providerError) providerCreated = true;
-    else console.error('[approveApplication] provider insert failed:', providerError.message);
+    if (providerError) return { error: providerError.message, providerCreated: false, userFound: true };
+    providerCreated = true;
   }
+
+  // Status update first; only log approved when the transition succeeds.
+  const { error: updateError } = await serviceRole
+    .from('provider_applications')
+    .update({ status: 'approved' })
+    .eq('id', applicationId)
+    .eq('status', 'pending')
+    .select('id')
+    .single();
+
+  if (updateError) return { error: updateError.message, providerCreated, userFound: true };
 
   await supabase.from('admin_audit_log').insert({
     actor_user_id: userId,
-    target_type: 'user',
+    target_type: 'application',
     target_id: applicationId,
     action: 'application.approve',
     metadata: { email: app.email, profile_id: profileId, provider_created: providerCreated },
@@ -114,16 +157,20 @@ export async function rejectApplicationAction(
   if (fetchError || !app) return { error: 'Application not found' };
   if (app.status !== 'pending') return { error: 'Application is not pending' };
 
+  // Status update first; only log rejected when the transition succeeds.
   const { error: updateError } = await serviceRole
     .from('provider_applications')
     .update({ status: 'rejected' })
-    .eq('id', applicationId);
+    .eq('id', applicationId)
+    .eq('status', 'pending')
+    .select('id')
+    .single();
 
   if (updateError) return { error: updateError.message };
 
   await supabase.from('admin_audit_log').insert({
     actor_user_id: userId,
-    target_type: 'user',
+    target_type: 'application',
     target_id: applicationId,
     action: 'application.reject',
     metadata: { email: app.email },
@@ -255,10 +302,10 @@ export async function updateProviderTrustAction(
     actor_user_id: userId,
     target_type: 'provider',
     target_id: providerId,
-    action: 'provider.update_trust',
+    action: 'provider.trust_update',
     metadata: { status: data.status, trust_level: trustLevel },
   });
-  if (auditError) console.error('[audit] provider.update_trust failed to log:', auditError.message);
+  if (auditError) console.error('[audit] provider.trust_update failed to log:', auditError.message);
 
   revalidatePath('/admin/aanbieders');
   return { error: null };
