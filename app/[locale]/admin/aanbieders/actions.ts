@@ -52,132 +52,163 @@ async function findAuthUserByEmail(
 export async function approveApplicationAction(
   applicationId: string,
 ): Promise<{ error: string | null; providerCreated: boolean; userFound: boolean }> {
-  const ctx = await requireAdmin();
-  if (!ctx) return { error: 'Unauthorized', providerCreated: false, userFound: false };
-  const { supabase, userId } = ctx;
+  try {
+    const ctx = await requireAdmin();
+    if (!ctx) return { error: 'Unauthorized', providerCreated: false, userFound: false };
+    const { supabase, userId } = ctx;
 
-  const serviceRole = createServiceRoleClient();
+    const serviceRole = createServiceRoleClient();
 
-  const { data: app, error: fetchError } = await serviceRole
-    .from('provider_applications')
-    .select('*')
-    .eq('id', applicationId)
-    .single();
+    const { data: app, error: fetchError } = await serviceRole
+      .from('provider_applications')
+      .select('*')
+      .eq('id', applicationId)
+      .single();
 
-  if (fetchError || !app) return { error: 'Application not found', providerCreated: false, userFound: false };
-  if (app.status !== 'pending') return { error: 'Application is not pending', providerCreated: false, userFound: false };
+    if (fetchError || !app) return { error: 'Application not found', providerCreated: false, userFound: false };
+    if (app.status !== 'pending') return { error: 'Application is not pending', providerCreated: false, userFound: false };
 
-  const { user: matchedUser, error: userLookupError } = await findAuthUserByEmail(serviceRole, app.email);
-  if (userLookupError) return { error: userLookupError, providerCreated: false, userFound: false };
+    const { user: matchedUser, error: userLookupError } = await findAuthUserByEmail(serviceRole, app.email);
+    if (userLookupError) {
+      console.error('[approve] stage=user_lookup', userLookupError);
+      return { error: userLookupError, providerCreated: false, userFound: false };
+    }
 
-  if (!matchedUser) {
-    // No registered account yet — record the lookup attempt but do NOT approve the application.
-    await supabase.from('admin_audit_log').insert({
+    if (!matchedUser) {
+      // No registered account yet — record the lookup attempt but do NOT approve the application.
+      const { error: auditError } = await supabase.from('admin_audit_log').insert({
+        actor_user_id: userId,
+        target_type: 'application',
+        target_id: applicationId,
+        action: 'application.user_missing',
+        metadata: { email: app.email },
+      });
+      if (auditError) {
+        console.error('[approve] stage=audit_insert user_missing', auditError.message);
+        return { error: auditError.message, providerCreated: false, userFound: false };
+      }
+      return { error: null, providerCreated: false, userFound: false };
+    }
+
+    const profileId = matchedUser.id;
+
+    const { error: profileError } = await serviceRole
+      .from('profiles')
+      .update({ is_provider: true })
+      .eq('id', profileId);
+
+    if (profileError) {
+      console.error('[approve] stage=profile_update', profileError.message);
+      return { error: profileError.message, providerCreated: false, userFound: true };
+    }
+
+    const { data: existingProvider, error: providerLookupError } = await serviceRole
+      .from('providers')
+      .select('id')
+      .eq('profile_id', profileId)
+      .maybeSingle();
+
+    if (providerLookupError) {
+      console.error('[approve] stage=provider_lookup', providerLookupError.message);
+      return { error: providerLookupError.message, providerCreated: false, userFound: true };
+    }
+
+    let providerCreated = false;
+    if (!existingProvider) {
+      const { error: providerError } = await serviceRole.from('providers').insert({
+        profile_id: profileId,
+        slug: generateSlug(app.full_name),
+        city: app.city,
+        service_mode: app.works_mobile ? 'mobile_only' : 'studio_only',
+        is_active: false,
+        is_verified: false,
+        status: 'new',
+        trust_level: 0,
+      });
+      if (providerError) {
+        console.error('[approve] stage=provider_insert', providerError.message);
+        return { error: providerError.message, providerCreated: false, userFound: true };
+      }
+      providerCreated = true;
+    }
+
+    // Status update first; only log approved when the transition succeeds.
+    const { error: updateError } = await serviceRole
+      .from('provider_applications')
+      .update({ status: 'approved' })
+      .eq('id', applicationId)
+      .eq('status', 'pending')
+      .select('id')
+      .single();
+
+    if (updateError) {
+      console.error('[approve] stage=status_update', updateError.message);
+      return { error: updateError.message, providerCreated, userFound: true };
+    }
+
+    const { error: auditError } = await supabase.from('admin_audit_log').insert({
       actor_user_id: userId,
       target_type: 'application',
       target_id: applicationId,
-      action: 'application.user_missing',
-      metadata: { email: app.email },
+      action: 'application.approve',
+      metadata: { email: app.email, profile_id: profileId, provider_created: providerCreated },
     });
-    revalidatePath('/admin/aanbieders');
-    return { error: null, providerCreated: false, userFound: false };
+    if (auditError) console.error('[approve] stage=audit_insert', auditError.message);
+
+    return { error: null, providerCreated, userFound: true };
+  } catch (err) {
+    console.error('[approve] unexpected', err);
+    return { error: 'Unexpected server error', providerCreated: false, userFound: false };
   }
-
-  const profileId = matchedUser.id;
-
-  const { error: profileError } = await serviceRole
-    .from('profiles')
-    .update({ is_provider: true })
-    .eq('id', profileId);
-
-  if (profileError) return { error: profileError.message, providerCreated: false, userFound: true };
-
-  const { data: existingProvider, error: providerLookupError } = await serviceRole
-    .from('providers')
-    .select('id')
-    .eq('profile_id', profileId)
-    .maybeSingle();
-
-  if (providerLookupError) return { error: providerLookupError.message, providerCreated: false, userFound: true };
-
-  let providerCreated = false;
-  if (!existingProvider) {
-    const { error: providerError } = await serviceRole.from('providers').insert({
-      profile_id: profileId,
-      slug: generateSlug(app.full_name),
-      city: app.city,
-      service_mode: app.works_mobile ? 'mobile_only' : 'studio_only',
-      is_active: false,
-      is_verified: false,
-      status: 'new',
-      trust_level: 0,
-    });
-    if (providerError) return { error: providerError.message, providerCreated: false, userFound: true };
-    providerCreated = true;
-  }
-
-  // Status update first; only log approved when the transition succeeds.
-  const { error: updateError } = await serviceRole
-    .from('provider_applications')
-    .update({ status: 'approved' })
-    .eq('id', applicationId)
-    .eq('status', 'pending')
-    .select('id')
-    .single();
-
-  if (updateError) return { error: updateError.message, providerCreated, userFound: true };
-
-  await supabase.from('admin_audit_log').insert({
-    actor_user_id: userId,
-    target_type: 'application',
-    target_id: applicationId,
-    action: 'application.approve',
-    metadata: { email: app.email, profile_id: profileId, provider_created: providerCreated },
-  });
-
-  revalidatePath('/admin/aanbieders');
-  return { error: null, providerCreated, userFound: true };
 }
 
 export async function rejectApplicationAction(
   applicationId: string,
 ): Promise<{ error: string | null }> {
-  const ctx = await requireAdmin();
-  if (!ctx) return { error: 'Unauthorized' };
-  const { supabase, userId } = ctx;
+  try {
+    const ctx = await requireAdmin();
+    if (!ctx) return { error: 'Unauthorized' };
+    const { supabase, userId } = ctx;
 
-  const serviceRole = createServiceRoleClient();
+    const serviceRole = createServiceRoleClient();
 
-  const { data: app, error: fetchError } = await serviceRole
-    .from('provider_applications')
-    .select('id, status, email')
-    .eq('id', applicationId)
-    .single();
+    const { data: app, error: fetchError } = await serviceRole
+      .from('provider_applications')
+      .select('id, status, email')
+      .eq('id', applicationId)
+      .single();
 
-  if (fetchError || !app) return { error: 'Application not found' };
-  if (app.status !== 'pending') return { error: 'Application is not pending' };
+    if (fetchError || !app) return { error: 'Application not found' };
+    if (app.status !== 'pending') return { error: 'Application is not pending' };
 
-  // Status update first; only log rejected when the transition succeeds.
-  const { error: updateError } = await serviceRole
-    .from('provider_applications')
-    .update({ status: 'rejected' })
-    .eq('id', applicationId)
-    .eq('status', 'pending')
-    .select('id')
-    .single();
+    // Status update first; only log rejected when the transition succeeds.
+    const { error: updateError } = await serviceRole
+      .from('provider_applications')
+      .update({ status: 'rejected' })
+      .eq('id', applicationId)
+      .eq('status', 'pending')
+      .select('id')
+      .single();
 
-  if (updateError) return { error: updateError.message };
+    if (updateError) {
+      console.error('[reject] stage=status_update', updateError.message);
+      return { error: updateError.message };
+    }
 
-  await supabase.from('admin_audit_log').insert({
-    actor_user_id: userId,
-    target_type: 'application',
-    target_id: applicationId,
-    action: 'application.reject',
-    metadata: { email: app.email },
-  });
+    const { error: auditError } = await supabase.from('admin_audit_log').insert({
+      actor_user_id: userId,
+      target_type: 'application',
+      target_id: applicationId,
+      action: 'application.reject',
+      metadata: { email: app.email },
+    });
+    if (auditError) console.error('[reject] stage=audit_insert', auditError.message);
 
-  revalidatePath('/admin/aanbieders');
-  return { error: null };
+    return { error: null };
+  } catch (err) {
+    console.error('[reject] unexpected', err);
+    return { error: 'Unexpected server error' };
+  }
 }
 
 async function requireAdmin() {

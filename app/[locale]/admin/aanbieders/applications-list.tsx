@@ -1,12 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { approveApplicationAction, rejectApplicationAction } from './actions';
 import type { ApplicationRow } from './page';
 
 export default function ApplicationsList({ applications }: { applications: ApplicationRow[] }) {
   const t = useTranslations('admin.providers');
+  const router = useRouter();
 
   const [busy, setBusy] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState<Set<string>>(new Set());
@@ -20,41 +22,51 @@ export default function ApplicationsList({ applications }: { applications: Appli
 
   async function handleApprove(app: ApplicationRow) {
     setBusy(app.id);
-    const result = await approveApplicationAction(app.id);
-    if (result.error) {
+    try {
+      const result = await approveApplicationAction(app.id);
+      if (result.error) {
+        setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+        return;
+      }
+      const msg = result.userFound
+        ? result.providerCreated
+          ? t('appApproveSuccessLinked')
+          : t('appApproveSuccess')
+        : t('appApproveSuccessNoUser');
+      setFeedback((prev) => ({ ...prev, [app.id]: msg }));
+      if (!result.userFound) {
+        // No account registered yet — clear the message after 5 s so admin can retry.
+        setTimeout(
+          () => setFeedback((prev) => { const next = { ...prev }; delete next[app.id]; return next; }),
+          5000,
+        );
+        return;
+      }
+      setDismissed((prev) => new Set(prev).add(app.id));
+      router.refresh();
+    } catch {
       setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+    } finally {
       setBusy(null);
-      return;
     }
-    const msg = result.userFound
-      ? result.providerCreated
-        ? t('appApproveSuccessLinked')
-        : t('appApproveSuccess')
-      : t('appApproveSuccessNoUser');
-    setFeedback((prev) => ({ ...prev, [app.id]: msg }));
-    setBusy(null);
-    if (!result.userFound) {
-      // No account registered yet — clear the message after 5 s so admin can retry.
-      setTimeout(
-        () => setFeedback((prev) => { const next = { ...prev }; delete next[app.id]; return next; }),
-        5000,
-      );
-      return;
-    }
-    setTimeout(() => setDismissed((prev) => new Set(prev).add(app.id)), 1800);
   }
 
   async function handleReject(app: ApplicationRow) {
     setBusy(`reject-${app.id}`);
-    const { error } = await rejectApplicationAction(app.id);
-    if (error) {
+    try {
+      const { error } = await rejectApplicationAction(app.id);
+      if (error) {
+        setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+        return;
+      }
+      setFeedback((prev) => ({ ...prev, [app.id]: t('appRejectSuccess') }));
+      setDismissed((prev) => new Set(prev).add(app.id));
+      router.refresh();
+    } catch {
       setFeedback((prev) => ({ ...prev, [app.id]: t('appActionError') }));
+    } finally {
       setBusy(null);
-      return;
     }
-    setFeedback((prev) => ({ ...prev, [app.id]: t('appRejectSuccess') }));
-    setBusy(null);
-    setTimeout(() => setDismissed((prev) => new Set(prev).add(app.id)), 1800);
   }
 
   return (
