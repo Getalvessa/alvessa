@@ -102,7 +102,8 @@
     "reviewsEmpty": "No reviews yet for this therapist.",
     "certifications": "Certifications",
     "profileMetaTitle": "{name} — Massage therapist in Utrecht — Alvessa",
-    "profileMetaDescription": "Book an in-home massage with {name} in Utrecht. View services, rates and reviews."
+    "profileMetaDescription": "Book an in-home massage with {name} in Utrecht. View services, rates and reviews.",
+    "founderBadge": "Founding Therapist"
   },
   "howItWorks": {
     "metaTitle": "How it works — Alvessa",
@@ -171,7 +172,19 @@
     "applySuccessTitle": "Application received!",
     "applySuccessBody": "Thank you for your application. We will contact you within two working days.",
     "applyErrorEmail": "Please enter a valid email address.",
-    "applyErrorServer": "Something went wrong. Please try again later."
+    "applyErrorServer": "Something went wrong. Please try again later.",
+    "foundingTitle": "Founding Therapist Program",
+    "foundingSubtitle": "Be one of the first therapists on Alvessa and enjoy exclusive benefits.",
+    "foundingTag": "Invitation Only · Utrecht",
+    "foundingSpots": "Only 10 spots available in Utrecht.",
+    "foundingBenefit1": "0% commission for the first 3 months",
+    "foundingBenefit2": "Priority visibility at the top of the platform",
+    "foundingBenefit3": "Personal onboarding guidance",
+    "foundingBenefit4": "Founder badge on your profile",
+    "foundingBenefit5": "Early access to new features",
+    "applyFoundingTitle": "Founding Therapist Program",
+    "applyFoundingDesc": "Alvessa welcomes its first therapists in Utrecht as Founding Therapists — with exclusive benefits for early movers.",
+    "applyFoundingSpots": "Only a limited number of founding spots remain."
   },
   "faq": {
     "metaTitle": "Frequently asked questions — Alvessa",
@@ -506,7 +519,12 @@
       "readinessVerified": "Verified",
       "readinessNotVerified": "Not verified",
       "readinessActive": "Active",
-      "readinessInactive": "Inactive"
+      "readinessInactive": "Inactive",
+      "foundingLabel": "Founding Therapist",
+      "foundingSet": "Set as Founding Therapist",
+      "foundingRemove": "Remove founder status",
+      "foundingSetSuccess": "Founding Therapist status set.",
+      "foundingRemoveSuccess": "Founder status removed."
     },
     "bookings": {
       "title": "All bookings",

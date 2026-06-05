@@ -307,6 +307,38 @@ export async function activateProviderAction(
   return { error: null };
 }
 
+export async function toggleFoundingTherapistAction(
+  providerId: string,
+  isFounder: boolean,
+): Promise<{ error: string | null }> {
+  const ctx = await requireAdmin();
+  if (!ctx) return { error: 'Unauthorized' };
+  const { supabase, userId } = ctx;
+
+  const serviceRole = createServiceRoleClient();
+  const { error } = await serviceRole
+    .from('providers')
+    .update({
+      is_founding_therapist: isFounder,
+      founding_joined_at: isFounder ? new Date().toISOString() : null,
+    })
+    .eq('id', providerId);
+
+  if (error) return { error: error.message };
+
+  const { error: auditError } = await supabase.from('admin_audit_log').insert({
+    actor_user_id: userId,
+    target_type: 'provider',
+    target_id: providerId,
+    action: isFounder ? 'provider.founding_set' : 'provider.founding_removed',
+    metadata: { is_founding_therapist: isFounder },
+  });
+  if (auditError) console.error('[audit] founding toggle failed to log:', auditError.message);
+
+  revalidatePath('/admin/aanbieders');
+  return { error: null };
+}
+
 export async function updateProviderTrustAction(
   providerId: string,
   data: { status: ProviderStatus; trust_level: number; internal_notes: string | null },

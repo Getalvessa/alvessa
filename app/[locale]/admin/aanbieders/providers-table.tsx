@@ -7,6 +7,7 @@ import {
   deactivateProviderAction,
   activateProviderAction,
   updateProviderTrustAction,
+  toggleFoundingTherapistAction,
 } from './actions';
 import type { ProviderRow } from './page';
 
@@ -113,6 +114,11 @@ export default function ProvidersTable({ providers }: { providers: ProviderRow[]
                 >
                   {t(`trustStatus${p.status.charAt(0).toUpperCase()}${p.status.slice(1)}` as Parameters<typeof t>[0])}
                 </span>
+                {p.is_founding_therapist && (
+                  <span className="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-900/30 dark:text-amber-400">
+                    ★ {t('foundingLabel')}
+                  </span>
+                )}
               </div>
             </div>
 
@@ -278,6 +284,35 @@ export default function ProvidersTable({ providers }: { providers: ProviderRow[]
               >
                 {t('actionSaveTrust')}
               </button>
+              {p.is_founding_therapist ? (
+                <button
+                  disabled={isBusy}
+                  onClick={() =>
+                    handleAction(
+                      p.id,
+                      (id) => toggleFoundingTherapistAction(id, false),
+                      t('foundingRemoveSuccess'),
+                    )
+                  }
+                  className="rounded-lg border border-amber-300 px-3 py-1.5 text-xs font-medium text-amber-700 hover:bg-amber-50 dark:border-amber-700 dark:text-amber-400 dark:hover:bg-amber-900/20 disabled:opacity-50"
+                >
+                  ★ {t('foundingRemove')}
+                </button>
+              ) : (
+                <button
+                  disabled={isBusy}
+                  onClick={() =>
+                    handleAction(
+                      p.id,
+                      (id) => toggleFoundingTherapistAction(id, true),
+                      t('foundingSetSuccess'),
+                    )
+                  }
+                  className="rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted disabled:opacity-50"
+                >
+                  {t('foundingSet')}
+                </button>
+              )}
 
               <div className="ml-auto flex gap-3">
                 {feedback[p.id] && (

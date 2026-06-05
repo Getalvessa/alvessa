@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { ArrowLeft, MapPin, Star, Building2, Home, Shuffle } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Building2, Home, Shuffle, Award } from 'lucide-react';
 import type { ServiceMode } from '@/lib/types/service-mode';
 import { createClient } from '@/lib/supabase/server';
 import { buildMetadata, SITE_URL } from '@/lib/metadata';
@@ -46,6 +46,7 @@ type ProviderDetail = {
   total_reviews: number;
   service_area_km: number;
   certifications: unknown;
+  is_founding_therapist: boolean;
   service_mode: ServiceMode | null;
   mobile_radius_km: number | null;
   mobile_travel_fee_cents: number | null;
@@ -65,6 +66,7 @@ async function getProvider(slug: string): Promise<ProviderDetail | null> {
     .from('providers')
     .select(`
       id, slug, bio, city, avg_rating, total_reviews, service_area_km, certifications,
+      is_founding_therapist,
       service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
       studio_city, studio_postcode, studio_notes,
       profiles ( display_name, avatar_url ),
@@ -347,6 +349,13 @@ function ProviderHeader({ provider }: { provider: ProviderDetail }) {
         <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
           {displayName}
         </h1>
+
+        {provider.is_founding_therapist && (
+          <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-400">
+            <Award className="h-3 w-3" />
+            {t('founderBadge')}
+          </div>
+        )}
 
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">

@@ -37,6 +37,8 @@ type RawProvider = {
   city: string;
   is_verified: boolean;
   is_active: boolean;
+  is_founding_therapist: boolean;
+  founding_joined_at: string | null;
   status: ProviderStatus;
   trust_level: number;
   referred_by_provider_id: string | null;
@@ -84,7 +86,7 @@ async function getAllProviders(): Promise<ProviderRow[]> {
     serviceRole
       .from('providers')
       .select(
-        'id, slug, city, is_verified, is_active, status, trust_level, referred_by_provider_id, internal_notes, profile:profiles!providers_profile_id_fkey(display_name)',
+        'id, slug, city, is_verified, is_active, is_founding_therapist, founding_joined_at, status, trust_level, referred_by_provider_id, internal_notes, profile:profiles!providers_profile_id_fkey(display_name)',
       )
       .order('created_at', { ascending: false }),
 

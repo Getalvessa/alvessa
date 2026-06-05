@@ -473,7 +473,9 @@ export type Database = {
           id: string
           internal_notes: string | null
           internal_score: number
+          founding_joined_at: string | null
           is_active: boolean
+          is_founding_therapist: boolean
           is_verified: boolean
           mobile_notes: string | null
           mobile_radius_km: number | null
@@ -500,10 +502,12 @@ export type Database = {
           certifications?: Json
           city?: string
           created_at?: string
+          founding_joined_at?: string | null
           id?: string
           internal_notes?: string | null
           internal_score?: number
           is_active?: boolean
+          is_founding_therapist?: boolean
           is_verified?: boolean
           mobile_notes?: string | null
           mobile_radius_km?: number | null
@@ -530,10 +534,12 @@ export type Database = {
           certifications?: Json
           city?: string
           created_at?: string
+          founding_joined_at?: string | null
           id?: string
           internal_notes?: string | null
           internal_score?: number
           is_active?: boolean
+          is_founding_therapist?: boolean
           is_verified?: boolean
           mobile_notes?: string | null
           mobile_radius_km?: number | null

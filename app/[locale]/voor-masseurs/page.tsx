@@ -1,7 +1,7 @@
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
-import { Clock, FileText, Banknote, CheckCircle } from 'lucide-react';
+import { Clock, FileText, Banknote, CheckCircle, Award } from 'lucide-react';
 import { buildMetadata } from '@/lib/metadata';
 import { Link } from '@/i18n/navigation';
 
@@ -19,6 +19,7 @@ export default async function ForProvidersPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <PageHeader />
+      <FoundingTherapistSection />
       <BenefitsSection />
       <RequirementsSection />
       <HowToApplySection />
@@ -36,6 +37,41 @@ function PageHeader() {
       </h1>
       <p className="mt-4 text-lg text-muted-foreground">{t('pageSubtitle')}</p>
     </div>
+  );
+}
+
+function FoundingTherapistSection() {
+  const t = useTranslations('forProviders');
+  const benefits = [
+    'foundingBenefit1',
+    'foundingBenefit2',
+    'foundingBenefit3',
+    'foundingBenefit4',
+    'foundingBenefit5',
+  ] as const;
+
+  return (
+    <section className="mb-12 rounded-2xl border border-amber-200 bg-amber-50 px-6 py-8 dark:border-amber-700/40 dark:bg-amber-900/10">
+      <div className="mb-1 flex items-center gap-2">
+        <span className="inline-flex items-center gap-1 rounded-full border border-amber-300 bg-white px-2.5 py-0.5 text-xs font-semibold text-amber-800 dark:border-amber-700 dark:bg-transparent dark:text-amber-400">
+          <Award className="h-3 w-3" />
+          {t('foundingTag')}
+        </span>
+      </div>
+      <h2 className="mt-3 text-xl font-bold text-foreground">{t('foundingTitle')}</h2>
+      <p className="mt-1 text-sm text-muted-foreground">{t('foundingSubtitle')}</p>
+      <ul className="mt-5 space-y-2">
+        {benefits.map((key) => (
+          <li key={key} className="flex items-start gap-2 text-sm text-foreground">
+            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-amber-600 dark:text-amber-400" />
+            {t(key)}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-5 text-xs font-medium text-amber-700 dark:text-amber-400">
+        {t('foundingSpots')}
+      </p>
+    </section>
   );
 }
 

@@ -102,7 +102,8 @@
     "reviewsEmpty": "Er zijn nog geen beoordelingen voor deze therapeut.",
     "certifications": "Certificeringen",
     "profileMetaTitle": "{name} — Massagetherapeut in Utrecht — Alvessa",
-    "profileMetaDescription": "Boek een massage aan huis bij {name} in Utrecht. Bekijk diensten, tarieven en beoordelingen."
+    "profileMetaDescription": "Boek een massage aan huis bij {name} in Utrecht. Bekijk diensten, tarieven en beoordelingen.",
+    "founderBadge": "Founding Therapeut"
   },
   "howItWorks": {
     "metaTitle": "Hoe het werkt — Alvessa",
@@ -171,7 +172,19 @@
     "applySuccessTitle": "Aanmelding ontvangen!",
     "applySuccessBody": "Bedankt voor je aanmelding. We nemen binnen twee werkdagen contact met je op.",
     "applyErrorEmail": "Voer een geldig e-mailadres in.",
-    "applyErrorServer": "Er is iets misgegaan. Probeer het later opnieuw."
+    "applyErrorServer": "Er is iets misgegaan. Probeer het later opnieuw.",
+    "foundingTitle": "Founding Therapist Program",
+    "foundingSubtitle": "Word een van de eerste therapeuten op Alvessa en profiteer van exclusieve voordelen.",
+    "foundingTag": "Invitation Only · Utrecht",
+    "foundingSpots": "Slechts 10 plekken beschikbaar in Utrecht.",
+    "foundingBenefit1": "0% commissie de eerste 3 maanden",
+    "foundingBenefit2": "Prioritaire zichtbaarheid bovenaan het platform",
+    "foundingBenefit3": "Persoonlijke onboarding begeleiding",
+    "foundingBenefit4": "Founder badge op jouw profiel",
+    "foundingBenefit5": "Vroeg toegang tot nieuwe functies",
+    "applyFoundingTitle": "Founding Therapist Program",
+    "applyFoundingDesc": "Alvessa verwelkomt de eerste therapeuten in Utrecht als Founding Therapist — met exclusieve voordelen voor vroege starters.",
+    "applyFoundingSpots": "Er zijn nog maar een beperkt aantal Founding spots beschikbaar."
   },
   "faq": {
     "metaTitle": "Veelgestelde vragen — Alvessa",
@@ -506,7 +519,12 @@
       "readinessVerified": "Geverifieerd",
       "readinessNotVerified": "Niet geverifieerd",
       "readinessActive": "Actief",
-      "readinessInactive": "Inactief"
+      "readinessInactive": "Inactief",
+      "foundingLabel": "Founding Therapist",
+      "foundingSet": "Instellen als Founding Therapist",
+      "foundingRemove": "Founder status verwijderen",
+      "foundingSetSuccess": "Founding Therapist status ingesteld.",
+      "foundingRemoveSuccess": "Founder status verwijderd."
     },
     "bookings": {
       "title": "Alle boekingen",
