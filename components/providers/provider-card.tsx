@@ -1,7 +1,7 @@
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
-import { Star, MapPin } from 'lucide-react';
+import { Star, MapPin, Award } from 'lucide-react';
 import type { ServiceMode } from '@/lib/types/service-mode';
 
 type ProviderService = {
@@ -19,6 +19,7 @@ export type ProviderCardData = {
   total_reviews: number;
   service_area_km: number;
   service_mode: ServiceMode | null;
+  is_founding_therapist: boolean;
   profiles: { display_name: string; avatar_url: string | null } | null;
   provider_services: ProviderService[];
 };
@@ -100,8 +101,14 @@ export function ProviderCard({ provider }: { provider: ProviderCardData }) {
           </div>
 
           {/* Service mode badge */}
-          <div className="mt-1.5">
+          <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
             <ServiceModeBadge mode={provider.service_mode} />
+            {provider.is_founding_therapist && (
+              <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2 py-0.5 text-xs font-medium text-amber-800 dark:border-amber-700/50 dark:bg-amber-900/20 dark:text-amber-400">
+                <Award className="h-3 w-3" />
+                {t('founderBadge')}
+              </span>
+            )}
           </div>
 
           {/* Rating */}

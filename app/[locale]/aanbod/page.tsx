@@ -39,6 +39,7 @@ async function getProviders(mode: FilterMode): Promise<ProviderCardData[]> {
       total_reviews,
       service_area_km,
       service_mode,
+      is_founding_therapist,
       profiles ( display_name, avatar_url ),
       provider_services ( custom_price_cents, is_active, services ( base_price_cents ) )
     `)

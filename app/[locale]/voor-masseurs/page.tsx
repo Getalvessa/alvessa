@@ -71,6 +71,12 @@ function FoundingTherapistSection() {
       <p className="mt-5 text-xs font-medium text-amber-700 dark:text-amber-400">
         {t('foundingSpots')}
       </p>
+      <Link
+        href="/voor-masseurs/aanmelden"
+        className="mt-5 inline-flex h-10 items-center justify-center rounded-lg bg-amber-600 px-6 text-sm font-semibold text-white transition-colors hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+      >
+        {t('ctaApplyButton')}
+      </Link>
     </section>
   );
 }
