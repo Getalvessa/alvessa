@@ -3,6 +3,15 @@
 import { headers } from 'next/headers';
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { createStripeClient } from '@/lib/stripe';
+import type { ServiceMode, AppointmentType } from '@/lib/types/service-mode';
+
+const ALLOWED_APPOINTMENT_TYPES: Record<ServiceMode, AppointmentType[]> = {
+  studio_only: ['in_studio'],
+  mobile_only: ['at_home'],
+  hybrid:      ['in_studio', 'at_home'],
+};
+
+const PUBLIC_PROVIDER_STATUSES = ['new', 'trusted', 'core'] as const;
 
 export type BookingState = {
   error: string | null;
@@ -61,7 +70,7 @@ export async function createBooking(
   // 2. Fetch authoritative provider data to verify active + verified status
   const { data: provider, error: providerError } = await supabase
     .from('providers')
-    .select('id, slug, is_active, is_verified, profiles ( display_name )')
+    .select('id, slug, is_active, is_verified, status, service_mode, profiles ( display_name )')
     .eq('id', ps.provider_id)
     .single();
 
@@ -70,6 +79,15 @@ export async function createBooking(
     return { error: 'errorGeneric' };
   }
   if (!provider.is_active || !provider.is_verified) return { error: 'errorGeneric' };
+  if (!PUBLIC_PROVIDER_STATUSES.includes(provider.status as typeof PUBLIC_PROVIDER_STATUSES[number])) {
+    return { error: 'errorGeneric' };
+  }
+
+  // Reject appointment types the provider's service_mode does not support
+  // (the booking UI only offers valid choices, but this is the authoritative check)
+  if (!ALLOWED_APPOINTMENT_TYPES[provider.service_mode as ServiceMode]?.includes(appointmentType as AppointmentType)) {
+    return { error: 'errorGeneric' };
+  }
 
   // All financial and snapshot values come exclusively from the database
   const priceCents          = ps.custom_price_cents ?? ps.services.base_price_cents;

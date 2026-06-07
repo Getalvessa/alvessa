@@ -44,7 +44,8 @@ async function getProviders(mode: FilterMode): Promise<ProviderCardData[]> {
       provider_services ( custom_price_cents, is_active, services ( base_price_cents ) )
     `)
     .eq('is_active', true)
-    .eq('is_verified', true);
+    .eq('is_verified', true)
+    .in('status', ['new', 'trusted', 'core']);
 
   if (mode === 'studio') {
     query = query.in('service_mode', ['studio_only', 'hybrid']);

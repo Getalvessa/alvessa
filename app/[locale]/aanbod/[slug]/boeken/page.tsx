@@ -39,6 +39,7 @@ async function getProviderForBooking(slug: string) {
     .eq('slug', slug)
     .eq('is_active', true)
     .eq('is_verified', true)
+    .in('status', ['new', 'trusted', 'core'])
     .single();
 
   if (!data) return null;

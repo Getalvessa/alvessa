@@ -206,6 +206,33 @@ export async function POST(request: NextRequest) {
         error: emailSetupErr instanceof Error ? emailSetupErr.message : 'unknown',
       });
     }
+  } else if (event.type === 'checkout.session.expired') {
+    const session  = event.data.object as Stripe.Checkout.Session;
+    const bookingId = session.metadata?.booking_id;
+
+    if (!bookingId) {
+      console.warn('[webhook] checkout.session.expired: missing booking_id in metadata', { stripe_event_id: event.id });
+      return NextResponse.json({ received: true });
+    }
+
+    const supabase = createServiceRoleClient();
+
+    // Only update bookings still in pending_payment — this makes the update idempotent.
+    // A booking already in payment_failed, confirmed, or cancelled is left untouched.
+    const { error: expiredError } = await supabase
+      .from('bookings')
+      .update({ status: 'payment_failed' })
+      .eq('id', bookingId)
+      .eq('status', 'pending_payment');
+
+    if (expiredError) {
+      console.error('[webhook] checkout.session.expired: failed to update booking:', {
+        booking_id:     bookingId,
+        stripe_event_id: event.id,
+        error:          expiredError.message,
+      });
+      return NextResponse.json({ error: 'DB update failed' }, { status: 500 });
+    }
   }
 
   return NextResponse.json({ received: true });

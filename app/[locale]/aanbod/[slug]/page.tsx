@@ -44,7 +44,6 @@ type ProviderDetail = {
   city: string;
   avg_rating: number | null;
   total_reviews: number;
-  service_area_km: number;
   certifications: unknown;
   is_founding_therapist: boolean;
   service_mode: ServiceMode | null;
@@ -65,7 +64,7 @@ async function getProvider(slug: string): Promise<ProviderDetail | null> {
   const { data, error } = await supabase
     .from('providers')
     .select(`
-      id, slug, bio, city, avg_rating, total_reviews, service_area_km, certifications,
+      id, slug, bio, city, avg_rating, total_reviews, certifications,
       is_founding_therapist,
       service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
       studio_city, studio_postcode, studio_notes,
@@ -78,6 +77,7 @@ async function getProvider(slug: string): Promise<ProviderDetail | null> {
     .eq('slug', slug)
     .eq('is_active', true)
     .eq('is_verified', true)
+    .in('status', ['new', 'trusted', 'core'])
     .single();
 
   if (error || !data) return null;
@@ -238,6 +238,14 @@ export default async function ProviderProfilePage({ params }: Props) {
   );
 }
 
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function getPublicRadiusKm(provider: ProviderDetail): number | null {
+  const supportsHomeService =
+    provider.service_mode === 'mobile_only' || provider.service_mode === 'hybrid';
+  return supportsHomeService ? provider.mobile_radius_km : null;
+}
+
 // ── Sections ─────────────────────────────────────────────────────────────────
 
 function ServiceModeSection({ provider }: { provider: ProviderDetail }) {
@@ -325,6 +333,7 @@ function ProviderHeader({ provider }: { provider: ProviderDetail }) {
     .join('')
     .slice(0, 2)
     .toUpperCase();
+  const radiusKm = getPublicRadiusKm(provider);
 
   return (
     <div className="flex flex-col gap-5 sm:flex-row sm:items-start">
@@ -360,7 +369,8 @@ function ProviderHeader({ provider }: { provider: ProviderDetail }) {
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5" />
-            {provider.city} · {t('serviceArea', { km: provider.service_area_km })}
+            {provider.city}
+            {radiusKm != null && <> · {t('serviceArea', { km: radiusKm })}</>}
           </span>
 
           {provider.avg_rating !== null ? (
@@ -521,6 +531,7 @@ function BookingCta({ provider }: { provider: ProviderDetail }) {
   const t = useTranslations('providers');
   const tCommon = useTranslations('common');
   const displayName = provider.profiles?.display_name ?? provider.slug;
+  const radiusKm = getPublicRadiusKm(provider);
 
   return (
     <div className="sticky top-24 rounded-xl border border-border p-5">
@@ -548,7 +559,8 @@ function BookingCta({ provider }: { provider: ProviderDetail }) {
       </Link>
 
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        {provider.city} · {t('serviceArea', { km: provider.service_area_km })}
+        {provider.city}
+        {radiusKm != null && <> · {t('serviceArea', { km: radiusKm })}</>}
       </p>
     </div>
   );
