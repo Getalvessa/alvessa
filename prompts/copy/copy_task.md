@@ -75,16 +75,16 @@ Every piece of copy must pass this filter:
 - Medical → wellness: "can help relax", "may support recovery", "kan bijdragen aan ontspanning"
 - Absolute → qualified: "many hotels", "veel hotels"; "as soon as possible", "zo snel mogelijk"
 - Injury → qualified: "can help reduce muscle soreness", "kan bijdragen aan spierherstel"
-- Cancellation (no self-service UI): direct to hallo@alvessa.nl — do not imply self-service
+- Cancellation (no self-service UI): direct to hello@alvessa.nl — do not imply self-service
 
 ---
 
 ## Cancellation Copy Rule
 
 There is currently no self-service cancellation UI. Any copy about cancellation must:
-- Direct users to: `hallo@alvessa.nl`
+- Direct users to: `hello@alvessa.nl`
 - Not imply automatic or self-service cancellation
-- Example (NL): "Neem contact op via hallo@alvessa.nl om te annuleren."
+- Example (NL): "Neem contact op via hello@alvessa.nl om te annuleren."
 - Example (EN): "Please contact us at hello@alvessa.nl to cancel."
 
 ---
@@ -140,7 +140,7 @@ BRAND VOICE CHECK:
 - [ ] No medical effect claims
 - [ ] No absolute trust claims
 - [ ] No absolute coverage claims ("all hotels" etc.)
-- [ ] Cancellation directs to hallo@alvessa.nl
+- [ ] Cancellation directs to hello@alvessa.nl
 - [ ] GDPR wording accurate
 - [ ] Dutch spelling correct
 

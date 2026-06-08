@@ -138,5 +138,5 @@ Full migration list: `supabase/migrations/` (18 files, chronological)
 | Provider trust network | ✅ Stable | status/trust_level/referral tracking (migration 016) |
 | i18n (NL + EN) | ✅ Stable | next-intl, all strings in messages/ |
 | SEO pages | ✅ Stable | 4 landing pages + JSON-LD |
-| Self-service cancellation | ❌ Not built | Copy directs to hallo@alvessa.nl |
+| Self-service cancellation | ❌ Not built | Copy directs to hello@alvessa.nl |
 | Timezone (winter CET) | ⚠️ Phase 8 | TZ_OFFSET_H=2 hardcoded (CEST only) |

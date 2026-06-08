@@ -25,7 +25,7 @@ const LOCAL_BUSINESS_SCHEMA = {
   name: 'Alvessa',
   description: 'Premium massage aan huis in Utrecht — gecertificeerde masseurs die naar jou toe komen.',
   url: SITE_URL,
-  email: 'hallo@alvessa.nl',
+  email: 'hello@alvessa.nl',
   image: `${SITE_URL}/og`,
   address: {
     '@type': 'PostalAddress',
