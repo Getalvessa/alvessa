@@ -22,6 +22,7 @@ export type ApplicationRow = {
   phone: string;
   city: string;
   service_types: string;
+  service_mode: 'studio_only' | 'mobile_only' | 'hybrid' | null;
   works_mobile: boolean;
   service_area: string | null;
   experience_years: number | null;

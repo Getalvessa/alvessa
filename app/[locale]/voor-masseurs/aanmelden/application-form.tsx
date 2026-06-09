@@ -131,19 +131,45 @@ export default function ApplicationForm() {
         />
       </div>
 
-      <div className="flex items-center gap-3">
-        <input
-          id="works_mobile"
-          name="works_mobile"
-          type="checkbox"
-          value="true"
-          defaultChecked
-          className="h-4 w-4 rounded border-input accent-foreground"
-        />
-        <label htmlFor="works_mobile" className="text-sm text-foreground">
-          {t('applyLabelMobile')}
-        </label>
-      </div>
+      <fieldset>
+        <legend className="block text-sm font-medium text-foreground">
+          {t('applyLabelServiceMode')} <span className="text-destructive">*</span>
+        </legend>
+        <div className="mt-2 space-y-2">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="service_mode"
+              value="studio_only"
+              required
+              className="h-4 w-4 border-input accent-foreground"
+            />
+            <span className="text-sm text-foreground">{t('applyServiceModeStudio')}</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="service_mode"
+              value="mobile_only"
+              defaultChecked
+              required
+              className="h-4 w-4 border-input accent-foreground"
+            />
+            <span className="text-sm text-foreground">{t('applyServiceModeMobile')}</span>
+          </label>
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="radio"
+              name="service_mode"
+              value="hybrid"
+              required
+              className="h-4 w-4 border-input accent-foreground"
+            />
+            <span className="text-sm text-foreground">{t('applyServiceModeHybrid')}</span>
+          </label>
+        </div>
+        <p className="mt-2 text-xs text-muted-foreground">{t('applyServiceModeHelper')}</p>
+      </fieldset>
 
       <div>
         <label htmlFor="service_area" className="block text-sm font-medium text-foreground">

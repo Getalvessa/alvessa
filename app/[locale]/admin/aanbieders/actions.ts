@@ -119,7 +119,9 @@ export async function approveApplicationAction(
         profile_id: profileId,
         slug: generateSlug(app.full_name),
         city: app.city,
-        service_mode: app.works_mobile ? 'mobile_only' : 'studio_only',
+        // Prefer service_mode (set by migration backfill + new submissions).
+        // Fall back to works_mobile derivation for any row that predates migration 020.
+        service_mode: app.service_mode ?? (app.works_mobile ? 'mobile_only' : 'studio_only'),
         is_active: false,
         is_verified: false,
         status: 'new',

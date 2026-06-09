@@ -2,7 +2,7 @@
 READ THIS INSTEAD OF MIGRATION HISTORY.
 Do NOT scan supabase/migrations/ to understand table structure.
 This file is the current schema source of truth.
-Last sync: migration 019 (2026-05-27). Update after every migration.
+Last sync: migration 020 (2026-06-10). Update after every migration.
 ---
 
 # Schema Snapshot — Alvessa Marketplace
@@ -159,11 +159,21 @@ RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = a
 
 ```
 id*(PK)  full_name*  email*  phone*  city*(DEFAULT 'Utrecht')
-service_types*  works_mobile*(DEFAULT true)
+service_types*
+service_mode  [nullable, CHECK IN ('studio_only','mobile_only','hybrid')]  ← Phase 1: no NOT NULL, no DEFAULT
+works_mobile*(DEFAULT true)  ← legacy compatibility column; kept until Phase 2 cleanup
 service_area  experience_years(0–80)  instagram_or_website  message
 status*(DEFAULT 'pending', CHECK IN ('pending','approved','rejected'))
 created_at*
 ```
+
+**service_mode** added in migration 020 (2026-06-10) — expand/contract Phase 1.
+- **Nullable in Phase 1.** No NOT NULL constraint. No DEFAULT. Rows inserted by old code
+  during the deploy window will have `service_mode = NULL` and `works_mobile` set correctly.
+- Backfilled for all rows existing at migration time: `works_mobile=true` → `mobile_only`,
+  `works_mobile=false` → `studio_only`.
+- Application layer falls back to `works_mobile` when `service_mode IS NULL`.
+- Phase 2 (separate future migration): set NOT NULL, set DEFAULT, drop `works_mobile`.
 
 Anonymous INSERT allowed (`status='pending'` enforced by RLS).
 Admin SELECT only (`public.is_admin()`). No UPDATE/DELETE policies — manage via Dashboard.

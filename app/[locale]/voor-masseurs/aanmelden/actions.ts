@@ -15,7 +15,15 @@ export async function submitProviderApplicationAction(
   const phone                = formData.get('phone')?.toString().trim() ?? '';
   const city                 = formData.get('city')?.toString().trim() || 'Utrecht';
   const service_types        = formData.get('service_types')?.toString().trim() ?? '';
-  const works_mobile         = formData.get('works_mobile') === 'true';
+  const service_mode_raw     = formData.get('service_mode')?.toString().trim() ?? '';
+  const VALID_MODES          = ['studio_only', 'mobile_only', 'hybrid'] as const;
+  type ServiceMode = (typeof VALID_MODES)[number];
+  const service_mode: ServiceMode = (VALID_MODES as readonly string[]).includes(service_mode_raw)
+    ? (service_mode_raw as ServiceMode)
+    : 'mobile_only';
+  // Legacy mirror: keep works_mobile in sync so old read paths still work
+  // during the expand phase (before works_mobile is dropped in Phase 2).
+  const works_mobile         = service_mode !== 'studio_only';
   const service_area         = formData.get('service_area')?.toString().trim() || null;
   const experience_years_raw = formData.get('experience_years')?.toString().trim();
   const experience_years     = experience_years_raw
@@ -37,6 +45,7 @@ export async function submitProviderApplicationAction(
     phone,
     city,
     service_types,
+    service_mode,
     works_mobile,
     service_area,
     experience_years,

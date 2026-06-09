@@ -8,6 +8,17 @@ import { approveApplicationAction, rejectApplicationAction } from './actions';
 import type { ApplicationRow } from './page';
 
 type FeedbackEntry = { message: string; showDashboardLink?: boolean };
+type ServiceModeKey = 'appServiceModeStudio' | 'appServiceModeMobile' | 'appServiceModeHybrid';
+
+function serviceModeKey(
+  mode: 'studio_only' | 'mobile_only' | 'hybrid' | null,
+  worksMobile: boolean,
+): ServiceModeKey {
+  const effective = mode ?? (worksMobile ? 'mobile_only' : 'studio_only');
+  if (effective === 'studio_only') return 'appServiceModeStudio';
+  if (effective === 'hybrid') return 'appServiceModeHybrid';
+  return 'appServiceModeMobile';
+}
 
 export default function ApplicationsList({ applications }: { applications: ApplicationRow[] }) {
   const t = useTranslations('admin.providers');
@@ -85,6 +96,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColPhone')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColCity')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColServices')}</th>
+            <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColServiceMode')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColExperience')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColDate')}</th>
             <th className="px-4 py-3 text-left font-medium text-muted-foreground">{t('appColActions')}</th>
@@ -104,6 +116,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
                 <td className="px-4 py-3 text-foreground">{app.phone}</td>
                 <td className="px-4 py-3 text-foreground">{app.city}</td>
                 <td className="max-w-[180px] truncate px-4 py-3 text-foreground">{app.service_types}</td>
+                <td className="px-4 py-3 text-foreground">{t(serviceModeKey(app.service_mode, app.works_mobile))}</td>
                 <td className="px-4 py-3 text-foreground">{app.experience_years ?? '—'}</td>
                 <td className="px-4 py-3 text-muted-foreground">
                   {new Date(app.created_at).toLocaleDateString('nl-NL', {

@@ -80,6 +80,11 @@ export type Database = {
           phone: string
           city: string
           service_types: string
+          // Nullable in both DB and TS during Phase 1 (migration 020).
+          // No NOT NULL and no DEFAULT in the DB until Phase 2 cleanup migration.
+          // Rows written by old code during the deploy window have service_mode = NULL;
+          // the application layer falls back to works_mobile in that case.
+          service_mode: 'studio_only' | 'mobile_only' | 'hybrid' | null
           works_mobile: boolean
           service_area: string | null
           experience_years: number | null
@@ -95,6 +100,7 @@ export type Database = {
           phone: string
           city?: string
           service_types: string
+          service_mode?: 'studio_only' | 'mobile_only' | 'hybrid'
           works_mobile?: boolean
           service_area?: string | null
           experience_years?: number | null
@@ -110,6 +116,7 @@ export type Database = {
           phone?: string
           city?: string
           service_types?: string
+          service_mode?: 'studio_only' | 'mobile_only' | 'hybrid'
           works_mobile?: boolean
           service_area?: string | null
           experience_years?: number | null
