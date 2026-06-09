@@ -2,6 +2,7 @@
 
 import { headers } from 'next/headers';
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
+import { PUBLIC_PROVIDER_STATUSES } from '@/lib/providers/public';
 import { createStripeClient } from '@/lib/stripe';
 import type { ServiceMode, AppointmentType } from '@/lib/types/service-mode';
 
@@ -11,7 +12,6 @@ const ALLOWED_APPOINTMENT_TYPES: Record<ServiceMode, AppointmentType[]> = {
   hybrid:      ['in_studio', 'at_home'],
 };
 
-const PUBLIC_PROVIDER_STATUSES = ['new', 'trusted', 'core'] as const;
 
 export type BookingState = {
   error: string | null;
@@ -67,8 +67,10 @@ export async function createBooking(
   }
   if (!ps.is_active || !ps.services) return { error: 'errorGeneric' };
 
-  // 2. Fetch authoritative provider data to verify active + verified status
-  const { data: provider, error: providerError } = await supabase
+  // 2. Fetch authoritative provider data via service role — status is an internal
+  //    field not granted to anon/authenticated (migration 021); service role is
+  //    required here so we can check it without re-exposing it to the client.
+  const { data: provider, error: providerError } = await createServiceRoleClient()
     .from('providers')
     .select('id, slug, is_active, is_verified, status, service_mode, profiles ( display_name )')
     .eq('id', ps.provider_id)

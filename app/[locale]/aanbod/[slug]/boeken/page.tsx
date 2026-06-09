@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { createClient } from '@/lib/supabase/server';
+import { fetchProviderForBooking } from '@/lib/providers/public';
 import { BookingFlow } from './booking-flow';
 import type { ServiceMode } from '@/lib/types/service-mode';
 
@@ -24,24 +24,7 @@ type Service = {
 };
 
 async function getProviderForBooking(slug: string) {
-  const supabase = await createClient();
-  const { data } = await supabase
-    .from('providers')
-    .select(`
-      id, slug, city,
-      service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
-      studio_city, studio_postcode, studio_notes,
-      profiles ( display_name ),
-      provider_services ( id, custom_price_cents, is_active,
-        services ( id, name_nl, name_en, duration_minutes, base_price_cents )
-      )
-    `)
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .eq('is_verified', true)
-    .in('status', ['new', 'trusted', 'core'])
-    .single();
-
+  const data = await fetchProviderForBooking(slug);
   if (!data) return null;
 
   return {

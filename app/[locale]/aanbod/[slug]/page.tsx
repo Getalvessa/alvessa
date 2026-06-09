@@ -7,6 +7,7 @@ import { Link } from '@/i18n/navigation';
 import { ArrowLeft, MapPin, Star, Building2, Home, Shuffle, Award } from 'lucide-react';
 import type { ServiceMode } from '@/lib/types/service-mode';
 import { createClient } from '@/lib/supabase/server';
+import { fetchPublicProviderBySlug } from '@/lib/providers/public';
 import { buildMetadata, SITE_URL } from '@/lib/metadata';
 import { JsonLd } from '@/components/seo/json-ld';
 
@@ -60,28 +61,8 @@ type ProviderDetail = {
 // ── Data fetching ────────────────────────────────────────────────────────────
 
 async function getProvider(slug: string): Promise<ProviderDetail | null> {
-  const supabase = await createClient();
-  const { data, error } = await supabase
-    .from('providers')
-    .select(`
-      id, slug, bio, city, avg_rating, total_reviews, certifications,
-      is_founding_therapist,
-      service_mode, mobile_radius_km, mobile_travel_fee_cents, mobile_notes,
-      studio_city, studio_postcode, studio_notes,
-      profiles ( display_name, avatar_url ),
-      provider_services (
-        id, custom_price_cents, is_active,
-        services ( id, name_nl, name_en, description_nl, description_en, duration_minutes, base_price_cents )
-      )
-    `)
-    .eq('slug', slug)
-    .eq('is_active', true)
-    .eq('is_verified', true)
-    .in('status', ['new', 'trusted', 'core'])
-    .single();
-
-  if (error || !data) return null;
-  return data as ProviderDetail;
+  const data = await fetchPublicProviderBySlug(slug);
+  return data as ProviderDetail | null;
 }
 
 async function getReviews(providerId: string): Promise<Review[]> {
