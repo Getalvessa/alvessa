@@ -1,12 +1,40 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useTranslations } from 'next-intl';
-import { Link } from '@/i18n/navigation';
+import { useTranslations, useLocale } from 'next-intl';
+import { Link, usePathname, useRouter } from '@/i18n/navigation';
 import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { logoutAction } from '@/app/[locale]/inloggen/actions';
 import type { User } from '@supabase/supabase-js';
+import { cn } from '@/lib/utils';
+
+function LocaleSwitcher() {
+  const locale = useLocale();
+  const pathname = usePathname();
+  const router = useRouter();
+
+  return (
+    <div className="flex items-center rounded-md border border-border overflow-hidden text-xs font-semibold">
+      {(['nl', 'en'] as const).map((loc, i) => (
+        <button
+          key={loc}
+          onClick={() => router.push(pathname, { locale: loc })}
+          disabled={locale === loc}
+          className={cn(
+            'px-2 py-1 transition-colors',
+            i === 0 && 'border-r border-border',
+            locale === loc
+              ? 'bg-foreground text-background cursor-default'
+              : 'text-muted-foreground hover:text-foreground hover:bg-muted',
+          )}
+        >
+          {loc.toUpperCase()}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 export default function SiteHeader() {
   const t = useTranslations('nav');
@@ -61,6 +89,8 @@ export default function SiteHeader() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <LocaleSwitcher />
+
           {/* Loading state — matches width of auth buttons to avoid layout shift */}
           {user === undefined && (
             <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
