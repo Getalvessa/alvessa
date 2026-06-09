@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: 'hotel-massage-utrecht',
     title: t('metaTitle'),
     description: t('metaDescription'),
+    noindex: true,
   });
 }
 

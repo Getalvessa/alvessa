@@ -14,12 +14,14 @@ export function buildMetadata({
   title,
   description,
   ogImage = '/og',
+  noindex = false,
 }: {
   locale: string;
   path: string;
   title: string;
   description: string;
   ogImage?: string;
+  noindex?: boolean;
 }): Metadata {
   const nlUrl = path ? `${SITE_URL}/${path}` : SITE_URL;
   const enUrl = path ? `${SITE_URL}/en/${path}` : `${SITE_URL}/en`;
@@ -28,6 +30,7 @@ export function buildMetadata({
   return {
     title,
     description,
+    ...(noindex && { robots: { index: false, follow: true } }),
     alternates: {
       canonical: canonicalUrl,
       languages: {

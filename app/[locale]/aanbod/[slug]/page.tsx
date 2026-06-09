@@ -128,6 +128,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     path: `aanbod/${slug}`,
     title,
     description,
+    noindex: true,
   });
 }
 
