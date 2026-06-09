@@ -59,9 +59,12 @@ export default function SiteFooter() {
         </div>
 
         <div className="mt-8 flex flex-col items-center justify-between gap-2 border-t border-border pt-6 sm:flex-row">
-          <span className="text-xs text-muted-foreground">
-            © {new Date().getFullYear()} {tCommon('siteName')}. {t('rights')}
-          </span>
+          <div className="flex flex-col items-center gap-1 sm:items-start">
+            <span className="text-xs text-muted-foreground">
+              © {new Date().getFullYear()} {tCommon('siteName')}. {t('rights')}
+            </span>
+            <span className="text-xs text-muted-foreground">{t('kvkNumber')}</span>
+          </div>
           <div className="flex gap-4 text-xs text-muted-foreground">
             <Link href="/privacybeleid" className="transition-colors hover:text-foreground">
               {t('privacy')}

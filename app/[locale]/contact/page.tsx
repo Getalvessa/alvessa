@@ -22,6 +22,7 @@ export default async function ContactPage({ params }: Props) {
       <ContactCards />
       <ResponseNote />
       <FaqNote />
+      <CompanyInfo />
     </div>
   );
 }
@@ -94,6 +95,15 @@ function FaqNote() {
       >
         {t('faqLink')}
       </Link>
+    </p>
+  );
+}
+
+function CompanyInfo() {
+  const t = useTranslations('contact');
+  return (
+    <p className="mt-8 border-t border-border pt-6 text-xs text-muted-foreground">
+      {t('companyInfo')}
     </p>
   );
 }

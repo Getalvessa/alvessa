@@ -240,7 +240,8 @@
     "responseTitle": "Reactietijd",
     "responseBody": "We reageren doorgaans binnen één werkdag. In drukke periodes kan dit twee werkdagen zijn.",
     "faqLink": "Bekijk eerst de veelgestelde vragen",
-    "faqNote": "Misschien staat jouw antwoord er al bij."
+    "faqNote": "Misschien staat jouw antwoord er al bij.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "footer": {
     "tagline": "Premium massage aan huis in Utrecht.",
@@ -256,7 +257,8 @@
     "massageUtrecht": "Massage aan huis Utrecht",
     "sportmassage": "Sportmassage Utrecht",
     "deepTissue": "Deep tissue massage Utrecht",
-    "hotelMassage": "Hotelmassage Utrecht"
+    "hotelMassage": "Hotelmassage Utrecht",
+    "kvkNumber": "KvK-nummer: 42069738"
   },
   "cookie": {
     "title": "Wij gebruiken cookies",
@@ -283,7 +285,8 @@
     "s6Title": "6. Uw rechten",
     "s6Body": "U heeft recht op inzage, rectificatie, verwijdering, beperking van verwerking, dataportabiliteit en bezwaar. Neem contact op via info@alvessa.nl. U kunt ook een klacht indienen bij de Autoriteit Persoonsgegevens (autoriteitpersoonsgegevens.nl).",
     "s7Title": "7. Contact",
-    "s7Body": "Vragen over dit privacybeleid? Stuur een e-mail naar info@alvessa.nl."
+    "s7Body": "Vragen over dit privacybeleid? Stuur een e-mail naar info@alvessa.nl.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "terms": {
     "metaTitle": "Algemene voorwaarden — Alvessa",
@@ -303,7 +306,8 @@
     "s6Title": "6. Aansprakelijkheid",
     "s6Body": "Alvessa is een bemiddelingsplatform en is niet aansprakelijk voor schade die voortvloeit uit de sessie zelf. De aanbieder draagt hiervoor eigen verantwoordelijkheid via zijn/haar beroepsaansprakelijkheidsverzekering. De aansprakelijkheid van Alvessa voor directe schade is beperkt tot het bedrag van de betreffende boeking.",
     "s7Title": "7. Toepasselijk recht",
-    "s7Body": "Op deze voorwaarden is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Utrecht."
+    "s7Body": "Op deze voorwaarden is Nederlands recht van toepassing. Geschillen worden voorgelegd aan de bevoegde rechter in Utrecht.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "booking": {
     "metaTitle": "Boek bij {name} — Alvessa",

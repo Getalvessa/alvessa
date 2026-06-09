@@ -76,7 +76,8 @@ function buildHtml(title: string, intro: string, tableRows: string, ctaUrl: stri
       <a href="${ctaUrl}" style="display:inline-block;background:#111;color:#fff;text-decoration:none;padding:11px 22px;border-radius:6px;font-size:14px;font-weight:bold">${ctaLabel}</a>
     </td></tr>
     <tr><td style="padding:0 28px 24px;border-top:1px solid #f0f0f0">
-      <p style="margin:16px 0 0;color:#aaa;font-size:12px">Vragen? Mail naar <a href="mailto:hello@alvessa.nl" style="color:#777">hello@alvessa.nl</a></p>
+      <p style="margin:16px 0 4px;color:#aaa;font-size:12px">Vragen? Mail naar <a href="mailto:hello@alvessa.nl" style="color:#777">hello@alvessa.nl</a></p>
+      <p style="margin:0;color:#aaa;font-size:12px">KvK-nummer: 42069738</p>
     </td></tr>
   </table>
   </td></tr>
@@ -136,6 +137,7 @@ export async function sendCustomerConfirmation(d: CustomerConfirmationData): Pro
     `Boekingen bekijken: ${APP}/mijn-boekingen`,
     '',
     'Vragen? Mail naar hello@alvessa.nl',
+    'KvK-nummer: 42069738',
     'Het Alvessa-team',
   ].join('\n');
 
@@ -207,6 +209,7 @@ export async function sendProviderNotification(d: ProviderNotificationData): Pro
     `Dashboard: ${APP}/dashboard/boekingen`,
     '',
     'Vragen? Mail naar hello@alvessa.nl',
+    'KvK-nummer: 42069738',
     'Het Alvessa-team',
   ].join('\n');
 

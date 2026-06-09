@@ -240,7 +240,8 @@
     "responseTitle": "Response time",
     "responseBody": "We typically respond within one working day. During busy periods this may take two working days.",
     "faqLink": "Check the FAQ first",
-    "faqNote": "Your answer might already be there."
+    "faqNote": "Your answer might already be there.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "footer": {
     "tagline": "Premium in-home massage in Utrecht.",
@@ -256,7 +257,8 @@
     "massageUtrecht": "Home massage Utrecht",
     "sportmassage": "Sports massage Utrecht",
     "deepTissue": "Deep tissue massage Utrecht",
-    "hotelMassage": "Hotel massage Utrecht"
+    "hotelMassage": "Hotel massage Utrecht",
+    "kvkNumber": "KvK-nummer: 42069738"
   },
   "cookie": {
     "title": "We use cookies",
@@ -283,7 +285,8 @@
     "s6Title": "6. Your rights",
     "s6Body": "You have the right to access, rectification, erasure, restriction of processing, data portability and objection. Contact us at info@alvessa.nl. You can also lodge a complaint with the Dutch Data Protection Authority (autoriteitpersoonsgegevens.nl).",
     "s7Title": "7. Contact",
-    "s7Body": "Questions about this privacy policy? Email info@alvessa.nl."
+    "s7Body": "Questions about this privacy policy? Email info@alvessa.nl.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "terms": {
     "metaTitle": "Terms of service — Alvessa",
@@ -303,7 +306,8 @@
     "s6Title": "6. Liability",
     "s6Body": "Alvessa is an intermediary platform and is not liable for damages arising from the session itself. The provider bears responsibility through their professional liability insurance. Alvessa's liability for direct damages is limited to the amount of the relevant booking.",
     "s7Title": "7. Governing law",
-    "s7Body": "These terms are governed by Dutch law. Disputes shall be submitted to the competent court in Utrecht."
+    "s7Body": "These terms are governed by Dutch law. Disputes shall be submitted to the competent court in Utrecht.",
+    "companyInfo": "KvK-nummer: 42069738"
   },
   "booking": {
     "metaTitle": "Book with {name} — Alvessa",

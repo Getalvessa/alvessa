@@ -41,6 +41,10 @@ function PrivacyContent() {
           </section>
         ))}
       </div>
+
+      <p className="mt-10 border-t border-border pt-6 text-xs text-muted-foreground">
+        {t('companyInfo')}
+      </p>
     </div>
   );
 }
