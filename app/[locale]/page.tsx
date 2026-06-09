@@ -24,7 +24,7 @@ const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Alvessa',
-  description: 'Premium massage aan huis in Utrecht — gecertificeerde masseurs die naar jou toe komen.',
+  description: 'Premium massage in Utrecht — gecertificeerde masseurs, thuis of in de studio.',
   url: SITE_URL,
   email: 'hello@alvessa.nl',
   image: `${SITE_URL}/og`,
@@ -40,7 +40,7 @@ const LOCAL_BUSINESS_SCHEMA = {
     { '@type': 'Place', name: 'Utrecht Oost' },
     { '@type': 'Place', name: 'Leidsche Rijn' },
   ],
-  serviceType: 'Massage aan huis',
+  serviceType: 'Massagetherapie in Utrecht',
   priceRange: '€€',
 };
 

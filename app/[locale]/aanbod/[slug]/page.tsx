@@ -98,8 +98,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const ratingStr =
     provider.avg_rating !== null ? ` (${provider.avg_rating.toFixed(1)}★)` : '';
 
+  const locationSuffix =
+    provider.service_mode === 'studio_only' ? 'in de studio in' :
+    provider.service_mode === 'hybrid' ? 'aan huis of in de studio in' :
+    'aan huis in';
+
   const title = serviceNames
-    ? `${name}${ratingStr} — ${serviceNames} aan huis in Utrecht | Alvessa`
+    ? `${name}${ratingStr} — ${serviceNames} ${locationSuffix} Utrecht | Alvessa`
     : `${name}${ratingStr} — Massage therapeut in Utrecht | Alvessa`;
 
   const minPriceCents =
@@ -114,7 +119,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = provider.bio
     ? `${provider.bio.slice(0, 145).trimEnd()}${provider.bio.length > 145 ? '…' : ''}`
     : [
-        `Boek gecertificeerde ${serviceNames || 'massage'} aan huis bij ${name} in ${provider.city}.`,
+        `Boek gecertificeerde ${serviceNames || 'massage'} ${locationSuffix} ${provider.city} bij ${name}.`,
         minPriceCents ? `Vanaf €${Math.floor(minPriceCents / 100)}.` : '',
         provider.avg_rating && provider.total_reviews > 0
           ? `Beoordeeld ${provider.avg_rating.toFixed(1)}/5 door ${provider.total_reviews} klanten.`
