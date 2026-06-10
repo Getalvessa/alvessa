@@ -20,6 +20,8 @@ export default async function ForProvidersPage({ params }: Props) {
     <div className="mx-auto max-w-3xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <PageHeader />
       <FoundingTherapistSection />
+      <AmbassadorSection />
+      <ReassuranceSection />
       <BenefitsSection />
       <RequirementsSection />
       <HowToApplySection />
@@ -48,6 +50,7 @@ function FoundingTherapistSection() {
     'foundingBenefit3',
     'foundingBenefit4',
     'foundingBenefit5',
+    'foundingBenefit6',
   ] as const;
 
   return (
@@ -143,6 +146,61 @@ function HowToApplySection() {
           </li>
         ))}
       </ol>
+    </section>
+  );
+}
+
+function AmbassadorSection() {
+  const t = useTranslations('forProviders');
+  const rewards = [
+    'ambassadorReward1',
+    'ambassadorReward2',
+    'ambassadorReward3',
+  ] as const;
+
+  return (
+    <section className="mb-12 rounded-2xl border border-border bg-muted/30 px-6 py-8">
+      <h2 className="text-xl font-bold text-foreground">{t('ambassadorTitle')}</h2>
+      <p className="mt-1 text-sm font-medium text-muted-foreground">{t('ambassadorSubtitle')}</p>
+      <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{t('ambassadorDesc')}</p>
+      <ul className="mt-4 space-y-2">
+        {rewards.map((key) => (
+          <li key={key} className="flex items-start gap-2 text-sm text-foreground">
+            <CheckCircle className="mt-0.5 h-4 w-4 shrink-0 text-foreground/70" />
+            {t(key)}
+          </li>
+        ))}
+      </ul>
+      <p className="mt-5 text-xs text-muted-foreground">{t('ambassadorNote')}</p>
+    </section>
+  );
+}
+
+function ReassuranceSection() {
+  const t = useTranslations('forProviders');
+  const items = [
+    'reassuranceItem1',
+    'reassuranceItem2',
+    'reassuranceItem3',
+    'reassuranceItem4',
+    'reassuranceItem5',
+    'reassuranceItem6',
+    'reassuranceItem7',
+    'reassuranceItem8',
+    'reassuranceItem9',
+  ] as const;
+
+  return (
+    <section className="mb-12">
+      <h2 className="mb-4 text-xl font-semibold text-foreground">{t('reassuranceTitle')}</h2>
+      <ul className="grid gap-x-6 gap-y-2 sm:grid-cols-2">
+        {items.map((key) => (
+          <li key={key} className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CheckCircle className="h-4 w-4 shrink-0 text-foreground/60" />
+            {t(key)}
+          </li>
+        ))}
+      </ul>
     </section>
   );
 }
