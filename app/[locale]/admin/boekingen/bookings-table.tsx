@@ -13,6 +13,7 @@ type BookingRow = {
   service_name_en_snapshot: string;
   provider_display_name_snapshot: string;
   customer: { display_name: string } | null;
+  refundRequired: boolean;
 };
 
 const STATUS_COLOR: Record<string, string> = {
@@ -97,6 +98,12 @@ export default function BookingsTable({
                   <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_COLOR[b.status] ?? 'bg-muted text-muted-foreground'}`}>
                     {STATUS_LABELS[b.status] ?? b.status}
                   </span>
+                  {/* P1-4: paid booking cancelled — surfaces the manual-refund obligation */}
+                  {b.refundRequired && (
+                    <span className="mt-1 block rounded-md bg-red-100 px-2 py-1 text-xs font-semibold text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                      Paid booking cancelled – manual refund required
+                    </span>
+                  )}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex items-center gap-2">

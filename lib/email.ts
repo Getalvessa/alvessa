@@ -223,3 +223,63 @@ export async function sendProviderNotification(d: ProviderNotificationData): Pro
 
   if (error) throw new Error(`Resend error (provider): ${error.message}`);
 }
+
+// ── Operational alert: paid booking cancelled, manual refund required ─────────
+// Sent when an admin or provider cancels a booking that was already paid
+// ('confirmed' with a payment row). No automatic refund is issued — this alert
+// tells the operator to process the refund manually in the Stripe dashboard.
+// Recipient is ADMIN_EMAIL (the operational alert mailbox), never EMAIL_FROM.
+
+export type RefundAlertData = {
+  bookingId:   string;
+  customerId:  string;
+  providerId:  string;
+  paymentId:   string | null;
+  scheduledAt: string;
+  cancelledBy: 'admin' | 'provider';
+};
+
+export async function sendRefundRequiredAlert(d: RefundAlertData): Promise<void> {
+  const recipient = process.env.ADMIN_EMAIL;
+  if (!recipient) {
+    throw new Error('ADMIN_EMAIL is not set — cannot send manual-refund alert');
+  }
+
+  const rows: [string, string][] = [
+    ['Action',       'Manual Stripe refund required'],
+    ['Booking ID',   d.bookingId],
+    ['Customer ID',  d.customerId],
+    ['Provider ID',  d.providerId],
+    ['Payment ID',   d.paymentId ?? '(no payment row found)'],
+    ['Scheduled at', fmtDate(d.scheduledAt)],
+    ['Cancelled by', d.cancelledBy],
+  ];
+
+  const html = buildHtml(
+    'Manual refund required',
+    'A paid (confirmed) booking was cancelled. No automatic refund is issued — process the refund manually in the Stripe dashboard.',
+    buildTable(rows),
+    `${APP}/admin/boekingen`,
+    'Open admin bookings',
+  );
+
+  const text = [
+    'Manual Stripe refund required — Alvessa',
+    '',
+    'A paid (confirmed) booking was cancelled. Process the refund manually in Stripe.',
+    '',
+    ...rows.map(([k, v]) => `${k}: ${v}`),
+    '',
+    `Admin: ${APP}/admin/boekingen`,
+  ].join('\n');
+
+  const { error } = await getResend().emails.send({
+    from: FROM,
+    to:   recipient,
+    subject: `Manual refund required — booking ${d.bookingId}`,
+    html,
+    text,
+  });
+
+  if (error) throw new Error(`Resend error (refund alert): ${error.message}`);
+}

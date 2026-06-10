@@ -2,7 +2,7 @@
 READ THIS INSTEAD OF MIGRATION HISTORY.
 Do NOT scan supabase/migrations/ to understand table structure.
 This file is the current schema source of truth.
-Last sync: migration 020 (2026-06-10). Update after every migration.
+Last sync: migration 024 (2026-06-10). Update after every migration.
 ---
 
 # Schema Snapshot — Alvessa Marketplace
@@ -30,14 +30,18 @@ Last sync: migration 020 (2026-06-10). Update after every migration.
 [mode]       service_mode  mobile_radius_km  mobile_travel_fee_cents  mobile_notes
              studio_address  studio_city  studio_postcode  studio_notes
 [trust]      status†  trust_level†  referred_by_provider_id†  internal_score†⊗  internal_notes†⊗
+[founding]   is_founding_therapist†  founding_joined_at†
 [system]     created_at  updated_at
 ```
 
 **Trigger: `prevent_provider_integrity_fields` (BEFORE UPDATE)**
 Blocks non-admin from changing: `is_verified`, `avg_rating`, `total_reviews`,
 `stripe_account_id`, `stripe_onboarding_completed`, `status`, `trust_level`,
-`internal_score`, `internal_notes`, `referred_by_provider_id`.
+`internal_score`, `internal_notes`, `referred_by_provider_id`,
+`is_founding_therapist`, `founding_joined_at`.
 Bypasses: `auth.uid() IS NULL` (service_role) | `app.system_update='true'` | `is_admin=true`.
+Founding Therapist fields are admin-only write (migration 024); a provider cannot
+self-assign the badge — only an admin (or service_role) may set them.
 
 **Trigger: `update_provider_rating_stats` (AFTER INSERT/UPDATE/DELETE on reviews)**
 Writes `avg_rating` + `total_reviews`. Uses `set_config('app.system_update','true')`.

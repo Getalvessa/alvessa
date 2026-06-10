@@ -121,6 +121,11 @@ function BookingsList({
                     <p className="mt-0.5 text-sm text-muted-foreground">
                       {b.customer?.display_name ?? '—'} · {date}
                     </p>
+                    {/* P1-4: only address_city is shown in the list — the full street
+                        address (address_line / address_notes) is hidden from authenticated
+                        clients by column-level RLS (migration 021). Providers reveal it on
+                        demand for a confirmed booking via getBookingAddressAction (see the
+                        "Toon adres" button in <BookingActions>). */}
                     <p className="mt-0.5 text-xs text-muted-foreground">{b.address_city}</p>
                   </div>
                   <div className="flex shrink-0 flex-col items-end gap-2">

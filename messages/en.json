@@ -418,7 +418,11 @@
       "statusRefunded": "Refunded",
       "actionComplete": "Mark as completed",
       "actionCancel": "Cancel booking",
-      "actionError": "An error occurred. Please try again."
+      "actionError": "An error occurred. Please try again.",
+      "showAddress": "Show address",
+      "hideAddress": "Hide address",
+      "addressNotesLabel": "Notes",
+      "addressError": "Address could not be loaded."
     },
     "availability": {
       "title": "Availability",

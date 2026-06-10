@@ -418,7 +418,11 @@
       "statusRefunded": "Terugbetaald",
       "actionComplete": "Markeer als voltooid",
       "actionCancel": "Boeking annuleren",
-      "actionError": "Er is een fout opgetreden. Probeer opnieuw."
+      "actionError": "Er is een fout opgetreden. Probeer opnieuw.",
+      "showAddress": "Toon adres",
+      "hideAddress": "Verberg adres",
+      "addressNotesLabel": "Notities",
+      "addressError": "Adres kan niet worden geladen."
     },
     "availability": {
       "title": "Beschikbaarheid",

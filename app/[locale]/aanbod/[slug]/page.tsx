@@ -282,9 +282,6 @@ function ServiceModeSection({ provider }: { provider: ProviderDetail }) {
               <p>
                 <span className="font-medium text-foreground">Reisafstand: </span>
                 tot {provider.mobile_radius_km} km
-                {provider.mobile_travel_fee_cents != null && provider.mobile_travel_fee_cents > 0
-                  ? ` · reiskosten €${(provider.mobile_travel_fee_cents / 100).toFixed(2)}`
-                  : ' · gratis thuisbezoek'}
               </p>
             )}
             {provider.mobile_notes && (

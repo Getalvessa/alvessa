@@ -2,6 +2,7 @@
 
 import { revalidatePath } from 'next/cache';
 import { createClient } from '@/lib/supabase/server';
+import { sendRefundRequiredAlert } from '@/lib/email';
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -53,6 +54,14 @@ export async function cancelBookingAction(
   if (!ctx) return { error: 'Unauthorized' };
   const { supabase, userId } = ctx;
 
+  // Capture the prior status BEFORE the update so we know whether this booking
+  // was already paid ('confirmed') — only paid bookings need a manual refund.
+  const { data: prior } = await supabase
+    .from('bookings')
+    .select('status, customer_id, provider_id, scheduled_at')
+    .eq('id', bookingId)
+    .single();
+
   const { error } = await supabase
     .from('bookings')
     .update({
@@ -64,6 +73,38 @@ export async function cancelBookingAction(
     .in('status', ['confirmed', 'pending_payment']);
 
   if (error) return { error: error.message };
+
+  // P1-4: a paid ('confirmed') booking was cancelled. No automatic refund in the
+  // MVP — send an operational alert email so the refund can be issued manually via
+  // the Stripe dashboard. pending_payment cancellations were never paid, so they
+  // are skipped. Email failure must NOT block the cancellation.
+  if (prior?.status === 'confirmed') {
+    const { data: payment } = await supabase
+      .from('payments')
+      .select('id')
+      .eq('booking_id', bookingId)
+      .maybeSingle();
+
+    console.error('CANCELLED_PAID_BOOKING_REQUIRES_REFUND', JSON.stringify({
+      booking_id:  bookingId,
+      customer_id: prior.customer_id ?? null,
+      payment_id:  payment?.id ?? null,
+    }));
+
+    try {
+      await sendRefundRequiredAlert({
+        bookingId,
+        customerId:  prior.customer_id ?? '',
+        providerId:  prior.provider_id ?? '',
+        paymentId:   payment?.id ?? null,
+        scheduledAt: prior.scheduled_at,
+        cancelledBy: 'admin',
+      });
+    } catch (alertErr) {
+      console.error('[refund-alert] admin cancel: email send failed:',
+        alertErr instanceof Error ? alertErr.message : 'unknown');
+    }
+  }
 
   const { error: auditError } = await supabase.from('admin_audit_log').insert({
     actor_user_id: userId,
