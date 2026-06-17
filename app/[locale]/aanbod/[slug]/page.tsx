@@ -104,9 +104,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     provider.service_mode === 'hybrid' ? 'aan huis of in de studio in' :
     'aan huis in';
 
+  const cityName = getCityDisplayName(provider.city);
+
   const title = serviceNames
-    ? `${name}${ratingStr} — ${serviceNames} ${locationSuffix} Utrecht | Alvessa`
-    : `${name}${ratingStr} — Massage therapeut in Utrecht | Alvessa`;
+    ? `${name}${ratingStr} — ${serviceNames} ${locationSuffix} ${cityName} | Alvessa`
+    : `${name}${ratingStr} — Massage therapeut in ${cityName} | Alvessa`;
 
   const minPriceCents =
     activeServices.length > 0
