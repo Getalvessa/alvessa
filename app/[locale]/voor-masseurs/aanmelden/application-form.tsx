@@ -4,6 +4,7 @@ import { useTransition, useState, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { CheckCircle } from 'lucide-react';
 import { submitProviderApplicationAction } from './actions';
+import { getRecruitmentCities } from '@/lib/cities';
 
 export default function ApplicationForm() {
   const t = useTranslations('forProviders');
@@ -48,6 +49,8 @@ export default function ApplicationForm() {
 
   const inputClass =
     'mt-1 block w-full rounded-lg border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring';
+
+  const cityOptions = getRecruitmentCities();
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="space-y-5">
@@ -107,14 +110,20 @@ export default function ApplicationForm() {
         <label htmlFor="city" className="block text-sm font-medium text-foreground">
           {t('applyLabelCity')} <span className="text-destructive">*</span>
         </label>
-        <input
+        <select
           id="city"
           name="city"
-          type="text"
           required
-          defaultValue="Utrecht"
+          defaultValue="utrecht"
           className={inputClass}
-        />
+        >
+          {cityOptions.map((city) => (
+            <option key={city.slug} value={city.slug}>
+              {city.displayName}
+            </option>
+          ))}
+        </select>
+        <p className="mt-1 text-xs text-muted-foreground">{t('applyCityHelper')}</p>
       </div>
 
       <div>

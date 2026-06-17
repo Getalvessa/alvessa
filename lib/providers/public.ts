@@ -1,5 +1,6 @@
 import 'server-only';
 import { createServiceRoleClient } from '@/lib/supabase/server';
+import { getPublicCitySlugs } from '@/lib/cities';
 
 /**
  * Status values that qualify a provider for public listing.
@@ -11,6 +12,13 @@ export type PublicProviderStatus = (typeof PUBLIC_PROVIDER_STATUSES)[number];
 type FilterMode = 'all' | 'studio' | 'home';
 
 export async function fetchPublicProviders(mode: FilterMode) {
+  // City gate: only providers in publicly-launched cities (status=active &&
+  // publicVisible) may surface. Empty allowlist → no public providers, which
+  // is the intended state until a city is launched. Prevents supply-test
+  // providers in non-public cities from leaking onto /aanbod.
+  const publicCities = getPublicCitySlugs();
+  if (publicCities.length === 0) return [];
+
   const srClient = createServiceRoleClient();
 
   let query = srClient
@@ -23,6 +31,7 @@ export async function fetchPublicProviders(mode: FilterMode) {
     `)
     .eq('is_active', true)
     .eq('is_verified', true)
+    .in('city', publicCities)
     .in('status', [...PUBLIC_PROVIDER_STATUSES]);
 
   if (mode === 'studio') {
@@ -43,6 +52,11 @@ export async function fetchPublicProviders(mode: FilterMode) {
 }
 
 export async function fetchPublicProviderBySlug(slug: string) {
+  // Same city gate as the listing: a provider profile in a non-public city
+  // must not be reachable as a public page, even via direct slug URL.
+  const publicCities = getPublicCitySlugs();
+  if (publicCities.length === 0) return null;
+
   const { data, error } = await createServiceRoleClient()
     .from('providers')
     .select(`
@@ -59,6 +73,7 @@ export async function fetchPublicProviderBySlug(slug: string) {
     .eq('slug', slug)
     .eq('is_active', true)
     .eq('is_verified', true)
+    .in('city', publicCities)
     .in('status', [...PUBLIC_PROVIDER_STATUSES])
     .single();
 
@@ -67,6 +82,12 @@ export async function fetchPublicProviderBySlug(slug: string) {
 }
 
 export async function fetchProviderForBooking(slug: string) {
+  // City gate so a non-public-city provider cannot be booked via a direct
+  // /aanbod/[slug]/boeken URL. Additive read-only filter — no change to slot
+  // validation, pricing, or Stripe logic (those live in boeken/actions.ts).
+  const publicCities = getPublicCitySlugs();
+  if (publicCities.length === 0) return null;
+
   const { data } = await createServiceRoleClient()
     .from('providers')
     .select(`
@@ -81,6 +102,7 @@ export async function fetchProviderForBooking(slug: string) {
     .eq('slug', slug)
     .eq('is_active', true)
     .eq('is_verified', true)
+    .in('city', publicCities)
     .in('status', [...PUBLIC_PROVIDER_STATUSES])
     .single();
 

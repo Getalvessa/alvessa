@@ -38,6 +38,9 @@ function PageHeader() {
         {t('pageTitle')}
       </h1>
       <p className="mt-4 text-lg text-muted-foreground">{t('pageSubtitle')}</p>
+      <p className="mt-4 rounded-lg border border-border bg-muted/30 px-4 py-3 text-sm text-muted-foreground">
+        {t('cityEvaluationNote')}
+      </p>
     </div>
   );
 }

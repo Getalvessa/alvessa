@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { saveProfileAction, type ProfileData } from './actions';
+import { CITIES } from '@/lib/cities';
 
 export default function ProfileForm({ initial }: { initial: ProfileData }) {
   const t = useTranslations('dashboard.profile');
@@ -54,14 +55,18 @@ export default function ProfileForm({ initial }: { initial: ProfileData }) {
         <label className="block text-sm font-medium text-foreground mb-1">
           {t('cityLabel')}
         </label>
-        <input
-          type="text"
+        <select
           value={form.city}
           onChange={(e) => handleChange('city', e.target.value)}
           required
-          placeholder={t('cityPlaceholder')}
           className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
-        />
+        >
+          {CITIES.map((city) => (
+            <option key={city.slug} value={city.slug}>
+              {city.displayName}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="flex items-center gap-4">

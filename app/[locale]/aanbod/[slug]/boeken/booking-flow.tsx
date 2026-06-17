@@ -6,6 +6,7 @@ import { Link } from '@/i18n/navigation';
 import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { createBooking } from './actions';
 import type { ServiceMode, AppointmentType } from '@/lib/types/service-mode';
+import { getCityDisplayName } from '@/lib/cities';
 
 // Amsterdam UTC+2 (CEST) — fixed offset for MVP
 const TZ_OFFSET_H = 2;
@@ -543,7 +544,9 @@ export function BookingFlow({
   // Show spinner while browser navigates to Stripe
   if (bookingState.checkoutUrl) return <RedirectingScreen />;
 
-  const city = provider.city;
+  // provider.city is a slug; prefill the customer's address field with the
+  // human display name (they can still edit it freely).
+  const city = getCityDisplayName(provider.city);
 
   // From step 2, always go to step 3 (type choice for hybrid, studio info for studio_only, address for mobile_only)
   function afterDateTime() {

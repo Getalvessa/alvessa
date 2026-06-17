@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
 import { Star, MapPin, Award } from 'lucide-react';
 import type { ServiceMode } from '@/lib/types/service-mode';
+import { getCityDisplayName } from '@/lib/cities';
 
 type ProviderService = {
   custom_price_cents: number | null;
@@ -97,7 +98,7 @@ export function ProviderCard({ provider }: { provider: ProviderCardData }) {
 
           <div className="mt-1 flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
-            <span>{provider.city}</span>
+            <span>{getCityDisplayName(provider.city)}</span>
           </div>
 
           {/* Service mode badge */}
