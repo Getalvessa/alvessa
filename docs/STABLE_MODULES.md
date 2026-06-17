@@ -126,6 +126,24 @@
 
 ---
 
+## 10. City Visibility Gate & Canonical Slugs
+
+**What it protects:** Non-public cities never leak onto public surfaces, and the city dimension never drifts back to free-text display names.
+
+**Location:**
+- `lib/cities.ts` — single source of truth (slugs, status, publicVisible, recruitmentVisible)
+- `lib/providers/public.ts` — public listing/profile/booking queries gate by `getPublicCitySlugs()`
+- `supabase/migrations/202606170001_city_slug_normalization.sql` — CHECK constraints
+
+**Key invariants:**
+- `providers.city` / `provider_applications.city` store **slugs only** (`utrecht|amsterdam|rotterdam|den-haag`). Never store display names. (`studio_city` / `address_city` are unrelated address fields — exempt.)
+- Public surfaces show a city only when `status === 'active' && publicVisible`. Do not bypass `getPublicCitySlugs()` with a hardcoded city filter.
+- Every write path writes a slug (form/action, provider profile dropdown, admin approve).
+- Adding a city = config entry **and** altering both CHECK constraints.
+- Full rationale: `docs/adr/0001-canonical-city-slugs.md`.
+
+---
+
 ## Modification Policy
 
 Changes to any of the above modules:
