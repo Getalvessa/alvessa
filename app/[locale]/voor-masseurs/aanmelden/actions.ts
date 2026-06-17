@@ -1,6 +1,7 @@
 'use server';
 
 import { createClient } from '@/lib/supabase/server';
+import { getRecruitmentCitySlugs, isRecruitmentCitySlug } from '@/lib/cities';
 
 export type ApplicationResult = { error: string | null };
 
@@ -13,7 +14,11 @@ export async function submitProviderApplicationAction(
   const full_name            = formData.get('full_name')?.toString().trim() ?? '';
   const email                = formData.get('email')?.toString().trim() ?? '';
   const phone                = formData.get('phone')?.toString().trim() ?? '';
-  const city                 = formData.get('city')?.toString().trim() || 'Utrecht';
+  const city_raw             = formData.get('city')?.toString().trim().toLowerCase() || '';
+  // Store a canonical slug; only accept a recruitment-listed city, else fall back.
+  const city                 = isRecruitmentCitySlug(city_raw)
+    ? city_raw
+    : getRecruitmentCitySlugs()[0];
   const service_types        = formData.get('service_types')?.toString().trim() ?? '';
   const service_mode_raw     = formData.get('service_mode')?.toString().trim() ?? '';
   const VALID_MODES          = ['studio_only', 'mobile_only', 'hybrid'] as const;

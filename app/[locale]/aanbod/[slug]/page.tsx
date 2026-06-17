@@ -10,6 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 import { fetchPublicProviderBySlug } from '@/lib/providers/public';
 import { buildMetadata, SITE_URL } from '@/lib/metadata';
 import { JsonLd } from '@/components/seo/json-ld';
+import { getCityDisplayName } from '@/lib/cities';
 
 type Props = { params: Promise<{ locale: string; slug: string }> };
 
@@ -119,7 +120,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = provider.bio
     ? `${provider.bio.slice(0, 145).trimEnd()}${provider.bio.length > 145 ? '…' : ''}`
     : [
-        `Boek gecertificeerde ${serviceNames || 'massage'} ${locationSuffix} ${provider.city} bij ${name}.`,
+        `Boek gecertificeerde ${serviceNames || 'massage'} ${locationSuffix} ${getCityDisplayName(provider.city)} bij ${name}.`,
         minPriceCents ? `Vanaf €${Math.floor(minPriceCents / 100)}.` : '',
         provider.avg_rating && provider.total_reviews > 0
           ? `Beoordeeld ${provider.avg_rating.toFixed(1)}/5 door ${provider.total_reviews} klanten.`
@@ -162,10 +163,10 @@ function buildProviderSchema(provider: ProviderDetail, locale: string, slug: str
     url: pageUrl,
     address: {
       '@type': 'PostalAddress',
-      addressLocality: provider.city,
+      addressLocality: getCityDisplayName(provider.city),
       addressCountry: 'NL',
     },
-    areaServed: { '@type': 'City', name: provider.city },
+    areaServed: { '@type': 'City', name: getCityDisplayName(provider.city) },
     priceRange: '€€',
     offers,
   };
@@ -353,7 +354,7 @@ function ProviderHeader({ provider }: { provider: ProviderDetail }) {
         <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-muted-foreground">
           <span className="flex items-center gap-1">
             <MapPin className="h-3.5 w-3.5" />
-            {provider.city}
+            {getCityDisplayName(provider.city)}
             {radiusKm != null && <> · {t('serviceArea', { km: radiusKm })}</>}
           </span>
 
@@ -543,7 +544,7 @@ function BookingCta({ provider }: { provider: ProviderDetail }) {
       </Link>
 
       <p className="mt-3 text-center text-xs text-muted-foreground">
-        {provider.city}
+        {getCityDisplayName(provider.city)}
         {radiusKm != null && <> · {t('serviceArea', { km: radiusKm })}</>}
       </p>
     </div>

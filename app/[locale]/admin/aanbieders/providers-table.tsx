@@ -10,6 +10,7 @@ import {
   toggleFoundingTherapistAction,
 } from './actions';
 import type { ProviderRow } from './page';
+import { getCityDisplayName } from '@/lib/cities';
 
 type ProviderStatus = 'new' | 'trusted' | 'core' | 'restricted' | 'banned';
 
@@ -90,7 +91,7 @@ export default function ProvidersTable({ providers }: { providers: ProviderRow[]
                   {p.profile?.display_name ?? '—'}
                 </p>
                 <p className="text-xs text-muted-foreground mt-0.5">
-                  {p.slug} · {p.city}
+                  {p.slug} · {getCityDisplayName(p.city)}
                 </p>
               </div>
               <div className="flex flex-wrap gap-1.5 shrink-0">

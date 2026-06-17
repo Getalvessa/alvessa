@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import Link from 'next/link';
 import { approveApplicationAction, rejectApplicationAction } from './actions';
 import type { ApplicationRow } from './page';
+import { getCityDisplayName } from '@/lib/cities';
 
 type FeedbackEntry = { message: string; showDashboardLink?: boolean };
 type ServiceModeKey = 'appServiceModeStudio' | 'appServiceModeMobile' | 'appServiceModeHybrid';
@@ -114,7 +115,7 @@ export default function ApplicationsList({ applications }: { applications: Appli
                 <td className="px-4 py-3 font-medium text-foreground">{app.full_name}</td>
                 <td className="px-4 py-3 text-foreground">{app.email}</td>
                 <td className="px-4 py-3 text-foreground">{app.phone}</td>
-                <td className="px-4 py-3 text-foreground">{app.city}</td>
+                <td className="px-4 py-3 text-foreground">{getCityDisplayName(app.city)}</td>
                 <td className="max-w-[180px] truncate px-4 py-3 text-foreground">{app.service_types}</td>
                 <td className="px-4 py-3 text-foreground">{t(serviceModeKey(app.service_mode, app.works_mobile))}</td>
                 <td className="px-4 py-3 text-foreground">{app.experience_years ?? '—'}</td>
