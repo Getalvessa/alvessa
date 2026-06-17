@@ -23,7 +23,7 @@ Last sync: migration 024 (2026-06-10). Update after every migration.
 ## providers
 
 ```
-[identity]   id  profile_id*→  slug*  bio  city  service_area_km  certifications
+[identity]   id  profile_id*→  slug*  bio  city(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag)  service_area_km  certifications
 [stripe]     stripe_account_id⊗†  stripe_onboarding_completed†
 [listing]    is_active  is_verified†
 [ratings]    avg_rating‡  total_reviews‡
@@ -162,7 +162,7 @@ RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = a
 ## provider_applications
 
 ```
-id*(PK)  full_name*  email*  phone*  city*(DEFAULT 'Utrecht')
+id*(PK)  full_name*  email*  phone*  city*(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag)
 service_types*
 service_mode  [nullable, CHECK IN ('studio_only','mobile_only','hybrid')]  ← Phase 1: no NOT NULL, no DEFAULT
 works_mobile*(DEFAULT true)  ← legacy compatibility column; kept until Phase 2 cleanup

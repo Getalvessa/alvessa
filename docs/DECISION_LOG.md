@@ -109,3 +109,23 @@ Use Supabase for database, auth, and storage. Use Stripe for payments and Stripe
 - Provider onboarding includes a Stripe Connect step
 - Platform commission is automatically deducted via Stripe's application fee parameter
 - Supabase RLS must be carefully designed — all tables need policies for customer, provider, and admin roles
+
+---
+
+## 2026-06-17 — Canonical City Slugs & Per-City Public Launch Gating
+
+**Decision:**
+The city dimension (`providers.city`, `provider_applications.city`) stores canonical slugs only (`utrecht`, `amsterdam`, `rotterdam`, `den-haag`), enforced by a CHECK constraint. Display names are derived via `getCityDisplayName()` in `lib/cities.ts`, the single source of truth. Public visibility is gated by `status === 'active' && publicVisible`, recruitment by a separate `recruitmentVisible` flag. Full record: `docs/adr/0001-canonical-city-slugs.md`. Applied in production via migration `202606170001` (all cities `publicVisible = false`).
+
+**Reasoning:**
+- Free-text display names drift (casing/whitespace/`'s-Gravenhage`) and silently break the public visibility gate, which compares the stored value to a fixed allow-list.
+- Public and recruitment visibility are independent — a city recruits therapists before it is customer-visible.
+
+**Rejected alternatives:**
+- App-level validation only (no hard guarantee); rename column to `city_slug` (churn, no gain); full `cities` FK table (over-engineered for 4 cities — deferred to ~10-city scale).
+
+**Consequences:**
+- Launching a city = flip flags in `lib/cities.ts`; no DB change to go live.
+- Adding a new city requires altering both CHECK constraints (migration) + a config entry.
+- Deployment order is fixed: **code first, migration second, then validation** — never reversed.
+- Known non-blocking debt: `aanbod/[slug]/page.tsx` title hardcodes "Utrecht"; must fix before multi-city public launch.
