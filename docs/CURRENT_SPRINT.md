@@ -4,20 +4,19 @@
 
 ## Sprint
 
-**RC-2C — Align Sitemap with FULL HIDDEN Strategy** (2026-07-03) — **completed**
-Type: `app/sitemap.ts` only + documentation. No robots.ts, metadata, noindex, canonical, hreflang, booking, Stripe, DB or translation changes.
+**RC-4 — Production Deployment Verification (SOFT LAUNCH / FULL HIDDEN)** (2026-07-03) — **completed**
+Type: Release engineering only. No code, SEO, Stripe, database or config changes.
 
 ## Objective
 
-Remove the last mixed SEO signal: the sitemap listed 8 URLs that are intentionally noindex under FULL HIDDEN (RC-2B). **The sitemap is intentionally empty before production launch.**
+Deploy `release/rc-3` to Vercel Production WITHOUT flipping any launch switch: FULL HIDDEN stays active, Stripe stays test mode, Groningen stays `publicVisible: false`.
 
 ## Completed
 
-- `app/sitemap.ts` now returns `[]` (Option A); the former 8 URLs kept as a comment for Phase 4 restoration
-- `app/robots.ts` untouched — still allows crawling (required so noindex tags remain readable) and still references `sitemap.xml` (an empty sitemap is valid)
-- Page metadata / noindex / canonical / hreflang untouched
-- `docs/STATE.md` → Pre-Launch SEO Strategy updated with the sitemap policy (empty during FULL HIDDEN; restore per phased release: 1 homepage → 2 listing → 3 provider pages → 4 supporting pages)
-- Validation: `npm run lint` 0 errors, `npm run build` success, `/sitemap.xml` renders an empty urlset
+- Verified all 10 production env vars present in Vercel (names only, values not exported): Supabase (URL/anon/service_role), Stripe (publishable/secret/webhook), Resend + EMAIL_FROM, ADMIN_EMAIL, NEXT_PUBLIC_SITE_URL
+- Deployed `release/rc-3` (commit `8bc3d2b`) via `vercel deploy --prod` — deployment `alvessa-6rcqh2nuv` Ready, aliased to https://alvessa.nl, https://www.alvessa.nl
+- Production verification passed: all public pages 200 + `noindex, follow`; `/dashboard` `/admin` 307 → `/inloggen`; robots.txt allows public crawl + disallows private paths; sitemap.xml empty urlset; manifest + OG image (image/png) correct; 404 works; NL/EN both render; canonical `https://alvessa.nl` + hreflang nl/en/x-default
+- No launch switches flipped (SEO, Stripe Live, publicVisible all unchanged)
 
 ## Blocked
 
@@ -25,9 +24,9 @@ Remove the last mixed SEO signal: the sitemap listed 8 URLs that are intentional
 
 ## Acceptance Criteria
 
-- Sitemap empty; all SEO signals consistent (all pages noindex + empty sitemap + crawling allowed + canonical unchanged) — done
-- Lint 0 errors, build success
+- Production live on alvessa.nl with FULL HIDDEN intact — done
+- No repository changes beyond docs — done
 
 ## Next Task
 
-Owner review of RC-1/RC-2A/RC-2B/RC-2C; then launch checklist (Groningen `publicVisible` flip + phased noindex/sitemap release per `docs/STATE.md`).
+Real launch checklist (dedicated tasks, owner approval each): Groningen `publicVisible` flip → provider onboarding → Stripe Live (written approval) → phased SEO release (fix Open Debt #6 html `lang` first) → restore sitemap.

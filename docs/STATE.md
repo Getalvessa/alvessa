@@ -1,15 +1,15 @@
 # Project State
 
 > Single source of truth for operational state. Overwrite in place — never append history.
-> Last updated: 2026-07-03 (Sprint RC-2C)
+> Last updated: 2026-07-03 (Sprint RC-4)
 
 ## Current Sprint
 
-**Sprint RC-2C — Align Sitemap with FULL HIDDEN Strategy** — completed. See `docs/CURRENT_SPRINT.md`.
+**Sprint RC-4 — Production Deployment (SOFT LAUNCH / FULL HIDDEN)** — completed. `release/rc-3` (commit `8bc3d2b`) deployed to Vercel Production, live on https://alvessa.nl. FULL HIDDEN active: all pages noindex, sitemap empty, Stripe test mode, Groningen `publicVisible: false`. No launch switches flipped.
 
 ## Last Completed Sprint
 
-**Sprint RC-2B** (2026-07-03) — FULL HIDDEN policy: all 8 remaining indexable public pages set to noindex. RC-1 rebrand (same day) pending owner review.
+**Sprint RC-3** (2026-07-03) — RC freeze commit, build verification, preview deployment, smoke test. RC-1/RC-2A/RC-2B/RC-2C same day.
 
 ## Completed Work
 
