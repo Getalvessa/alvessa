@@ -191,6 +191,24 @@ This allows a single user to be both customer and provider.
 
 ---
 
+### 11. Category Runtime Behaviour — Single Source
+
+**Decision:** All runtime category behaviour is defined exclusively in `lib/categories.ts` as typed `CategoryDefinition` entries. `CategoryDefinition` is the only approved runtime source for category decisions. (Established Sprint 2.9, `docs/DECISION_LOG.md` 2026-07-02 entry; enforced as frozen rule in Sprint 3A.)
+
+**Concrete constraints:**
+- Category detection uses `getCategoryBySlug(service_categories.slug)` — never service names, never hardcoded slug comparisons in components
+- Category-specific UI reads `category.capabilities.*` — never `if (slug === 'cleaning')` / `switch (category)` branches
+- Commission is computed only via `calculateCommissionCents()` from the category's commission config
+- The provider application form's free-text keyword detection (`detectCategoryFromFreeText` / `recruitmentKeywords`) is the single sanctioned exception, and its keywords live in `lib/categories.ts`
+
+**Do not:**
+- Implement category behaviour (branching, copy selection, fees, capabilities) outside `lib/categories.ts`
+- Introduce new runtime string matching on category or service names
+- Duplicate capability or commission configuration in components, actions, or API routes
+- Add a second commission calculation path anywhere
+
+---
+
 ## Amendment Process
 
 To change a frozen decision:

@@ -20,6 +20,7 @@ type Service = {
     name_en: string;
     duration_minutes: number;
     base_price_cents: number;
+    service_categories: { slug: string } | null;
   } | null;
 };
 

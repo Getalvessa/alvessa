@@ -2,7 +2,7 @@
 READ THIS INSTEAD OF MIGRATION HISTORY.
 Do NOT scan supabase/migrations/ to understand table structure.
 This file is the current schema source of truth.
-Last sync: migration 024 (2026-06-10). Update after every migration.
+Last sync: migration 026 (2026-07-01). Update after every migration.
 ---
 
 # Schema Snapshot — Alvessa Marketplace
@@ -23,7 +23,7 @@ Last sync: migration 024 (2026-06-10). Update after every migration.
 ## providers
 
 ```
-[identity]   id  profile_id*→  slug*  bio  city(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag)  service_area_km  certifications
+[identity]   id  profile_id*→  slug*  bio  city(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag|groningen)  service_area_km  certifications
 [stripe]     stripe_account_id⊗†  stripe_onboarding_completed†
 [listing]    is_active  is_verified†
 [ratings]    avg_rating‡  total_reviews‡
@@ -109,6 +109,29 @@ Auto-creates profile with `is_customer=true`. Never hard-delete profiles.
 
 ---
 
+## service_categories
+
+```
+id  slug*(e.g. 'massage', 'cleaning')  name_nl*  name_en*  is_active  sort_order  created_at
+```
+
+RLS: anon/auth SELECT active rows. Admin full control.
+App-side behaviour config keyed by `slug`: `lib/categories.ts` (capabilities, commission, recruitment keywords).
+Seeded categories: `massage` (sort 1), `cleaning` (sort 2, migration 026).
+
+---
+
+## services
+
+```
+id  category_id*(→service_categories)  name_nl*  name_en*  description_nl  description_en
+duration_minutes*  base_price_cents*  is_active  sort_order  created_at  updated_at
+```
+
+RLS: anon/auth SELECT active rows. Admin full control.
+
+---
+
 ## provider_services
 
 ```
@@ -162,7 +185,7 @@ RLS: admin SELECT only (`public.is_admin()`). Admin INSERT only (`auth.uid() = a
 ## provider_applications
 
 ```
-id*(PK)  full_name*  email*  phone*  city*(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag)
+id*(PK)  full_name*  email*  phone*  city*(slug, DEFAULT 'utrecht', CHECK IN utrecht|amsterdam|rotterdam|den-haag|groningen)
 service_types*
 service_mode  [nullable, CHECK IN ('studio_only','mobile_only','hybrid')]  ← Phase 1: no NOT NULL, no DEFAULT
 works_mobile*(DEFAULT true)  ← legacy compatibility column; kept until Phase 2 cleanup

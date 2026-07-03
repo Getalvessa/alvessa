@@ -24,23 +24,18 @@ const LOCAL_BUSINESS_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
   name: 'Alvessa',
-  description: 'Premium massage in Utrecht — gecertificeerde masseurs, thuis of in de studio.',
+  description: 'Professionele schoonmaak aan huis in Groningen — gescreende schoonmakers, bij jou thuis.',
   url: SITE_URL,
   email: 'hello@alvessa.nl',
   image: `${SITE_URL}/og`,
   address: {
     '@type': 'PostalAddress',
-    addressLocality: 'Utrecht',
-    addressRegion: 'Utrecht',
+    addressLocality: 'Groningen',
+    addressRegion: 'Groningen',
     addressCountry: 'NL',
   },
-  areaServed: [
-    { '@type': 'City', name: 'Utrecht' },
-    { '@type': 'Place', name: 'Utrecht Centrum' },
-    { '@type': 'Place', name: 'Utrecht Oost' },
-    { '@type': 'Place', name: 'Leidsche Rijn' },
-  ],
-  serviceType: 'Massagetherapie in Utrecht',
+  areaServed: [{ '@type': 'City', name: 'Groningen' }],
+  serviceType: 'Schoonmaak aan huis in Groningen',
   priceRange: '€€',
 };
 
@@ -97,7 +92,7 @@ function HeroSection() {
         </div>
 
         <p className="mt-6 text-xs text-muted-foreground">
-          {tCommon('siteName')} · Utrecht, Nederland
+          {tCommon('siteName')} · Groningen, Nederland
         </p>
       </div>
     </section>

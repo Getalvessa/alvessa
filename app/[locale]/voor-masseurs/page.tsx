@@ -10,7 +10,14 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'forProviders' });
-  return buildMetadata({ locale, path: 'voor-masseurs', title: t('metaTitle'), description: t('metaDescription') });
+  return buildMetadata({
+    locale,
+    path: 'voor-masseurs',
+    title: t('metaTitle'),
+    description: t('metaDescription'),
+    // Massage recruitment track is not publicly launched — keep out of the index.
+    noindex: true,
+  });
 }
 
 export default async function ForProvidersPage({ params }: Props) {

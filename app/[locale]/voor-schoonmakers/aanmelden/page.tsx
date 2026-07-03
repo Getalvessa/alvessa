@@ -2,37 +2,37 @@ import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import { buildMetadata } from '@/lib/metadata';
-import ApplicationForm from './application-form';
+import ApplicationForm from '../../voor-masseurs/aanmelden/application-form';
 
 type Props = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'forProviders' });
+  const t = await getTranslations({ locale, namespace: 'forCleaners' });
   return buildMetadata({
     locale,
-    path: 'voor-masseurs/aanmelden',
+    path: 'voor-schoonmakers/aanmelden',
     title: t('applyMetaTitle'),
     description: t('applyMetaDescription'),
-    // Massage recruitment track is not publicly launched — keep out of the index.
+    // Pre-launch FULL HIDDEN policy (docs/STATE.md → Pre-Launch SEO Strategy)
     noindex: true,
   });
 }
 
-export default async function ApplyPage({ params }: Props) {
+export default async function CleanerApplyPage({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
 
   return (
     <div className="mx-auto max-w-lg px-4 py-12 sm:px-6 sm:py-16">
       <PageHeader />
-      <ApplicationForm />
+      <ApplicationForm defaultCity="groningen" categorySlug="cleaning" />
     </div>
   );
 }
 
 function PageHeader() {
-  const t = useTranslations('forProviders');
+  const t = useTranslations('forCleaners');
   return (
     <div className="mb-8">
       <h1 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
@@ -40,16 +40,6 @@ function PageHeader() {
       </h1>
       <p className="mt-3 text-sm text-muted-foreground">{t('applyPageSubtitle')}</p>
       <p className="mt-1 text-sm text-muted-foreground">{t('applyNote')}</p>
-
-      <div className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-4 dark:border-amber-700/40 dark:bg-amber-900/10">
-        <p className="text-sm font-semibold text-amber-800 dark:text-amber-400">
-          {t('applyFoundingTitle')}
-        </p>
-        <p className="mt-1 text-sm text-muted-foreground">{t('applyFoundingDesc')}</p>
-        <p className="mt-2 text-xs font-medium text-amber-700 dark:text-amber-400">
-          {t('applyFoundingSpots')}
-        </p>
-      </div>
     </div>
   );
 }

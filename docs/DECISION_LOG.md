@@ -112,6 +112,29 @@ Use Supabase for database, auth, and storage. Use Stripe for payments and Stripe
 
 ---
 
+## 2026-07-02 — Category Behaviour via Typed Configuration (`lib/categories.ts`)
+
+**Decision:**
+All category-specific behaviour is defined in `lib/categories.ts` as typed `CategoryDefinition` entries keyed by `service_categories.slug`. Runtime category detection uses the DB slug only — never service names. Category-specific UI reads `category.capabilities.*` (i18n key selection), never `if (slug === 'cleaning')` branches. Commission is a per-category `{ model: 'percentage', ratePercent }` config; `bookings.platform_fee_cents` is derived server-side via `calculateCommissionCents()`. All rates are 0 until Stripe Connect payouts ship. The provider application form is the sole sanctioned keyword-detection exception (applicant free text has no DB record), with keywords centralized as `recruitmentKeywords`.
+
+**Reasoning:**
+- Name-based detection (`CLEANING_TERMS`) missed `Dieptereiniging / Deep clean` (Sprint 4.5 audit) and the list was duplicated in two components — silent drift risk.
+- The authoritative discriminator (`service_categories.slug`) already existed in the schema; the code simply never selected it.
+- Mirrors the proven `lib/cities.ts` pattern: adding a category = one config entry, no scattered conditionals.
+- A percentage-model commission config covers current business needs (roadmap: configurable commission per category) without a pricing engine; the `model` union can grow later.
+
+**Rejected alternatives:**
+- Shared `CLEANING_TERMS` constant: propagates the coverage bug to both consumers (Sprint 4.5 §4).
+- Boolean `isCleaning` capability flags: reintroduces category branching in components.
+- Wiring nonzero commission rates now: changes stored `platform_fee_cents` and earnings math before the payout engine exists — behavioural regression.
+
+**Consequences:**
+- `fetchProviderForBooking` and the booking action's `provider_services` query join `service_categories(slug)` (additive selects).
+- New category = DB `service_categories` row + one `CategoryDefinition` entry (+ i18n keys if its copy differs).
+- Activating commission = changing `ratePercent` in one place, once payouts exist to consume it.
+
+---
+
 ## 2026-06-17 — Canonical City Slugs & Per-City Public Launch Gating
 
 **Decision:**

@@ -8,7 +8,8 @@ type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'privacy' });
-  return buildMetadata({ locale, path: 'privacybeleid', title: t('metaTitle'), description: t('metaDescription') });
+  // Pre-launch FULL HIDDEN policy (docs/STATE.md → Pre-Launch SEO Strategy)
+  return buildMetadata({ locale, path: 'privacybeleid', title: t('metaTitle'), description: t('metaDescription'), noindex: true });
 }
 
 export default async function PrivacyPage({ params }: Props) {

@@ -8,7 +8,7 @@
 
 | Layer      | Technology                  |
 |------------|-----------------------------|
-| Framework  | Next.js 14+ App Router      |
+| Framework  | Next.js 16.2.6 App Router (`proxy.ts`) |
 | Language   | TypeScript (strict)         |
 | Styling    | Tailwind CSS + shadcn/ui    |
 | Database   | Supabase (PostgreSQL + RLS) |

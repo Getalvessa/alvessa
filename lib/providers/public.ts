@@ -88,6 +88,8 @@ export async function fetchProviderForBooking(slug: string) {
   const publicCities = getPublicCitySlugs();
   if (publicCities.length === 0) return null;
 
+  // service_categories(slug) feeds category-driven UI (lib/categories.ts) —
+  // the booking flow must never detect a category from service names.
   const { data } = await createServiceRoleClient()
     .from('providers')
     .select(`
@@ -96,7 +98,9 @@ export async function fetchProviderForBooking(slug: string) {
       studio_city, studio_postcode, studio_notes,
       profiles ( display_name ),
       provider_services ( id, custom_price_cents, is_active,
-        services ( id, name_nl, name_en, duration_minutes, base_price_cents )
+        services ( id, name_nl, name_en, duration_minutes, base_price_cents,
+          service_categories ( slug )
+        )
       )
     `)
     .eq('slug', slug)

@@ -1,5 +1,5 @@
 import { notFound } from 'next/navigation';
-import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { setRequestLocale } from 'next-intl/server';
 import { useTranslations } from 'next-intl';
 import type { Metadata } from 'next';
 import Image from 'next/image';
@@ -108,7 +108,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const title = serviceNames
     ? `${name}${ratingStr} — ${serviceNames} ${locationSuffix} ${cityName} | Alvessa`
-    : `${name}${ratingStr} — Massage therapeut in ${cityName} | Alvessa`;
+    : `${name}${ratingStr} — Aanbieder in ${cityName} | Alvessa`;
 
   const minPriceCents =
     activeServices.length > 0
@@ -122,7 +122,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = provider.bio
     ? `${provider.bio.slice(0, 145).trimEnd()}${provider.bio.length > 145 ? '…' : ''}`
     : [
-        `Boek gecertificeerde ${serviceNames || 'massage'} ${locationSuffix} ${getCityDisplayName(provider.city)} bij ${name}.`,
+        `Boek ${serviceNames || 'een dienst'} ${locationSuffix} ${getCityDisplayName(provider.city)} bij ${name}.`,
         minPriceCents ? `Vanaf €${Math.floor(minPriceCents / 100)}.` : '',
         provider.avg_rating && provider.total_reviews > 0
           ? `Beoordeeld ${provider.avg_rating.toFixed(1)}/5 door ${provider.total_reviews} klanten.`

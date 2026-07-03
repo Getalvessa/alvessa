@@ -88,7 +88,7 @@ export async function GET() {
             letterSpacing: '0.2px',
           }}
         >
-          Trusted Services at Home · Utrecht
+          Trusted Services at Home · Groningen
         </div>
 
         {/* Location pill */}
@@ -111,7 +111,7 @@ export async function GET() {
               fontFamily: 'sans-serif',
             }}
           >
-            UTRECHT · NEDERLAND
+            GRONINGEN · NEDERLAND
           </div>
         </div>
 

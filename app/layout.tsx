@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   // metadataBase enables relative OG image URLs (/og-image.png) across all pages
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alvessa.nl'),
-  title: 'Alvessa — Premium massage aan huis in Utrecht',
+  title: 'Alvessa — Professionele schoonmaak aan huis in Groningen',
   description:
-    'Boek een professionele masseur aan huis in Utrecht. Gecertificeerde massage therapeuten, flexibele tijden, veilige betaling.',
+    'Boek een betrouwbare schoonmaker aan huis in Groningen. Gescreende schoonmakers, flexibele tijden, veilige betaling.',
 };
 
 // Root layout — html/body here. Lang attribute is set per locale by [locale]/layout.tsx.

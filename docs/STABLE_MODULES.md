@@ -14,6 +14,7 @@
 
 **Key invariant:**
 - `priceCents`, `durationMinutes`, `serviceNameNl/En`, `providerDisplayName`, `providerSlug` come exclusively from the Supabase DB query.
+- `platform_fee_cents` is derived server-side via `calculateCommissionCents()` from the category commission config in `lib/categories.ts` (all rates 0 until Stripe Connect payouts ship).
 - `formData` only supplies: `provider_service_id`, `scheduled_at`, `appointment_type`, `address_*`, `locale`.
 - Never add `total_cents` or `platform_fee_cents` to the trusted `formData` fields.
 
@@ -136,7 +137,7 @@
 - `supabase/migrations/202606170001_city_slug_normalization.sql` — CHECK constraints
 
 **Key invariants:**
-- `providers.city` / `provider_applications.city` store **slugs only** (`utrecht|amsterdam|rotterdam|den-haag`). Never store display names. (`studio_city` / `address_city` are unrelated address fields — exempt.)
+- `providers.city` / `provider_applications.city` store **slugs only** (`utrecht|amsterdam|rotterdam|den-haag|groningen`). Never store display names. (`studio_city` / `address_city` are unrelated address fields — exempt.)
 - Public surfaces show a city only when `status === 'active' && publicVisible`. Do not bypass `getPublicCitySlugs()` with a hardcoded city filter.
 - Every write path writes a slug (form/action, provider profile dropdown, admin approve).
 - Adding a city = config entry **and** altering both CHECK constraints.

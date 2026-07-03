@@ -1,102 +1,38 @@
-# Home Services Marketplace — Project Constitution
+# Project Constitution — Startup Protocol, Safety, Communication
 
-> **The goal is first real bookings in Utrecht.**
-> Every decision must serve that goal. If it doesn't, don't build it yet.
-
----
-
-## AI Context Rule
-
-This file defines **project philosophy and non-changing business constraints** only.
-
-For implementation workflows, subsystem file maps, stable module invariants, and task templates:
-
-- Read `docs/PROJECT_MAP.md` — subsystem file map and module status
-- Read `docs/AI_WORKFLOW.md` — task scoping, forbidden actions, output format
-- Read `docs/STABLE_MODULES.md` — what must never change accidentally
-- Use ONE `prompts/*` template per task category (see `docs/FEATURE_OWNERSHIP.md` for which template matches)
-
-Do not treat this file as the full implementation guide. Do not scan the full repo without first reading `docs/PROJECT_MAP.md`.
+> **The goal is first real bookings. Everything else is distraction.**
+> Project knowledge lives in `docs/CONTEXT_PACK.md` — this file intentionally contains none of it.
 
 ---
 
-## What This Project Is
+## Mandatory Startup Protocol
 
-A Dutch-first home services marketplace starting with premium mobile massage/wellness in Utrecht. The architecture is intentionally generic so future categories can be added — but the MVP exposes only massage.
+At the start of every session, read in this order — nothing else:
 
-## What This Project Is NOT (MVP Phase)
+```
+1. docs/CONTEXT_PACK.md    (project index — points to all authoritative docs)
+2. docs/STATE.md           (current state, open debts, next task)
+3. docs/CURRENT_SPRINT.md  (active sprint scope)
+4. Only the subsystem docs required by the current task
+   (expansion rules: CONTEXT_PACK.md §8)
+```
 
-- Not a native mobile app
-- Not a national or multi-city marketplace
-- Not a multi-category platform
-- Not an AI dispatch or recommendation system
-- Not enterprise SaaS
-- Not a microservice architecture
-
----
-
-## Tech Stack
-
-| Layer      | Technology                  |
-|------------|-----------------------------|
-| Framework  | Next.js 14+ App Router      |
-| Language   | TypeScript (strict)         |
-| Styling    | Tailwind CSS + shadcn/ui    |
-| Database   | Supabase (PostgreSQL + RLS) |
-| Auth       | Supabase Auth               |
-| Payments   | Stripe                      |
-| Maps       | Google Maps Places API      |
-| i18n       | next-intl                   |
-| Deployment | Vercel                      |
+Do not scan the repo before reading `docs/PROJECT_MAP.md`.
+Output the TASK_GATE block (`docs/TASK_GATE.md`) before the first tool call of any task.
+Execution rules (scope, budgets, forbidden behaviors): `docs/AI_WORKFLOW.md`.
 
 ---
 
-## Naming Rules (Critical)
+## Safety Rules (non-negotiable)
 
-Backend database and API code must use **generic marketplace naming**:
-
-| Use This            | Never Use This          |
-|---------------------|-------------------------|
-| `providers`         | `massage_therapists`    |
-| `customers`         | `clients`               |
-| `services`          | `massage_services`      |
-| `service_categories`| `massage_types`         |
-| `provider_services` | `therapist_offerings`   |
-| `bookings`          | `massage_bookings`      |
-| `payments`          | —                       |
-| `reviews`           | —                       |
-
-Frontend UI copy may say "massage" for the MVP. The schema must not.
-
----
-
-## MVP Constraints
-
-- **City:** Utrecht, Netherlands only
-- **Category:** Premium mobile massage / wellness only
-- **Language:** Dutch first, English second (next-intl from day one)
-- **Platform:** Website / PWA only
-- **Validation target:** Real bookings, real providers, real Stripe payments
-
-See `.claude/rules/mvp_scope.md` for the full allowed/forbidden feature list.
-
----
-
-## Development Process
-
-Before any code change: state objective, files in scope, what will NOT be built, acceptance criteria, and risk check.
-After any code change: summarize what changed, how to test, what remains, and confirm no MVP scope drift.
-
-Full workflow rules and task templates: `docs/AI_WORKFLOW.md` and `prompts/*`.
-
----
-
-## Architecture Constraints
-
-- App Router only — never Pages Router patterns
-- All user-facing strings via `next-intl` — no hardcoded Dutch or English in JSX
-- Database access only through Supabase client — never raw SQL strings in components
-- All i18n keys in `messages/nl.json` (primary) and `messages/en.json`
+- Never modify Stripe config, RLS policies, or auth middleware without a dedicated task + explicit written approval
+- Never recreate the authenticated INSERT policy on `bookings` — service_role INSERT is by design
+- Never run `supabase db reset`, `DROP TABLE`, `TRUNCATE`, or hard-delete bookings/payments
+- Never modify an existing migration file — migrations are append-only
+- Never commit `.env` files or put secrets in source
+- Stripe stays in **test mode** until the owner approves live mode in writing
+- Frozen architecture decisions (`docs/ARCHITECTURE_FREEZE.md`) may not be changed without a new `docs/DECISION_LOG.md` entry
+- Before code change: state objective, files in scope, what will NOT be built, acceptance criteria, risk check. After: summarize changes, how to test, what remains, confirm no scope drift.
 
 ---
 
@@ -113,11 +49,3 @@ Full workflow rules and task templates: `docs/AI_WORKFLOW.md` and `prompts/*`.
 **实施前：** 先用中文说明计划。**实施后：** 先用中文总结结果。
 
 See `.claude/rules/communication.md` for the full communication protocol.
-
----
-
-## Business Guardrail
-
-> **Ship real bookings in Utrecht first. Everything else is distraction.**
-
-When in doubt: would this help a Utrecht customer book a massage today? If no, defer it.

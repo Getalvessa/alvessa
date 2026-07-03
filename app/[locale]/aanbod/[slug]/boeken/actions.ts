@@ -4,6 +4,7 @@ import { headers } from 'next/headers';
 import { createClient, createServiceRoleClient } from '@/lib/supabase/server';
 import { PUBLIC_PROVIDER_STATUSES } from '@/lib/providers/public';
 import { createStripeClient } from '@/lib/stripe';
+import { getCategoryBySlug, calculateCommissionCents } from '@/lib/categories';
 import type { ServiceMode, AppointmentType } from '@/lib/types/service-mode';
 
 const ALLOWED_APPOINTMENT_TYPES: Record<ServiceMode, AppointmentType[]> = {
@@ -50,14 +51,16 @@ export async function createBooking(
   const appointmentType   = (formData.get('appointment_type')   as string) || 'at_home';
   const rawAddressLine    = (formData.get('address_line')       as string | null) ?? '';
   const addressLine       = rawAddressLine.trim() || null;
-  const addressCity       = (formData.get('address_city')       as string | null) ?? 'Utrecht';
+  const addressCity       = (formData.get('address_city')       as string | null) ?? 'Groningen';
   const addressNotes      = (formData.get('address_notes')      as string | null) || null;
   const locale            = (formData.get('locale')             as string) || 'nl';
 
   // 1. Fetch authoritative service data from the database
+  //    (service_categories has anon/authenticated SELECT on active rows,
+  //    so the nested slug join resolves under the user-scoped client)
   const { data: ps, error: psError } = await supabase
     .from('provider_services')
-    .select('id, provider_id, custom_price_cents, is_active, services ( id, name_nl, name_en, duration_minutes, base_price_cents )')
+    .select('id, provider_id, custom_price_cents, is_active, services ( id, name_nl, name_en, duration_minutes, base_price_cents, service_categories ( slug ) )')
     .eq('id', providerServiceId)
     .single();
 
@@ -93,6 +96,10 @@ export async function createBooking(
 
   // All financial and snapshot values come exclusively from the database
   const priceCents          = ps.custom_price_cents ?? ps.services.base_price_cents;
+  // Commission is category-configured (lib/categories.ts). All rates are 0
+  // today, so platform_fee_cents stays 0 — identical to previous behaviour.
+  const category            = getCategoryBySlug(ps.services.service_categories?.slug);
+  const platformFeeCents    = calculateCommissionCents(priceCents, category);
   const durationMinutes     = ps.services.duration_minutes;
   const serviceNameNl       = ps.services.name_nl;
   const serviceNameEn       = ps.services.name_en;
@@ -182,7 +189,7 @@ export async function createBooking(
       address_city:                   addressCity,
       address_notes:                  addressNotes,
       total_cents:                    priceCents,
-      platform_fee_cents:             0,
+      platform_fee_cents:             platformFeeCents,
       service_name_nl_snapshot:       serviceNameNl,
       service_name_en_snapshot:       serviceNameEn,
       service_price_cents_snapshot:   priceCents,

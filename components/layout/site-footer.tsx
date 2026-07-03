@@ -8,7 +8,7 @@ export default function SiteFooter() {
   return (
     <footer className="border-t border-border bg-background">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-4">
+        <div className="grid gap-8 sm:grid-cols-3">
           {/* Brand */}
           <div>
             <span className="text-sm font-semibold text-foreground">
@@ -17,29 +17,12 @@ export default function SiteFooter() {
             <p className="mt-1 text-xs text-muted-foreground">{t('tagline')}</p>
           </div>
 
-          {/* Service pages — local SEO internal links */}
-          <div className="flex flex-col gap-2">
-            <span className="text-xs font-semibold text-foreground">{t('servicesTitle')}</span>
-            <Link href="/massage-aan-huis-utrecht" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-              {t('massageUtrecht')}
-            </Link>
-            <Link href="/sportmassage-utrecht" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-              {t('sportmassage')}
-            </Link>
-            <Link href="/deep-tissue-massage-utrecht" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-              {t('deepTissue')}
-            </Link>
-            <Link href="/hotel-massage-utrecht" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
-              {t('hotelMassage')}
-            </Link>
-          </div>
-
           {/* Platform links */}
           <div className="flex flex-col gap-2">
             <Link href="/hoe-het-werkt" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               {t('howItWorks')}
             </Link>
-            <Link href="/voor-masseurs" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+            <Link href="/voor-schoonmakers" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               {t('forProviders')}
             </Link>
             <Link href="/faq" className="text-xs text-muted-foreground transition-colors hover:text-foreground">

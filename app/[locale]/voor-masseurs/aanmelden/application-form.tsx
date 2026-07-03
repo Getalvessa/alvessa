@@ -5,13 +5,32 @@ import { useTranslations } from 'next-intl';
 import { CheckCircle } from 'lucide-react';
 import { submitProviderApplicationAction } from './actions';
 import { getRecruitmentCities } from '@/lib/cities';
+import { detectCategoryFromFreeText, getCategoryBySlug } from '@/lib/categories';
 
-export default function ApplicationForm() {
+type Props = {
+  /** Pre-selected city slug in the city dropdown. */
+  defaultCity?: string;
+  /** When set, form copy is fixed to this category instead of free-text detection. */
+  categorySlug?: string;
+};
+
+export default function ApplicationForm({ defaultCity = 'utrecht', categorySlug }: Props = {}) {
   const t = useTranslations('forProviders');
   const [isPending, startTransition] = useTransition();
   const [success, setSuccess] = useState(false);
   const [serverError, setServerError] = useState<string | null>(null);
   const formRef = useRef<HTMLFormElement>(null);
+  const [selectedCity, setSelectedCity] = useState(defaultCity);
+  const [selectedServiceTypes, setSelectedServiceTypes] = useState('');
+
+  // Applicant free text has no DB record yet — keyword detection here is the
+  // sanctioned exception, centralized in lib/categories.ts. Category-specific
+  // recruitment pages pin the copy via `categorySlug` instead.
+  const applicationCopy = (
+    categorySlug
+      ? getCategoryBySlug(categorySlug)
+      : detectCategoryFromFreeText(selectedServiceTypes)
+  ).capabilities.application;
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -114,7 +133,8 @@ export default function ApplicationForm() {
           id="city"
           name="city"
           required
-          defaultValue="utrecht"
+          value={selectedCity}
+          onChange={(e) => setSelectedCity(e.target.value)}
           className={inputClass}
         >
           {cityOptions.map((city) => (
@@ -128,21 +148,24 @@ export default function ApplicationForm() {
 
       <div>
         <label htmlFor="service_types" className="block text-sm font-medium text-foreground">
-          {t('applyLabelServices')} <span className="text-destructive">*</span>
+          {t(applicationCopy.servicesLabelKey)}{' '}
+          <span className="text-destructive">*</span>
         </label>
         <input
           id="service_types"
           name="service_types"
           type="text"
           required
-          placeholder={t('applyLabelServicesPh')}
+          placeholder={t(applicationCopy.servicesPlaceholderKey)}
+          onChange={(e) => setSelectedServiceTypes(e.target.value)}
           className={inputClass}
         />
       </div>
 
       <fieldset>
         <legend className="block text-sm font-medium text-foreground">
-          {t('applyLabelServiceMode')} <span className="text-destructive">*</span>
+          {t(applicationCopy.serviceModeLabelKey)}{' '}
+          <span className="text-destructive">*</span>
         </legend>
         <div className="mt-2 space-y-2">
           <label className="flex items-center gap-3 cursor-pointer">
@@ -195,7 +218,7 @@ export default function ApplicationForm() {
 
       <div>
         <label htmlFor="experience_years" className="block text-sm font-medium text-foreground">
-          {t('applyLabelExperience')}
+          {t(applicationCopy.experienceLabelKey)}
         </label>
         <input
           id="experience_years"

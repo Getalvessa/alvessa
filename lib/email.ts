@@ -111,7 +111,7 @@ export async function sendCustomerConfirmation(d: CustomerConfirmationData): Pro
 
   const rows: [string, string][] = [
     ['Dienst',       `${d.serviceName} (${d.durationMinutes} min)`],
-    ['Masseur',      d.providerName],
+    ['Aanbieder',    d.providerName],
     ['Datum & tijd', date],
     ['Locatie',      location],
     ['Betaald',      fmtAmount(d.totalCents)],

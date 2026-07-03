@@ -1,20 +1,12 @@
 import type { MetadataRoute } from 'next';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://alvessa.nl';
-
+// PRE-LAUNCH FULL HIDDEN (docs/STATE.md → Pre-Launch SEO Strategy, Sprint RC-2C):
+// every customer-facing page is noindex, so the sitemap is intentionally empty
+// to keep all SEO signals consistent. Restore URLs together with the phased
+// index release (Phase 1 `/` → 2 `/aanbod` → 3 `/aanbod/[slug]` → 4 supporting
+// pages). Pre-hidden entries for Phase 4 reference:
+//   /hoe-het-werkt, /faq, /voor-schoonmakers, /voor-schoonmakers/aanmelden,
+//   /over-ons, /contact, /privacybeleid, /algemene-voorwaarden
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-
-  // Provider detail pages (/aanbod/[slug]) carry noindex: true and are excluded
-  // from the sitemap until SEO launch is intentionally re-enabled.
-  return [
-    { url: `${SITE_URL}/hoe-het-werkt`,              lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${SITE_URL}/faq`,                         lastModified: now, changeFrequency: 'monthly', priority: 0.7 },
-    { url: `${SITE_URL}/voor-masseurs`,               lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/voor-masseurs/aanmelden`,     lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
-    { url: `${SITE_URL}/over-ons`,                    lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/contact`,                     lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
-    { url: `${SITE_URL}/privacybeleid`,               lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-    { url: `${SITE_URL}/algemene-voorwaarden`,        lastModified: now, changeFrequency: 'yearly',  priority: 0.3 },
-  ];
+  return [];
 }

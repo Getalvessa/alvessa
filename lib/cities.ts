@@ -64,6 +64,13 @@ export const CITIES: readonly City[] = [
     publicVisible: false,
     recruitmentVisible: true,
   },
+  {
+    slug: 'groningen',
+    displayName: 'Groningen',
+    status: 'prelaunch',
+    publicVisible: false,
+    recruitmentVisible: true,
+  },
 ] as const;
 
 /**

@@ -39,7 +39,7 @@ async function getServicesData(): Promise<ServiceRow[]> {
   const [{ data: allServices }, { data: myServices }] = await Promise.all([
     supabase
       .from('services')
-      .select('id, name_nl, name_en, base_price_cents, duration_minutes')
+      .select('id, name_nl, name_en, base_price_cents, duration_minutes, category_id')
       .eq('is_active', true)
       .order('duration_minutes', { ascending: true }),
     supabase
@@ -48,19 +48,35 @@ async function getServicesData(): Promise<ServiceRow[]> {
       .eq('provider_id', provider.id),
   ]);
 
+  // Build a lookup so we can resolve category_id for each of the provider's services.
+  const allServicesMap = new Map((allServices ?? []).map((s) => [s.id, s]));
+
+  // Determine which categories this provider has already configured services for.
+  // If the provider has no provider_services yet (new provider), show all categories
+  // so they can set up their profile — the admin handles assignment at onboarding.
+  const enabledCategoryIds = new Set(
+    (myServices ?? [])
+      .map((r) => allServicesMap.get(r.service_id)?.category_id)
+      .filter((id): id is string => Boolean(id)),
+  );
+
+  const filteredServices = enabledCategoryIds.size > 0
+    ? (allServices ?? []).filter((s) => enabledCategoryIds.has(s.category_id))
+    : (allServices ?? []);
+
   const myMap = new Map(
     (myServices ?? []).map((r) => [r.service_id, r]),
   );
 
-  return (allServices ?? []).map((s) => {
+  return filteredServices.map((s) => {
     const mine = myMap.get(s.id);
     return {
-      id:              s.id,
-      nameNl:          s.name_nl,
-      nameEn:          s.name_en,
-      basePriceCents:  s.base_price_cents,
-      durationMinutes: s.duration_minutes,
-      isEnabled:       mine?.is_active ?? false,
+      id:               s.id,
+      nameNl:           s.name_nl,
+      nameEn:           s.name_en,
+      basePriceCents:   s.base_price_cents,
+      durationMinutes:  s.duration_minutes,
+      isEnabled:        mine?.is_active ?? false,
       customPriceCents: mine?.custom_price_cents ?? null,
     };
   });

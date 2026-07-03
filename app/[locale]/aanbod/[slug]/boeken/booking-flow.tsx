@@ -7,6 +7,7 @@ import { ArrowLeft, Check, Loader2 } from 'lucide-react';
 import { createBooking } from './actions';
 import type { ServiceMode, AppointmentType } from '@/lib/types/service-mode';
 import { getCityDisplayName } from '@/lib/cities';
+import { getCategoryBySlug, type CategoryDefinition } from '@/lib/categories';
 
 // Amsterdam UTC+2 (CEST) — fixed offset for MVP
 const TZ_OFFSET_H = 2;
@@ -20,6 +21,7 @@ type Service = {
     name_en: string;
     duration_minutes: number;
     base_price_cents: number;
+    service_categories: { slug: string } | null;
   } | null;
 };
 
@@ -339,12 +341,13 @@ function StudioInfoStep({
 // ── Step 3: Address (mobile_only / hybrid+at_home) ────────────────────────────
 
 function AddressStep({
-  city, addressLine, addressNotes,
+  city, addressLine, addressNotes, category,
   onAddressLine, onAddressNotes, onNext, onBack,
 }: {
   city: string;
   addressLine: string;
   addressNotes: string;
+  category: CategoryDefinition;
   onAddressLine: (v: string) => void;
   onAddressNotes: (v: string) => void;
   onNext: () => void;
@@ -377,11 +380,13 @@ function AddressStep({
           />
         </div>
         <div className="space-y-1.5">
-          <label className="text-sm font-medium text-foreground">{t('notesLabel')}</label>
+          <label className="text-sm font-medium text-foreground">
+            {t(category.capabilities.booking.notesLabelKey)}
+          </label>
           <textarea
             value={addressNotes}
             onChange={(e) => onAddressNotes(e.target.value)}
-            placeholder={t('notesPlaceholder')}
+            placeholder={t(category.capabilities.booking.notesPlaceholderKey)}
             rows={3}
             className="w-full rounded-lg border border-border bg-background px-3 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-foreground/20"
           />
@@ -534,6 +539,10 @@ export function BookingFlow({
 
   const [bookingState, formAction, isPending] = useActionState(createBooking, { error: null });
 
+  // Category comes from the DB slug (service_categories.slug) — never from
+  // service names. Unknown/missing slugs fall back to the default category.
+  const category = getCategoryBySlug(service?.services?.service_categories?.slug);
+
   // Trigger Stripe redirect when checkoutUrl is available (no setState needed)
   useEffect(() => {
     if (bookingState.checkoutUrl) {
@@ -620,6 +629,7 @@ export function BookingFlow({
           city={city}
           addressLine={addressLine}
           addressNotes={addressNotes}
+          category={category}
           onAddressLine={setAddressLine}
           onAddressNotes={setAddressNotes}
           onNext={() => setStep(confirmStep)}
@@ -633,6 +643,7 @@ export function BookingFlow({
           city={city}
           addressLine={addressLine}
           addressNotes={addressNotes}
+          category={category}
           onAddressLine={setAddressLine}
           onAddressNotes={setAddressNotes}
           onNext={() => setStep(confirmStep)}
