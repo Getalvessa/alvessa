@@ -28,6 +28,7 @@
 | 3 | Self-service cancellation not built — copy routes to hello@alvessa.nl | 🟢 LOW | Sprint 8 or post-launch |
 | 4 | `providers.profileMetaTitle/Description` message keys hardcode "Groningen" (currently unused by pages) | 🟢 LOW | Before multi-city public launch |
 | 5 | Stripe webhook writes literal `payments.platform_fee_cents: 0` — must mirror `booking.platform_fee_cents` once a commission rate becomes nonzero | 🟢 LOW | Stripe Connect payouts sprint (rates are 0 today) |
+| 6 | `<html>` has no `lang` attribute — root layout comment claims `[locale]/layout.tsx` sets it, but nothing does (a11y/SEO; harmless while noindex) | 🟡 MED | Before SEO index release (Phase 1) |
 
 ## Verified Facts
 
