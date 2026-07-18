@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { Geist, Geist_Mono } from 'next/font/google';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { setRequestLocale } from 'next-intl/server';
@@ -7,6 +8,16 @@ import { routing } from '@/i18n/routing';
 import SiteHeader from '@/components/layout/site-header';
 import SiteFooter from '@/components/layout/site-footer';
 import CookieBanner from '@/components/layout/cookie-banner';
+
+const geistSans = Geist({
+  variable: '--font-geist-sans',
+  subsets: ['latin'],
+});
+
+const geistMono = Geist_Mono({
+  variable: '--font-geist-mono',
+  subsets: ['latin'],
+});
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -44,12 +55,17 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
 
+  // Sole <html>/<body> — lang from static [locale] param (server-rendered, no client patch)
   return (
-    <NextIntlClientProvider locale={locale} messages={messages}>
-      <SiteHeader />
-      <main className="flex-1">{children}</main>
-      <SiteFooter />
-      <CookieBanner />
-    </NextIntlClientProvider>
+    <html lang={locale} className={`${geistSans.variable} ${geistMono.variable}`}>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <NextIntlClientProvider locale={locale} messages={messages}>
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <SiteFooter />
+          <CookieBanner />
+        </NextIntlClientProvider>
+      </body>
+    </html>
   );
 }

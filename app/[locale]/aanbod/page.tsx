@@ -88,7 +88,7 @@ function EmptyState() {
       <h2 className="text-xl font-semibold text-foreground">{t('emptyTitle')}</h2>
       <p className="mt-2 max-w-sm text-sm text-muted-foreground">{t('emptyDesc')}</p>
       <Link
-        href="/voor-schoonmakers"
+        href="/voor-masseurs"
         className="mt-8 inline-flex h-10 items-center justify-center rounded-lg border border-border px-5 text-sm font-medium text-foreground transition-colors hover:bg-muted"
       >
         {t('emptyCtaLabel')}

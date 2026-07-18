@@ -20,23 +20,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   });
 }
 
-const LOCAL_BUSINESS_SCHEMA = {
+// Organization only — no Offer / AggregateRating / priceRange that would imply
+// an operating bookable business while we are still in recruitment mode.
+const ORGANIZATION_SCHEMA = {
   '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
+  '@type': 'Organization',
   name: 'Alvessa',
-  description: 'Professionele schoonmaak aan huis in Groningen — gescreende schoonmakers, bij jou thuis.',
+  description:
+    'Alvessa bouwt aan een netwerk van professionele massagetherapeuten in Utrecht. Klantafspraken zijn nog niet open.',
   url: SITE_URL,
   email: 'hello@alvessa.nl',
   image: `${SITE_URL}/og`,
-  address: {
-    '@type': 'PostalAddress',
-    addressLocality: 'Groningen',
-    addressRegion: 'Groningen',
-    addressCountry: 'NL',
-  },
-  areaServed: [{ '@type': 'City', name: 'Groningen' }],
-  serviceType: 'Schoonmaak aan huis in Groningen',
-  priceRange: '€€',
+  areaServed: [{ '@type': 'City', name: 'Utrecht' }],
 };
 
 export default async function HomePage({ params }: Props) {
@@ -45,7 +40,7 @@ export default async function HomePage({ params }: Props) {
 
   return (
     <>
-      <JsonLd data={LOCAL_BUSINESS_SCHEMA} />
+      <JsonLd data={ORGANIZATION_SCHEMA} />
       <HeroSection />
       <ValuePropsSection />
       <HowItWorksSection />
@@ -78,7 +73,7 @@ function HeroSection() {
 
         <div className="mt-10 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
           <Link
-            href="/aanbod"
+            href="/voor-masseurs"
             className="inline-flex h-12 items-center justify-center rounded-lg bg-foreground px-8 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
           >
             {t('heroCtaPrimary')}
@@ -92,7 +87,7 @@ function HeroSection() {
         </div>
 
         <p className="mt-6 text-xs text-muted-foreground">
-          {tCommon('siteName')} · Groningen, Nederland
+          {tCommon('siteName')} · {t('heroLocation')}
         </p>
       </div>
     </section>
@@ -225,7 +220,7 @@ function CtaBannerSection() {
           {t('ctaSubtitle')}
         </p>
         <Link
-          href="/aanbod"
+          href="/voor-masseurs"
           className="mt-8 inline-flex h-12 items-center justify-center rounded-lg bg-background px-8 text-sm font-semibold text-foreground transition-colors hover:bg-background/90"
         >
           {t('ctaButton')}

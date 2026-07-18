@@ -36,32 +36,20 @@ export default async function MassageAanHuisUtrechtPage({ params }: Props) {
     })),
   };
 
-  const localBusinessSchema = {
+  // Organization only — no Offer / priceRange / operating inventory claims
+  const organizationSchema = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': 'Organization',
     name: 'Alvessa',
-    url: `${SITE_URL}/massage-aan-huis-utrecht`,
+    url: SITE_URL,
     email: 'hello@alvessa.nl',
-    image: `${SITE_URL}/og`,
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: 'Utrecht',
-      addressRegion: 'Utrecht',
-      addressCountry: 'NL',
-    },
-    areaServed: [
-      { '@type': 'City', name: 'Utrecht' },
-      { '@type': 'Place', name: 'Utrecht Centrum' },
-      { '@type': 'Place', name: 'Utrecht Oost' },
-      { '@type': 'Place', name: 'Leidsche Rijn' },
-    ],
-    serviceType: 'Massage aan huis',
-    priceRange: '€€',
+    description: t('metaDescription'),
+    areaServed: { '@type': 'City', name: 'Utrecht' },
   };
 
   return (
     <>
-      <JsonLd data={localBusinessSchema} />
+      <JsonLd data={organizationSchema} />
       <JsonLd data={faqSchema} />
       <PageContent />
     </>
@@ -97,7 +85,7 @@ function PageContent() {
       {/* CTA */}
       <div className="mt-8">
         <Link
-          href="/aanbod"
+          href="/voor-masseurs"
           className="inline-flex h-12 items-center justify-center rounded-lg bg-foreground px-8 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           {t('ctaButton')}

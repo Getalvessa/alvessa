@@ -36,15 +36,15 @@ export default async function DeepTissueMassageUtrechtPage({ params }: Props) {
     })),
   };
 
+  // Neutral Service — no Offer / price / availability (bookings not open)
   const serviceSchema = {
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: 'Deep tissue massage aan huis Utrecht',
     url: `${SITE_URL}/deep-tissue-massage-utrecht`,
-    provider: { '@type': 'LocalBusiness', name: 'Alvessa', url: SITE_URL },
-    areaServed: 'Utrecht',
+    provider: { '@type': 'Organization', name: 'Alvessa', url: SITE_URL },
+    areaServed: { '@type': 'City', name: 'Utrecht' },
     description: t('metaDescription'),
-    offers: { '@type': 'Offer', priceCurrency: 'EUR', price: '85' },
   };
 
   return (
@@ -69,7 +69,7 @@ function PageContent() {
 
       <div className="mt-8">
         <Link
-          href="/aanbod"
+          href="/voor-masseurs"
           className="inline-flex h-12 items-center justify-center rounded-lg bg-foreground px-8 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           {t('ctaButton')}

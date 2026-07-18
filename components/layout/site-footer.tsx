@@ -22,7 +22,7 @@ export default function SiteFooter() {
             <Link href="/hoe-het-werkt" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               {t('howItWorks')}
             </Link>
-            <Link href="/voor-schoonmakers" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
+            <Link href="/voor-masseurs" className="text-xs text-muted-foreground transition-colors hover:text-foreground">
               {t('forProviders')}
             </Link>
             <Link href="/faq" className="text-xs text-muted-foreground transition-colors hover:text-foreground">

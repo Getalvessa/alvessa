@@ -15,14 +15,14 @@ function LocaleSwitcher() {
   const router = useRouter();
 
   return (
-    <div className="flex items-center rounded-md border border-border overflow-hidden text-xs font-semibold">
+    <div className="flex items-center rounded-md border border-border overflow-hidden text-[11px] font-semibold sm:text-xs">
       {(['nl', 'en'] as const).map((loc, i) => (
         <button
           key={loc}
           onClick={() => router.push(pathname, { locale: loc })}
           disabled={locale === loc}
           className={cn(
-            'px-2 py-1 transition-colors',
+            'px-1.5 py-1 transition-colors sm:px-2',
             i === 0 && 'border-r border-border',
             locale === loc
               ? 'bg-foreground text-background cursor-default'
@@ -55,14 +55,14 @@ export default function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
+        <Link href="/" className="flex shrink-0 items-center">
           <Image
             src="/logo.png"
             alt={tCommon('siteName')}
             width={140}
             height={93}
-            className="h-14 w-auto"
+            className="h-9 w-auto sm:h-11 md:h-14"
             priority
           />
         </Link>
@@ -81,50 +81,60 @@ export default function SiteHeader() {
             {t('howItWorks')}
           </Link>
           <Link
-            href="/voor-schoonmakers"
+            href="/voor-masseurs"
             className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
           >
             {t('forProviders')}
           </Link>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-3">
           <LocaleSwitcher />
 
-          {/* Loading state — matches width of auth buttons to avoid layout shift */}
+          {/* Loading state — desktop auth width only */}
           {user === undefined && (
-            <div className="h-9 w-24 animate-pulse rounded-lg bg-muted" />
+            <div className="hidden h-9 w-24 animate-pulse rounded-lg bg-muted md:block" />
           )}
 
           {user === null && (
             <>
+              {/* Compact login — visible on mobile + desktop; secondary text link */}
               <Link
                 href="/inloggen"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="shrink-0 whitespace-nowrap text-xs font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:text-sm"
               >
                 {t('login')}
               </Link>
+              {/* Register stays desktop-only */}
               <Link
                 href="/registreren"
-                className="inline-flex h-9 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90"
+                className="hidden h-9 items-center justify-center rounded-lg bg-foreground px-4 text-sm font-medium text-background transition-colors hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 md:inline-flex"
               >
                 {t('register')}
               </Link>
             </>
           )}
 
+          {/* Mobile recruitment CTA — below md only; no hamburger/menu state */}
+          <Link
+            href="/voor-masseurs"
+            className="inline-flex h-8 shrink-0 items-center justify-center rounded-lg bg-foreground px-2 text-xs font-medium whitespace-nowrap text-background transition-colors hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:h-9 sm:px-3 sm:text-sm md:hidden"
+          >
+            {t('mobileApply')}
+          </Link>
+
           {user && (
             <>
               <Link
                 href="/mijn-boekingen"
-                className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                className="hidden text-sm font-medium text-muted-foreground transition-colors hover:text-foreground md:inline"
               >
                 {t('myBookings')}
               </Link>
               <form action={logoutAction}>
                 <button
                   type="submit"
-                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   {t('logout')}
                 </button>

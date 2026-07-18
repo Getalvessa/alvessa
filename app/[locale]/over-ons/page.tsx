@@ -63,7 +63,7 @@ function AboutContent() {
 
       <div className="mt-12">
         <Link
-          href="/aanbod"
+          href="/voor-masseurs"
           className="inline-flex h-11 items-center justify-center rounded-lg bg-foreground px-8 text-sm font-semibold text-background transition-colors hover:bg-foreground/90"
         >
           {t('ctaButton')}

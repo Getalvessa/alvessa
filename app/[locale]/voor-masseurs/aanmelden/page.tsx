@@ -26,7 +26,8 @@ export default async function ApplyPage({ params }: Props) {
   return (
     <div className="mx-auto max-w-lg px-4 py-12 sm:px-6 sm:py-16">
       <PageHeader />
-      <ApplicationForm />
+      {/* Pin massage copy: free-text keyword detection can match cleaning terms. */}
+      <ApplicationForm defaultCity="utrecht" categorySlug="massage" />
     </div>
   );
 }
