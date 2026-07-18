@@ -30,6 +30,7 @@ const ORGANIZATION_SCHEMA = {
     'Alvessa bouwt aan een netwerk van professionele massagetherapeuten in Utrecht. Klantafspraken zijn nog niet open.',
   url: SITE_URL,
   email: 'hello@alvessa.nl',
+  logo: `${SITE_URL}/brand/alvessa-mark.svg`,
   image: `${SITE_URL}/og`,
   areaServed: [{ '@type': 'City', name: 'Utrecht' }],
 };

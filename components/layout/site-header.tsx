@@ -3,11 +3,11 @@
 import { useEffect, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
-import Image from 'next/image';
 import { createClient } from '@/lib/supabase/client';
 import { logoutAction } from '@/app/[locale]/inloggen/actions';
 import type { User } from '@supabase/supabase-js';
 import { cn } from '@/lib/utils';
+import Logo from '@/components/brand/logo';
 
 function LocaleSwitcher() {
   const locale = useLocale();
@@ -38,7 +38,6 @@ function LocaleSwitcher() {
 
 export default function SiteHeader() {
   const t = useTranslations('nav');
-  const tCommon = useTranslations('common');
   const [user, setUser] = useState<User | null | undefined>(undefined); // undefined = loading
 
   useEffect(() => {
@@ -56,15 +55,12 @@ export default function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-2 px-3 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center">
-          <Image
-            src="/logo.png"
-            alt={tCommon('siteName')}
-            width={140}
-            height={93}
-            className="h-9 w-auto sm:h-11 md:h-14"
-            priority
-          />
+        <Link
+          href="/"
+          className="flex shrink-0 items-center rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          aria-label="Alvessa"
+        >
+          <Logo variant="full" tone="brand" markSize={32} priority />
         </Link>
 
         <nav className="hidden gap-6 md:flex">

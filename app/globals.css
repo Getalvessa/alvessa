@@ -22,6 +22,8 @@
   --input: 240 5.9% 90%;
   --ring: 240 5.9% 10%;
   --radius: 0.5rem;
+  /* Brand mark only — do not repaint the full UI theme with this */
+  --brand-royal: #4169E1;
 }
 
 /* Dark mode */
@@ -69,6 +71,7 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-brand-royal: var(--brand-royal);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   /* --radius is intentionally omitted here: shadcn/ui components reference
